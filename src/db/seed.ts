@@ -164,6 +164,7 @@ async function main() {
       latitude: stop.lat,
       longitude: stop.lng,
       significance: stop.significance,
+      imageUrl: stop.image,
       isOnRoute: true,
       yatraId: mainYatra.id,
       routeOrder: index + 1,

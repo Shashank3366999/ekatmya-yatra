@@ -179,6 +179,8 @@ export const MAIN_YATRA_ROUTE: {
   significance: string;
   /** Day offset from the Yatra start date. */
   dayOffset: number;
+  /** Photograph of the place, under /public/places. */
+  image: string;
 }[] = [
   {
     name: "Kalady",
@@ -190,6 +192,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Birthplace of Adi Shankaracharya on the banks of the Periyar. The Yatra begins here.",
     dayOffset: 0,
+    image: "/places/kalady.jpg",
   },
   {
     name: "Thrissur — Vadakkunnathan",
@@ -201,6 +204,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Traditionally held to be where Adi Shankaracharya attained samadhi; a major Shaiva centre.",
     dayOffset: 4,
+    image: "/places/thrissur.jpg",
   },
   {
     name: "Kanyakumari",
@@ -211,6 +215,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "The southern tip of Bharat, where the three seas meet.",
     dayOffset: 9,
+    image: "/places/kanyakumari.jpg",
   },
   {
     name: "Madurai",
@@ -221,6 +226,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "crowd_gathering",
     significance: "Ancient temple city and a centre of Tamil learning and debate.",
     dayOffset: 14,
+    image: "/places/madurai.jpg",
   },
   {
     name: "Rameswaram",
@@ -231,6 +237,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "One of the Char Dham; the eastern anchor of the pilgrimage tradition.",
     dayOffset: 18,
+    image: "/places/rameswaram.webp",
   },
   {
     name: "Kanchipuram",
@@ -242,6 +249,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Seat of the Kanchi Kamakoti Peetham and a historic centre of Advaita scholarship.",
     dayOffset: 24,
+    image: "/places/kanchipuram.jpg",
   },
   {
     name: "Sringeri",
@@ -253,6 +261,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "The Sharada Peetham — the southern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 32,
+    image: "/places/sringeri.jpg",
   },
   {
     name: "Kollur — Mookambika",
@@ -263,6 +272,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "Shakti shrine closely associated with Adi Shankaracharya's life.",
     dayOffset: 36,
+    image: "/places/kollur.webp",
   },
   {
     name: "Kolhapur",
@@ -273,6 +283,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "Mahalakshmi Shakti Peetha and a major western gathering point.",
     dayOffset: 43,
+    image: "/places/kolhapur.webp",
   },
   {
     name: "Nashik — Trimbakeshwar",
@@ -283,6 +294,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "Jyotirlinga on the Godavari; a traditional Kumbh site.",
     dayOffset: 49,
+    image: "/places/nashik.jpg",
   },
   {
     name: "Dwarka",
@@ -294,6 +306,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Sharada Peetham, Dwarka — the western Amnaya Peetham of the Advaita tradition.",
     dayOffset: 58,
+    image: "/places/dwarka.jpg",
   },
   {
     name: "Omkareshwar — Ekatma Dham",
@@ -305,6 +318,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Where Adi Shankaracharya met his guru Govindapada. Home of the Statue of Oneness and the Ekatma Dham project.",
     dayOffset: 68,
+    image: "/places/omkareshwar.jpg",
   },
   {
     name: "Ujjain — Mahakaleshwar",
@@ -315,6 +329,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "Jyotirlinga and one of the four Kumbh Mela cities.",
     dayOffset: 73,
+    image: "/places/ujjain.jpg",
   },
   {
     name: "Puri",
@@ -326,6 +341,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Govardhana Peetham — the eastern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 84,
+    image: "/places/puri.jpg",
   },
   {
     name: "Varanasi — Kashi",
@@ -337,6 +353,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Where Adi Shankaracharya composed and debated; the enduring centre of Sanatana learning.",
     dayOffset: 95,
+    image: "/places/varanasi.png",
   },
   {
     name: "Prayagraj",
@@ -347,6 +364,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "crowd_gathering",
     significance: "The Triveni Sangam — confluence of Ganga, Yamuna and Saraswati.",
     dayOffset: 100,
+    image: "/places/prayagraj.jpg",
   },
   {
     name: "Haridwar",
@@ -357,6 +375,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "religious",
     significance: "Where the Ganga enters the plains; gateway to the Himalayan seats.",
     dayOffset: 108,
+    image: "/places/haridwar.webp",
   },
   {
     name: "Rishikesh",
@@ -367,6 +386,7 @@ export const MAIN_YATRA_ROUTE: {
     category: "educational",
     significance: "A living centre of Vedanta study and monastic institutions.",
     dayOffset: 112,
+    image: "/places/rishikesh.jpeg",
   },
   {
     name: "Joshimath",
@@ -378,6 +398,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Jyotirmath — the northern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 116,
+    image: "/places/joshimath.jpg",
   },
   {
     name: "Badrinath",
@@ -389,6 +410,7 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "Char Dham shrine, re-established by Adi Shankaracharya in the Himalaya.",
     dayOffset: 118,
+    image: "/places/badrinath.jpg",
   },
   {
     name: "Kedarnath",
@@ -400,5 +422,6 @@ export const MAIN_YATRA_ROUTE: {
     significance:
       "The Jyotirlinga where Adi Shankaracharya's journey concluded. The Yatra culminates here.",
     dayOffset: 121,
+    image: "/places/kedarnath.avif",
   },
 ];

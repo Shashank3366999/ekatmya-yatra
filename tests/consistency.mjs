@@ -67,6 +67,38 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
   eq(statStops, badgeStops, "landing: Stops figure matches the map card badge");
   ok(statStops > 0, "landing: stop count is non-zero", `${statStops}`);
   global.landingStops = statStops;
+
+  // Every sequenced stop is a photo card on the journey timeline. The row is a
+  // horizontal scroller, so its later cards only load once scrolled into view —
+  // walk it before counting, or lazy loading reads as a broken image.
+  //
+  // Note when testing this check by deleting a file from public/places: the
+  // Next image optimizer keeps optimised copies in .next/cache/images and will
+  // happily keep serving one whose source is gone. Clear that directory too.
+  await p.evaluate(async () => {
+    document.querySelector(".snap-row")?.scrollIntoView({ block: "center" });
+    const row = document.querySelector(".snap-row");
+    if (!row) return;
+    for (let x = 0; x <= row.scrollWidth; x += 400) {
+      row.scrollTo({ left: x });
+      await new Promise((r) => setTimeout(r, 150));
+    }
+  });
+  await p.waitForTimeout(2500);
+  const cards = await p.evaluate(() => {
+    const articles = [...document.querySelectorAll(".snap-row article")];
+    const imgs = articles.flatMap((a) => [...a.querySelectorAll("img")]);
+    return {
+      articles: articles.length,
+      imgs: imgs.length,
+      loaded: imgs.filter((i) => i.complete && i.naturalWidth > 0).length,
+      broken: imgs.filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.alt),
+    };
+  });
+  eq(cards.articles, statStops, "landing: timeline cards match the stop count");
+  eq(cards.imgs, statStops, "landing: every timeline card carries a photo");
+  eq(cards.loaded, cards.imgs, "landing: every timeline photo loads");
+  ok(cards.broken.length === 0, "landing: no broken timeline photos", cards.broken.join(", "));
 }
 const landingStops = global.landingStops;
 
@@ -93,6 +125,24 @@ await login(ctx, "survey.kerala@ekatmadham.com");
   });
   eq(counts.numbered, landingStops, "yatra: numbered itinerary entries match the stop count");
   global.yatraPending = counts.pending;
+
+  // Each sequenced stop also carries its photo as an itinerary thumbnail.
+  await p.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += 600) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 120));
+    }
+  });
+  await p.waitForTimeout(2000);
+  const thumbs = await p.evaluate(() => {
+    const imgs = [...document.querySelectorAll("ol li img")];
+    return {
+      total: imgs.length,
+      loaded: imgs.filter((i) => i.complete && i.naturalWidth > 0).length,
+    };
+  });
+  eq(thumbs.total, landingStops, "yatra: itinerary thumbnails match the stop count");
+  eq(thumbs.loaded, thumbs.total, "yatra: every itinerary thumbnail loads");
 }
 
 /* -------------------------------------------------- organiser surfaces */

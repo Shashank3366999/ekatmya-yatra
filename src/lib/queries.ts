@@ -68,6 +68,7 @@ export async function listRoutePlaces() {
       routeOrder: places.routeOrder,
       category: places.category,
       significance: places.significance,
+      imageUrl: places.imageUrl,
       expectedArrival: places.expectedArrival,
       stateName: states.name,
       districtName: districts.name,
@@ -584,6 +585,7 @@ export async function listJourneyPlaces(userId: string) {
       expectedArrival: places.expectedArrival,
       latitude: places.latitude,
       longitude: places.longitude,
+      imageUrl: places.imageUrl,
       stateName: states.name,
     })
     .from(places)

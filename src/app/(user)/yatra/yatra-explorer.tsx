@@ -9,6 +9,7 @@
  * Choosing a marker scrolls the itinerary to that stop.
  */
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { Chip } from "@heroui/react";
 import { CalendarDays, Check, MapPin, Plus } from "lucide-react";
 
@@ -38,6 +39,7 @@ type Place = {
   districtName: string | null;
   category: PlaceCategory;
   significance: string | null;
+  imageUrl: string | null;
   expectedArrival: string | null;
 };
 
@@ -112,6 +114,17 @@ export function YatraExplorer({
           </Chip>
         ) : null}
       </div>
+      {selected.imageUrl ? (
+        <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-lg bg-ink-100">
+          <Image
+            src={selected.imageUrl}
+            alt={selected.name}
+            fill
+            sizes="(max-width: 640px) 90vw, 420px"
+            className="object-cover"
+          />
+        </div>
+      ) : null}
       {selected.significance ? (
         <p className="mt-2.5 text-sm leading-relaxed text-ink-600">
           {selected.significance}
@@ -156,15 +169,29 @@ export function YatraExplorer({
           }`}
         >
           <div className="flex items-start gap-3.5">
-            <span
-              className={`grid size-8 shrink-0 place-items-center rounded-full text-xs font-semibold ${
-                p.routeOrder
-                  ? "bg-pumpkin-500 text-ink-0"
-                  : "bg-pumpkin-100 text-pumpkin-700"
-              }`}
-            >
-              {p.routeOrder ?? "?"}
-            </span>
+            <div className="shrink-0">
+              <span
+                className={`grid size-8 place-items-center rounded-full text-xs font-semibold ${
+                  p.routeOrder
+                    ? "bg-pumpkin-500 text-ink-0"
+                    : "bg-pumpkin-100 text-pumpkin-700"
+                }`}
+              >
+                {p.routeOrder ?? "?"}
+              </span>
+
+              {p.imageUrl ? (
+                <div className="relative mt-2.5 size-16 overflow-hidden rounded-lg bg-ink-100">
+                  <Image
+                    src={p.imageUrl}
+                    alt={p.name}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </div>
+              ) : null}
+            </div>
 
             <div className="min-w-0 flex-1">
               <p className="font-display text-base leading-tight text-ink-900">

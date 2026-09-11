@@ -305,6 +305,12 @@ export const places = pgTable(
     longitude: real("longitude"),
     /** Significance to Advaita / Shankaracharya tradition. */
     significance: text("significance"),
+    /**
+     * Photograph of the place, as a public path. Data rather than a lookup in
+     * the UI, so a place approved from a survey can be given one later without
+     * touching code.
+     */
+    imageUrl: text("image_url"),
     /** Confirmed as part of a Yatra route (vs. merely surveyed). */
     isOnRoute: boolean("is_on_route").notNull().default(false),
 

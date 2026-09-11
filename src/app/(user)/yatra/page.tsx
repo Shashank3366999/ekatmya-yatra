@@ -48,6 +48,7 @@ export default async function YatraPage() {
           districtName: p.districtName,
           category: p.category,
           significance: p.significance,
+          imageUrl: p.imageUrl,
           expectedArrival: p.expectedArrival ? p.expectedArrival.toISOString() : null,
         }))}
         journeyIds={journeyIds}

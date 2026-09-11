@@ -1,7 +1,7 @@
 /**
  * End-to-end smoke test of the flows that matter, driven through real Chrome.
  *
- *   pnpm build && PORT=3100 pnpm start      # in one terminal
+ *   pnpm build && PORT=3200 pnpm start      # in one terminal
  *   pnpm test:e2e                           # in another
  *
  * Set BASE_URL to point at another environment, and SHOTS=<dir> to capture
@@ -18,7 +18,7 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.BASE_URL ?? "http://localhost:3100";
+const BASE = process.env.BASE_URL ?? "http://localhost:3200";
 const SHOTS = process.env.SHOTS;
 const pass = [], fail = [];
 /** ok(name, condition, extra?) — name first in this suite. */

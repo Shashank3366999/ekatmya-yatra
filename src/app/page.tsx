@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowDown, Compass, HandHeart, MapPin, ShieldCheck } from "lucide-react";
 
 import { redirectIfSignedIn } from "@/actions/auth";
@@ -463,33 +464,50 @@ export default async function LandingPage() {
             IntersectionObserver.
           */}
           <Reveal>
-            <div className="snap-row stagger mt-8 flex gap-3 overflow-x-auto pb-3">
+            <div className="snap-row stagger mt-8 flex gap-3 overflow-x-auto pb-3 sm:gap-4">
               {sequenced.map((p) => (
                 <article
                   key={p.id}
-                  className="lift flex h-full w-56 shrink-0 flex-col rounded-xl border border-ink-200 bg-surface p-4 sm:w-64"
+                  className="lift group flex h-full w-60 shrink-0 flex-col overflow-hidden rounded-xl border border-ink-200 bg-surface sm:w-72"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold tabular-nums text-ink-0">
+                  {/* The place itself. Lazy by default — 21 photos must not
+                      all load before the page is usable. */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-100">
+                    {p.imageUrl ? (
+                      <Image
+                        src={p.imageUrl}
+                        alt={p.name}
+                        fill
+                        sizes="(max-width: 640px) 240px, 288px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : null}
+
+                    {/* Stop number, over the photo. */}
+                    <span className="absolute top-2.5 left-2.5 grid size-7 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold tabular-nums text-ink-0 shadow">
                       {p.routeOrder}
                     </span>
-                    <span className="text-[11px] tabular-nums text-ink-500">
-                      {p.expectedArrival ? formatDate(p.expectedArrival) : "date TBC"}
-                    </span>
+
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950/85 to-transparent p-2.5 pt-8">
+                      <p className="font-display text-sm leading-tight text-ink-0">
+                        {p.name}
+                      </p>
+                      <p className="text-[10px] text-ink-0/70">
+                        {[p.districtName, p.stateName].filter(Boolean).join(", ")}
+                      </p>
+                    </div>
                   </div>
 
-                  <p className="mt-3 font-display text-base leading-tight text-ink-900">
-                    {p.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-500">
-                    {[p.districtName, p.stateName].filter(Boolean).join(", ")}
-                  </p>
-
-                  {p.significance ? (
-                    <p className="mt-2.5 line-clamp-4 text-xs leading-relaxed text-ink-600">
-                      {p.significance}
+                  <div className="flex flex-1 flex-col p-3.5">
+                    <p className="text-[11px] tabular-nums text-pumpkin-600">
+                      {p.expectedArrival ? formatDate(p.expectedArrival) : "date TBC"}
                     </p>
-                  ) : null}
+                    {p.significance ? (
+                      <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-ink-600">
+                        {p.significance}
+                      </p>
+                    ) : null}
+                  </div>
                 </article>
               ))}
             </div>

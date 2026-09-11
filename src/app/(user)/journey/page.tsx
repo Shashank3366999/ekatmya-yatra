@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Route } from "lucide-react";
 
 import { toggleJourneyPlace } from "@/actions/journey";
@@ -52,6 +53,17 @@ export default async function JourneyPage() {
             <ul className="divide-y divide-ink-200 overflow-hidden rounded-xl border border-ink-200 bg-surface">
               {places.map((p) => (
                 <li key={p.id} className="flex items-center gap-3 px-4 py-3">
+                  {p.imageUrl ? (
+                    <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-ink-100">
+                      <Image
+                        src={p.imageUrl}
+                        alt={p.name}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : null}
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
                     {p.routeOrder ?? "—"}
                   </span>
