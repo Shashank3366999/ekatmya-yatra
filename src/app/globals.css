@@ -258,6 +258,28 @@
     --field-placeholder: rgb(255 255 255 / 0.45);
     --field-border: rgb(255 255 255 / 0.28);
 
+    /*
+      The bug this comment is here to stop recurring: HeroUI's focused and
+      invalid field backgrounds do NOT read --field-background. They read
+      --field-hover / --field-focus / --field-border-hover / --field-border-focus,
+      and those four are declared exactly once, at :root, as
+      `color-mix(... var(--field-background) ...)` — resolved there, using the
+      *light-theme* --field-background, and that resolved value is what
+      inherits down. Redeclaring --field-background inside .glass-panel does
+      not touch them, because CSS custom properties don't get re-resolved at a
+      descendant just because the property they reference changed there.
+
+      So this got a focused email input with a white background (from the
+      unmodified --field-focus) and white text (from --field-foreground,
+      which the panel DOES control) sitting on top of it — invisible while
+      typing, on the one input a visitor fills in first. The four derived
+      tokens have to be redeclared here too, from the same dark base.
+    */
+    --field-hover: color-mix(in oklab, var(--field-background) 90%, #ffffff 6%);
+    --field-focus: rgb(30 30 34 / 0.85);
+    --field-border-hover: rgb(255 255 255 / 0.4);
+    --field-border-focus: rgb(255 255 255 / 0.55);
+
     --accent: #ffffff;
     --accent-hover: rgb(255 255 255 / 0.88);
     --accent-foreground: #111113;

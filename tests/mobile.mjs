@@ -111,7 +111,19 @@ ok(touch.action === "manipulation", "links avoid the 300ms tap delay", String(to
       return (hi + 0.05) / (lo + 0.05);
     };
 
-    const panelBg = "rgb(40,40,44)"; // the blurred dark glass, measured once
+    /*
+      The input's OWN computed background, not a guessed constant. An earlier
+      version of this check compared the input's text colour against a
+      hard-coded "rgb(40,40,44)" meant to approximate the panel behind it —
+      which is what let a real bug through: HeroUI's focused and invalid field
+      backgrounds come from tokens (--field-focus, by way of --field-hover /
+      --field-border-*) that are separate from --field-background and were
+      never overridden for the panel, so a focused, invalid email input
+      rendered a white background under white text. Reading the element's
+      actual `background-color` in each state is what catches that; a fixed
+      guess cannot.
+    */
+    const bgOf = (el) => (el ? getComputedStyle(el).backgroundColor : null);
     return {
       hasPhoto: Boolean(bg) && bg.complete && bg.naturalWidth > 0,
       hasPanel: Boolean(panel),
@@ -120,8 +132,9 @@ ok(touch.action === "manipulation", "links avoid the 300ms tap delay", String(to
       submitContrast: submit
         ? ratio(getComputedStyle(submit).backgroundColor, getComputedStyle(submit).color)
         : 0,
-      labelContrast: label ? ratio(getComputedStyle(label).color, panelBg) : 0,
-      inputContrast: input ? ratio(getComputedStyle(input).color, panelBg) : 0,
+      labelContrast: label ? ratio(getComputedStyle(label).color, bgOf(panel)) : 0,
+      inputContrast: input ? ratio(getComputedStyle(input).color, bgOf(input)) : 0,
+      inputBg: bgOf(input),
       /* The reference is one screen: no scrolling to reach the button. */
       fitsOneScreen:
         document.documentElement.scrollHeight <= window.innerHeight + 2,
@@ -145,9 +158,53 @@ ok(touch.action === "manipulation", "links avoid the 300ms tap delay", String(to
   */
   ok(l.submitContrast >= 4.5, "primary action text is legible", l.submitContrast.toFixed(1));
   ok(l.labelContrast >= 4.5, "field labels are legible on the panel", l.labelContrast.toFixed(1));
-  ok(l.inputContrast >= 4.5, "typed input is legible on the panel", l.inputContrast.toFixed(1));
+  ok(l.inputContrast >= 4.5, "typed input is legible at rest", l.inputContrast.toFixed(1));
   ok(l.fitsOneScreen, "sign-in fits one phone screen without scrolling");
   ok(l.noSideScroll, "sign-in does not scroll sideways");
+
+  /*
+    Focused, and focused-while-invalid: the two states a hard-coded background
+    guess could never catch, and the exact state a visitor hits by tapping the
+    email field and then submitting it empty. Submit first, so data-invalid is
+    already true when the field is refocused.
+  */
+  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.waitForTimeout(500);
+
+  const email = page.locator('input[type="email"]');
+  await email.click();
+  await page.waitForTimeout(250);
+  const focusedInvalid = await email.evaluate((el) => {
+    const lum = (c) => {
+      const [r, g, b] = (c.match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(Number);
+      const f = (v) => {
+        const x = v / 255;
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+      };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    };
+    const ratio = (a, b) => {
+      const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    const cs = getComputedStyle(el);
+    return {
+      invalid: el.getAttribute("data-invalid") ?? el.getAttribute("aria-invalid"),
+      bg: cs.backgroundColor,
+      color: cs.color,
+      contrast: ratio(cs.color, cs.backgroundColor),
+    };
+  });
+  ok(
+    focusedInvalid.invalid === "true" || focusedInvalid.invalid === true,
+    "the email field actually reached the invalid state for this check",
+    String(focusedInvalid.invalid),
+  );
+  ok(
+    focusedInvalid.contrast >= 4.5,
+    "typed input is legible while focused and invalid",
+    `${focusedInvalid.contrast.toFixed(1)} — bg ${focusedInvalid.bg}, text ${focusedInvalid.color}`,
+  );
 }
 
 /* ----------------------------------------------- one-handed reachability */
