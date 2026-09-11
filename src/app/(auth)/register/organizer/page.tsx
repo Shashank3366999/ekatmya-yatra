@@ -60,7 +60,7 @@ export default async function RegisterOrganizerPage() {
 
       <p className="mt-6 text-sm text-ink-500">
         Want to volunteer or simply follow the Yatra?{" "}
-        <Link href="/register" className="font-medium text-pumpkin-500 underline">
+        <Link href="/register" className="font-medium text-pumpkin-700 underline">
           Create an account
         </Link>
         . No approval needed.

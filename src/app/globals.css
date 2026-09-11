@@ -51,8 +51,14 @@
   --color-ink-100: #f4f4f5;
   --color-ink-200: #e7e7e9;
   --color-ink-300: #d6d6d9;
+  /*
+    ink-400 is a tint, not a text colour: 2.4:1 on white. Borders, rules,
+    disabled icons. The faintest text on the site is ink-500, which is
+    #707076 rather than the #78787e it started as, because that measured
+    4.39:1 on white and 4.01:1 on the warm grounds — under 4.5:1 in both.
+  */
   --color-ink-400: #a5a5aa;
-  --color-ink-500: #78787e;
+  --color-ink-500: #707076;
   --color-ink-600: #545459;
   --color-ink-700: #3a3a3e;
   --color-ink-800: #232326;
@@ -70,6 +76,13 @@
 
   /* Warm gold — "needs attention" states, kept distinct from pumpkin. */
   --color-gold: #b8873b;
+  /*
+    The same gold, dark enough to be read.
+    #b8873b is 3.2:1 on white, which is fine for a dot, a border or a fill and
+    not enough for words. Text uses this instead: 5.5:1 on white and 5:1 on the
+    warm grounds, still recognisably the same colour.
+  */
+  --color-gold-ink: #8a6220;
 
   /*
     The phone column width for the User and Organiser apps. They are mobile-first
@@ -102,10 +115,19 @@
     --default: #f4f4f5;
     --default-foreground: #3a3a3e;
 
-    /* HeroUI's "accent" is the primary action colour. */
+    /*
+      HeroUI's "accent" is the primary action colour.
+
+      The foreground on it is ink, not white. Pumpkin 245,118,26 is the Yatra's
+      colour and stays exactly that, but white on it measures **2.80:1** — under
+      the 4.5:1 body-text bar and the 3:1 bar for large text too, so every
+      primary button and badge was hard to read. Ink on the same pumpkin is
+      6.0:1. Darkening the fill instead would have clouded the brand colour;
+      darkening the type keeps it.
+    */
     --accent: #f5761a;
     --accent-hover: #dc5f0c;
-    --accent-foreground: #ffffff;
+    --accent-foreground: #111113;
 
     --field-background: #ffffff;
     --field-foreground: #111113;

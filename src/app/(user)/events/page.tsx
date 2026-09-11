@@ -30,7 +30,7 @@ export default async function EventsPage() {
             <li key={e.id} className="overflow-hidden rounded-xl border border-ink-200 bg-surface">
               <div className="flex items-stretch">
                 {/* Date rail */}
-                <div className="flex w-16 shrink-0 flex-col items-center justify-center bg-pumpkin-500 py-4 text-ink-0">
+                <div className="flex w-16 shrink-0 flex-col items-center justify-center bg-pumpkin-500 py-4 text-ink-900">
                   <span className="text-xl font-semibold tabular-nums leading-none">
                     {new Date(e.startsAt).getDate()}
                   </span>

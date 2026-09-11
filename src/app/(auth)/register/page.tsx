@@ -33,7 +33,7 @@ export default async function RegisterPage() {
 
       <p className="mt-6 text-sm text-ink-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-pumpkin-500 underline">
+        <Link href="/login" className="font-medium text-pumpkin-700 underline">
           Sign in
         </Link>
       </p>

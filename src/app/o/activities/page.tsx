@@ -77,13 +77,13 @@ export default async function ActivitiesPage() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="mt-1.5 text-[11px] text-ink-400">
+                      <p className="mt-1.5 text-[11px] text-ink-500">
                         {a.done} of {a.total} complete
                         {a.dueDate ? ` · due ${formatDate(a.dueDate)}` : ""}
                       </p>
                     </>
                   ) : a.dueDate ? (
-                    <p className="mt-2 text-[11px] text-ink-400">
+                    <p className="mt-2 text-[11px] text-ink-500">
                       Due {formatDate(a.dueDate)}
                     </p>
                   ) : null}

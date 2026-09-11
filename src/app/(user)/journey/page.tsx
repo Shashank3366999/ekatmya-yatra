@@ -64,7 +64,7 @@ export default async function JourneyPage() {
                       />
                     </div>
                   ) : null}
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-900">
                     {p.routeOrder ?? "?"}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -87,7 +87,7 @@ export default async function JourneyPage() {
               ))}
             </ul>
 
-            <p className="mt-4 text-[11px] leading-relaxed text-ink-400">
+            <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
               Arrival dates are provisional. The Yatra team will confirm the final
               schedule closer to the date.
             </p>

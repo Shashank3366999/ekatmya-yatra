@@ -221,7 +221,7 @@ function OrganizerCard({
 
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <ApprovalStatusChip status={row.status} />
-          <span className="text-[11px] text-ink-400">
+          <span className="text-[11px] text-ink-500">
             {formatRelative(row.createdAt)}
           </span>
         </div>

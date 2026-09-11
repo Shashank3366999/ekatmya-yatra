@@ -35,7 +35,7 @@ export default async function AdminLayout({
   const account = (
     <div>
       <div className="flex items-center gap-2.5">
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-900">
           {initials(admin.fullName)}
         </span>
         <div className="min-w-0 flex-1">
@@ -71,7 +71,7 @@ export default async function AdminLayout({
           </span>
         </Link>
 
-        <span className="ml-auto grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold text-ink-0">
+        <span className="ml-auto grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold text-ink-900">
           {initials(admin.fullName)}
         </span>
       </header>

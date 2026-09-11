@@ -93,7 +93,7 @@ export function YatraExplorer({
         className="mx-auto max-h-[30rem] w-full max-w-md"
       />
       <MapLegend className="mt-3 justify-center" />
-      <p className="mt-2 text-center text-[11px] text-ink-400">
+      <p className="mt-2 text-center text-[11px] text-ink-500">
         Tap a marker to see the place.
       </p>
     </div>
@@ -150,7 +150,7 @@ export function YatraExplorer({
           {selectedHeritage.significance}
         </p>
       ) : null}
-      <p className="mt-2.5 text-[11px] text-ink-400">
+      <p className="mt-2.5 text-[11px] text-ink-500">
         Not a halt on the 2027 itinerary.
       </p>
     </div>
@@ -173,8 +173,8 @@ export function YatraExplorer({
               <span
                 className={`grid size-8 place-items-center rounded-full text-xs font-semibold ${
                   p.routeOrder
-                    ? "bg-pumpkin-500 text-ink-0"
-                    : "bg-pumpkin-100 text-pumpkin-700"
+                    ? "bg-pumpkin-500 text-ink-900"
+                    : "bg-pumpkin-100 text-pumpkin-800"
                 }`}
               >
                 {p.routeOrder ?? "?"}

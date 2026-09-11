@@ -41,7 +41,7 @@ export default async function AdminUsersPage() {
               <tr key={u.id} className="hover:bg-ink-50">
                 <Td>
                   <span className="font-medium text-ink-900">{u.fullName}</span>
-                  <span className="block text-[11px] text-ink-400">
+                  <span className="block text-[11px] text-ink-500">
                     joined {formatDate(u.createdAt)}
                   </span>
                 </Td>
@@ -76,12 +76,12 @@ export default async function AdminUsersPage() {
                     {u.isActive ? "Active" : "Deactivated"}
                   </Chip>
                 </Td>
-                <Td className="whitespace-nowrap text-xs text-ink-400">
+                <Td className="whitespace-nowrap text-xs text-ink-500">
                   {u.lastLoginAt ? formatRelative(u.lastLoginAt) : "never"}
                 </Td>
                 <Td>
                   {u.id === admin.id ? (
-                    <span className="text-xs text-ink-400">You</span>
+                    <span className="text-xs text-ink-500">You</span>
                   ) : (
                     <UserAccessForm
                       userId={u.id}
@@ -133,19 +133,19 @@ export default async function AdminUsersPage() {
               >
                 {humanise(u.accountType)}
               </Chip>
-              <span className="text-[11px] text-ink-400">
+              <span className="text-[11px] text-ink-500">
                 {[u.districtName, u.stateName].filter(Boolean).join(", ") || "No area"}
               </span>
             </div>
 
-            <p className="mt-1.5 text-[11px] text-ink-400">
+            <p className="mt-1.5 text-[11px] text-ink-500">
               joined {formatDate(u.createdAt)} · last seen{" "}
               {u.lastLoginAt ? formatRelative(u.lastLoginAt) : "never"}
             </p>
 
             <div className="mt-3 border-t border-ink-200 pt-3">
               {u.id === admin.id ? (
-                <span className="text-xs text-ink-400">This is your account</span>
+                <span className="text-xs text-ink-500">This is your account</span>
               ) : (
                 <UserAccessForm
                   userId={u.id}
@@ -159,7 +159,7 @@ export default async function AdminUsersPage() {
         ))}
       </ul>
 
-      <p className="text-[11px] leading-relaxed text-ink-400">
+      <p className="text-[11px] leading-relaxed text-ink-500">
         Deactivating an account signs the person out and blocks sign-in, but keeps
         everything they have filed. Only a super admin can grant admin access.
       </p>

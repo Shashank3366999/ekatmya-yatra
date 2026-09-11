@@ -11,7 +11,7 @@ type Survey = typeof surveySubmissions.$inferSelect;
 
 /** Renders a tri-state boolean the way the field recorded it. */
 function YesNo({ value }: { value: boolean | null }) {
-  if (value === null) return <span className="text-ink-400">Not known</span>;
+  if (value === null) return <span className="text-ink-500">Not known</span>;
   return <span>{value ? "Yes" : "No"}</span>;
 }
 
@@ -75,7 +75,7 @@ export function SurveyDetail({
           {[districtName, stateName].filter(Boolean).join(", ") || "Location not set"}
         </p>
 
-        <p className="mt-1 text-xs text-ink-400">
+        <p className="mt-1 text-xs text-ink-500">
           {survey.reference} · filed {formatDateTime(survey.submittedAt)}
           {showSubmitter && submittedByName ? ` by ${submittedByName}` : ""}
         </p>
@@ -105,14 +105,14 @@ export function SurveyDetail({
                 href={`https://www.google.com/maps?q=${survey.latitude},${survey.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-pumpkin-500 underline"
+                className="text-pumpkin-700 underline"
               >
                 {survey.latitude.toFixed(5)}, {survey.longitude.toFixed(5)}
               </a>
             </Row>
           ) : (
             <Row label="Coordinates">
-              <span className="text-ink-400">Not captured</span>
+              <span className="text-ink-500">Not captured</span>
             </Row>
           )}
         </dl>
@@ -125,7 +125,7 @@ export function SurveyDetail({
             {survey.expectedGathering !== null ? (
               `${formatNumber(survey.expectedGathering)} people`
             ) : (
-              <span className="text-ink-400">Not estimated</span>
+              <span className="text-ink-500">Not estimated</span>
             )}
           </Row>
           <Row label="Vehicle access">
@@ -166,7 +166,7 @@ export function SurveyDetail({
                   {survey.contactPhone ? (
                     <a
                       href={`tel:${survey.contactPhone}`}
-                      className="mt-1 inline-flex items-center gap-1.5 text-xs text-pumpkin-500 underline"
+                      className="mt-1 inline-flex items-center gap-1.5 text-xs text-pumpkin-700 underline"
                     >
                       <Phone size={12} aria-hidden="true" />
                       {survey.contactPhone}
@@ -208,7 +208,7 @@ export function SurveyDetail({
             <Row label="Name">{submittedByName}</Row>
             {submittedByEmail ? (
               <Row label="Email">
-                <a href={`mailto:${submittedByEmail}`} className="text-pumpkin-500 underline">
+                <a href={`mailto:${submittedByEmail}`} className="text-pumpkin-700 underline">
                   {submittedByEmail}
                 </a>
               </Row>

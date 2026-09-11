@@ -70,7 +70,7 @@ export default async function AdminRoutePage() {
                 key={p.id}
                 className="flex items-start gap-3.5 rounded-xl border border-ink-200 bg-surface p-4"
               >
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-900">
                   {p.routeOrder}
                 </span>
 
@@ -122,7 +122,7 @@ export default async function AdminRoutePage() {
                     key={p.id}
                     className="flex items-start gap-3.5 rounded-xl border border-dashed border-pumpkin-200 bg-pumpkin-50/40 p-4"
                   >
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-900">
                       ?
                     </span>
                     <div className="min-w-0 flex-1">

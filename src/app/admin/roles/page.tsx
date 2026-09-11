@@ -77,7 +77,7 @@ export default async function AdminRolesPage() {
                     <ol className="mt-3 space-y-1.5">
                       {t.items.map((item, i) => (
                         <li key={item} className="flex gap-2.5 text-sm text-ink-700">
-                          <span className="w-4 shrink-0 text-right text-xs tabular-nums text-ink-400">
+                          <span className="w-4 shrink-0 text-right text-xs tabular-nums text-ink-500">
                             {i + 1}
                           </span>
                           {item}
@@ -87,7 +87,7 @@ export default async function AdminRolesPage() {
                   ) : null}
 
                   <details className="mt-4">
-                    <summary className="cursor-pointer text-xs font-medium text-pumpkin-600">
+                    <summary className="cursor-pointer text-xs font-medium text-pumpkin-700">
                       Edit this role
                     </summary>
                     <div className="mt-4 border-t border-ink-200 pt-4">

@@ -57,7 +57,7 @@ export function AppHeader({
           </form>
 
           <span
-            className="ml-1 grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0"
+            className="ml-1 grid size-9 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-900"
             title={user.fullName}
           >
             {initials(user.fullName)}

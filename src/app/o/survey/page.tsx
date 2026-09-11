@@ -87,7 +87,7 @@ export default async function SurveyListPage() {
                     </div>
                     <div className="mt-2.5 flex flex-wrap items-center gap-2">
                       <RecommendationChip recommendation={s.recommendation} />
-                      <span className="text-[11px] text-ink-400">
+                      <span className="text-[11px] text-ink-500">
                         {humanise(s.category)} · {formatRelative(s.submittedAt)}
                       </span>
                     </div>

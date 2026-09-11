@@ -20,7 +20,7 @@ export function StatCard({
     default: "text-ink-600 bg-ink-100",
     accent: "text-pumpkin-500 bg-pumpkin-50",
     warning: "text-pumpkin-700 bg-pumpkin-50",
-    success: "text-pumpkin-600 bg-pumpkin-50",
+    success: "text-pumpkin-700 bg-pumpkin-50",
   } as const;
 
   return (

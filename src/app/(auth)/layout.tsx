@@ -34,7 +34,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           <div className="mt-6">{children}</div>
 
-          <p className="mt-10 text-[11px] leading-relaxed text-ink-400">
+          <p className="mt-10 text-[11px] leading-relaxed text-ink-500">
             Yatra dates and route are provisional and subject to confirmation by
             the Yatra committee.
           </p>

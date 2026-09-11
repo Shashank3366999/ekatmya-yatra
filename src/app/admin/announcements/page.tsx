@@ -59,7 +59,7 @@ export default async function AdminAnnouncementsPage() {
                     </div>
                   </div>
 
-                  <p className="mt-0.5 text-[11px] text-ink-400">
+                  <p className="mt-0.5 text-[11px] text-ink-500">
                     {formatDateTime(a.createdAt)}
                     {a.stateName ? ` · ${a.stateName}` : ""}
                   </p>

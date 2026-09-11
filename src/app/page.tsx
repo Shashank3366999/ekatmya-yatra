@@ -288,7 +288,7 @@ export default async function LandingPage() {
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <Reveal>
-              <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+              <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                 The journey of oneness
               </p>
               <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
@@ -350,7 +350,7 @@ export default async function LandingPage() {
               <div className="relative mt-8 overflow-hidden rounded-2xl border border-pumpkin-200/70 bg-ink-0/70 p-5 backdrop-blur-sm sm:p-6">
                 <LotusMandala className="spin-slow pointer-events-none absolute -right-10 -bottom-12 size-40 text-pumpkin-500/[0.08]" />
                 <div className="relative">
-                  <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                  <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                     The Yatra begins in
                   </p>
                   <div className="mt-3">
@@ -375,7 +375,7 @@ export default async function LandingPage() {
 
               <div className="relative flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                  <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                     The Main Yatra
                   </p>
                   <p className="mt-1 font-display text-lg text-ink-900">
@@ -428,7 +428,7 @@ export default async function LandingPage() {
       <section className="bg-dusk relative overflow-hidden border-t border-pumpkin-100">
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="max-w-3xl">
-            <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+            <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
               The Digvijaya Yatra
             </p>
             <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
@@ -446,7 +446,7 @@ export default async function LandingPage() {
             {HERITAGE_ORDER.map((t, i) => (
               <Reveal key={t} delay={i * 60}>
                 <div className="lift h-full rounded-xl border border-pumpkin-200/60 bg-surface p-4">
-                  <dd className="text-3xl font-semibold leading-none text-pumpkin-600">
+                  <dd className="text-3xl font-semibold leading-none text-pumpkin-700">
                     <CountUp value={counts[t] ?? 0} />
                   </dd>
                   <dt className="mt-2 text-[11px] leading-tight text-ink-500">
@@ -472,7 +472,7 @@ export default async function LandingPage() {
 
             <Reveal delay={140}>
               <div className="flex h-full flex-col justify-center rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
-                <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                   Across Bharat
                 </p>
                 <p className="mt-3 text-5xl font-semibold leading-none text-ink-900">
@@ -573,7 +573,7 @@ export default async function LandingPage() {
         <div className="bg-grain pointer-events-none absolute inset-0" />
         <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="max-w-3xl">
-            <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+            <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
               The itinerary
             </p>
             <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
@@ -614,7 +614,7 @@ export default async function LandingPage() {
                     ) : null}
 
                     {/* Stop number, over the photo. */}
-                    <span className="absolute top-2.5 left-2.5 grid size-7 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold tabular-nums text-ink-0 shadow">
+                    <span className="absolute top-2.5 left-2.5 grid size-7 place-items-center rounded-full bg-pumpkin-500 text-[11px] font-semibold tabular-nums text-ink-900 shadow">
                       {p.routeOrder}
                     </span>
 
@@ -629,7 +629,7 @@ export default async function LandingPage() {
                   </div>
 
                   <div className="flex flex-1 flex-col p-3.5">
-                    <p className="text-[11px] tabular-nums text-pumpkin-600">
+                    <p className="text-[11px] tabular-nums text-pumpkin-700">
                       {p.expectedArrival ? formatDate(p.expectedArrival) : "date TBC"}
                     </p>
                     {p.significance ? (
@@ -651,7 +651,7 @@ export default async function LandingPage() {
         <LotusMandala className="spin-slow pointer-events-none absolute -bottom-24 -right-20 size-64 text-pumpkin-500/[0.06] sm:size-80" />
         <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="mx-auto max-w-3xl text-center">
-            <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+            <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
               A sacred call to service
             </p>
             <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
@@ -673,7 +673,7 @@ export default async function LandingPage() {
             {ROLES.map((card, i) => (
               <Reveal key={card.title} delay={i * 80}>
                 <div className="lift flex h-full flex-col rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
-                  <span className="grid size-10 place-items-center rounded-xl bg-pumpkin-50 text-pumpkin-600">
+                  <span className="grid size-10 place-items-center rounded-xl bg-pumpkin-50 text-pumpkin-700">
                     <card.icon size={19} aria-hidden="true" />
                   </span>
                   <h3 className="mt-4 font-display text-lg text-ink-900">
@@ -719,7 +719,7 @@ export default async function LandingPage() {
             </div>
 
             <div>
-              <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+              <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                 The wider mission
               </p>
               <ul className="mt-3 space-y-2">
@@ -734,7 +734,7 @@ export default async function LandingPage() {
                       href={href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-ink-600 hover:text-pumpkin-600"
+                      className="inline-flex items-center gap-1.5 text-xs text-ink-600 hover:text-pumpkin-700"
                     >
                       {label}
                       <ArrowUpRight size={12} aria-hidden="true" />
@@ -745,7 +745,7 @@ export default async function LandingPage() {
             </div>
 
             <div>
-              <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+              <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
                 Acharya Shankar Sanskritik Ekta Nyas
               </p>
               <address className="mt-3 text-xs leading-relaxed text-ink-600 not-italic">
@@ -757,7 +757,7 @@ export default async function LandingPage() {
               </address>
               <a
                 href="tel:+917554928869"
-                className="mt-2 inline-block text-xs font-medium text-ink-700 tabular-nums hover:text-pumpkin-600"
+                className="mt-2 inline-block text-xs font-medium text-ink-700 tabular-nums hover:text-pumpkin-700"
               >
                 +91 755-4928869
               </a>
@@ -774,7 +774,7 @@ export default async function LandingPage() {
                     href={href}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-ink-500 underline decoration-pumpkin-300 underline-offset-4 hover:text-pumpkin-600"
+                    className="text-xs text-ink-500 underline decoration-pumpkin-300 underline-offset-4 hover:text-pumpkin-700"
                   >
                     {label}
                   </a>
@@ -783,7 +783,7 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <p className="mt-8 border-t border-pumpkin-100 pt-5 text-[11px] leading-relaxed text-ink-400">
+          <p className="mt-8 border-t border-pumpkin-100 pt-5 text-[11px] leading-relaxed text-ink-500">
             Route, halts and dates are provisional, pending confirmation by the
             Yatra committee. Boundaries on the map are a cartographic reference,
             simplified for display.

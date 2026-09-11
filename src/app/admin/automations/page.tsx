@@ -86,7 +86,7 @@ export default async function AdminAutomationsPage() {
                         {a.description}
                       </p>
                     ) : null}
-                    <p className="mt-1 text-[11px] text-ink-400">
+                    <p className="mt-1 text-[11px] text-ink-500">
                       updated {formatRelative(a.updatedAt)}
                     </p>
                   </div>

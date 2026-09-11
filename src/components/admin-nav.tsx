@@ -81,7 +81,7 @@ function NavList({
               aria-current={active ? "page" : undefined}
               className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-pumpkin-500 text-ink-0"
+                  ? "bg-pumpkin-500 text-ink-900"
                   : "text-ink-0/70 hover:bg-yatra-800 hover:text-ink-0"
               }`}
             >
@@ -91,7 +91,7 @@ function NavList({
               {waiting > 0 ? (
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
-                    active ? "bg-ink-0 text-pumpkin-700" : "bg-pumpkin-500 text-ink-0"
+                    active ? "bg-ink-0 text-pumpkin-700" : "bg-pumpkin-500 text-ink-900"
                   }`}
                   aria-label={`${waiting} waiting for review`}
                 >

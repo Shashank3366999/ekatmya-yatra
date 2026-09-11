@@ -140,7 +140,7 @@ export default async function AdminDashboard() {
               <ol className="max-h-[28rem] space-y-1.5 overflow-y-auto pr-1">
                 {route.map((p) => (
                   <li key={p.id} className="flex items-center gap-2.5 text-xs">
-                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-[9px] font-semibold text-ink-0">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-[9px] font-semibold text-ink-900">
                       {p.routeOrder}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-ink-700">{p.name}</span>
@@ -185,7 +185,7 @@ export default async function AdminDashboard() {
                       <Chip size="sm" variant="soft" color="warning">
                         Pending
                       </Chip>
-                      <span className="text-[11px] text-ink-400">
+                      <span className="text-[11px] text-ink-500">
                         {formatRelative(o.createdAt)}
                       </span>
                     </div>
@@ -239,7 +239,7 @@ export default async function AdminDashboard() {
 
       <AccentRule />
 
-      <p className="text-center text-[11px] leading-relaxed text-ink-400">
+      <p className="text-center text-[11px] leading-relaxed text-ink-500">
         Yatra dates, route and organisational terminology are provisional pending
         confirmation by the Yatra committee.
       </p>

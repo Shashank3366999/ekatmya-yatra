@@ -89,7 +89,7 @@ export default async function UserHomePage() {
           </dl>
         </div>
 
-        <p className="mt-4 text-[11px] leading-relaxed text-ink-400">
+        <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
           Dates are provisional and subject to confirmation by the Yatra committee.
         </p>
       </section>
@@ -147,7 +147,7 @@ export default async function UserHomePage() {
                         <span className="text-base font-semibold tabular-nums leading-none text-pumpkin-700">
                           {new Date(e.startsAt).getDate()}
                         </span>
-                        <span className="text-[9px] tracking-wide text-pumpkin-600 uppercase">
+                        <span className="text-[9px] tracking-wide text-pumpkin-700 uppercase">
                           {new Date(e.startsAt).toLocaleDateString("en-IN", {
                             month: "short",
                             timeZone: "Asia/Kolkata",
@@ -180,7 +180,7 @@ export default async function UserHomePage() {
                     className="rounded-xl border border-ink-200 bg-surface p-3.5"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-pumpkin-50 text-pumpkin-600">
+                      <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-pumpkin-50 text-pumpkin-700">
                         <Megaphone size={15} aria-hidden="true" />
                       </span>
                       <div className="min-w-0">
@@ -188,7 +188,7 @@ export default async function UserHomePage() {
                         <p className="mt-0.5 line-clamp-3 text-xs leading-relaxed text-ink-500">
                           {a.body}
                         </p>
-                        <p className="mt-1 text-[11px] text-ink-400">
+                        <p className="mt-1 text-[11px] text-ink-500">
                           {formatDate(a.createdAt)}
                         </p>
                         <div className="mt-2">
@@ -210,7 +210,7 @@ export default async function UserHomePage() {
           <Card variant="secondary">
             {/* Card.Content is flex-column by default, so the row is explicit. */}
             <Card.Content className="flex flex-row items-start gap-3.5">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-pumpkin-500 text-ink-0">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-pumpkin-500 text-ink-900">
                 <HandHeart size={19} aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">

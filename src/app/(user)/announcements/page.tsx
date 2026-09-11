@@ -29,7 +29,7 @@ export default async function AnnouncementsPage() {
           {announcements.map((a) => (
             <li key={a.id} className="rounded-xl border border-ink-200 bg-surface p-4">
               <p className="font-display text-base text-ink-900">{a.title}</p>
-              <p className="mt-0.5 text-[11px] text-ink-400">
+              <p className="mt-0.5 text-[11px] text-ink-500">
                 {formatDateTime(a.createdAt)}
                 {a.stateName ? ` · ${a.stateName}` : ""}
               </p>

@@ -108,7 +108,7 @@ export default async function ActivityDetailPage({
                     <span
                       className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-md border-2 transition-colors ${
                         item.isDone
-                          ? "border-pumpkin-500 bg-pumpkin-500 text-ink-0"
+                          ? "border-pumpkin-500 bg-pumpkin-500 text-ink-900"
                           : "border-ink-300 bg-surface"
                       }`}
                       aria-hidden="true"
@@ -127,7 +127,7 @@ export default async function ActivityDetailPage({
                     </span>
                     <span
                       className={`text-sm leading-relaxed ${
-                        item.isDone ? "text-ink-400 line-through" : "text-ink-900"
+                        item.isDone ? "text-ink-500 line-through" : "text-ink-900"
                       }`}
                     >
                       {item.label}

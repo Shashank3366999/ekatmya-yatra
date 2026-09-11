@@ -157,7 +157,7 @@ export function SurveyForm({
               />
               <span
                 className={`block truncate text-[10px] ${
-                  active ? "font-semibold text-pumpkin-600" : "text-ink-400"
+                  active ? "font-semibold text-pumpkin-700" : "text-ink-500"
                 }`}
               >
                 {s.label}

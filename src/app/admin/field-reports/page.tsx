@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Field Reports" };
 /** Status colour, matching the chips used elsewhere in the panel. */
 const STATUS_STYLE: Record<string, string> = {
   not_started: "bg-ink-100 text-ink-600",
-  in_progress: "bg-gold/15 text-gold",
+  in_progress: "bg-gold/15 text-gold-ink",
   done: "bg-pumpkin-50 text-pumpkin-700",
   blocked: "bg-danger/10 text-danger",
 };
@@ -71,7 +71,7 @@ export default async function AdminFieldReportsPage() {
                     >
                       {ACTIVITY_STATUS_LABELS[r.status]}
                     </span>
-                    <span className="text-xs whitespace-nowrap text-ink-400">
+                    <span className="text-xs whitespace-nowrap text-ink-500">
                       {formatRelative(r.createdAt)}
                     </span>
                   </div>

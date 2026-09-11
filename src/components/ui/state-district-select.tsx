@@ -69,7 +69,7 @@ export function StateDistrictSelect({
             {stateLabel}
           </span>
           <div className="mt-1.5 flex items-center gap-2 rounded-[var(--field-radius)] border border-ink-200 bg-ink-50 px-3 py-2.5">
-            <Lock size={13} className="shrink-0 text-ink-400" aria-hidden="true" />
+            <Lock size={13} className="shrink-0 text-ink-500" aria-hidden="true" />
             <span className="text-sm text-ink-700">
               {lockedState?.name ?? "Your state"}
             </span>

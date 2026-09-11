@@ -117,7 +117,7 @@ export default async function PendingPage() {
         </form>
       </div>
 
-      <p className="mt-6 text-xs leading-relaxed text-ink-400">
+      <p className="mt-6 text-xs leading-relaxed text-ink-500">
         Registered {formatDate(new Date())}. Approvals are handled by the Yatra
         administration team.
       </p>

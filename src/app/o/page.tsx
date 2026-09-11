@@ -87,7 +87,7 @@ export default async function OrganizerDashboard() {
         <Card variant="secondary">
           {/* Card.Content is flex-column by default, so the row direction is explicit. */}
           <Card.Content className="flex flex-row items-center gap-3.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-pumpkin-500 text-ink-0">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-pumpkin-500 text-ink-900">
               <Plus size={19} aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
@@ -215,7 +215,7 @@ export default async function OrganizerDashboard() {
                     <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-ink-500">
                       {a.body}
                     </p>
-                    <p className="mt-1 text-[11px] text-ink-400">
+                    <p className="mt-1 text-[11px] text-ink-500">
                       {formatRelative(a.createdAt)}
                     </p>
                   </div>

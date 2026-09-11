@@ -597,7 +597,7 @@ export function MapLegend({ className = "" }: { className?: string }) {
                 boxShadow: style.dashed ? undefined : "0 0 0 1px var(--color-ink-300)",
               }}
             />
-            <span className="text-xs text-ink-500">{i.label}</span>
+            <span className="text-xs text-ink-600">{i.label}</span>
           </div>
         );
       })}

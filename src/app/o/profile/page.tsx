@@ -93,7 +93,7 @@ export default async function OrganizerProfilePage() {
               </li>
               <li>• Complete checklists assigned to you and post updates</li>
             </ul>
-            <p className="mt-2 text-[11px] leading-relaxed text-ink-400">
+            <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
               To change your level, area or responsibilities, ask the Yatra
               administration team.
             </p>

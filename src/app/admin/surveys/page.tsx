@@ -123,7 +123,7 @@ export default async function AdminSurveysPage({
                     <Td>
                       <a
                         href={`/admin/surveys/${s.id}`}
-                        className="font-medium text-pumpkin-500 underline"
+                        className="font-medium text-pumpkin-700 underline"
                       >
                         {s.reference}
                       </a>
@@ -149,7 +149,7 @@ export default async function AdminSurveysPage({
                     <Td>
                       <SurveyStatusChip status={s.status} />
                     </Td>
-                    <Td className="whitespace-nowrap text-xs text-ink-400">
+                    <Td className="whitespace-nowrap text-xs text-ink-500">
                       {formatRelative(s.submittedAt)}
                       <span className="block">{s.submittedByName ?? "Unknown"}</span>
                     </Td>
@@ -181,7 +181,7 @@ export default async function AdminSurveysPage({
                   </div>
                   <div className="mt-2.5 flex flex-wrap items-center gap-2">
                     <RecommendationChip recommendation={s.recommendation} />
-                    <span className="text-[11px] text-ink-400">
+                    <span className="text-[11px] text-ink-500">
                       {humanise(s.category)} · {formatRelative(s.submittedAt)}
                     </span>
                   </div>
@@ -190,7 +190,7 @@ export default async function AdminSurveysPage({
             ))}
           </ul>
 
-          <p className="text-[11px] text-ink-400">
+          <p className="text-[11px] text-ink-500">
             Showing {surveys.length} of {counts.total} entries.
             {surveys.length === 300 ? " Refine the filters to see older entries." : ""}
           </p>

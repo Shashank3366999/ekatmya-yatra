@@ -472,10 +472,10 @@ export function SiteSpotlight({
       onBlur={() => setPaused(false)}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+        <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
           Sacred sites of the journey
         </p>
-        <span className="text-[11px] tabular-nums text-ink-400">
+        <span className="text-[11px] tabular-nums text-ink-500">
           {index + 1} / {sites.length}
         </span>
       </div>

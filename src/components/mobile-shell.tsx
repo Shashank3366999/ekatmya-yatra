@@ -74,7 +74,7 @@ export function BottomNav({ variant }: { variant: "user" | "organizer" }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={`flex min-h-14 flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] font-medium transition-colors active:bg-ink-100 ${
-                  active ? "text-pumpkin-600" : "text-ink-500 hover:text-ink-900"
+                  active ? "text-pumpkin-700" : "text-ink-500 hover:text-ink-900"
                 }`}
               >
                 <Icon size={20} strokeWidth={active ? 2.4 : 1.9} aria-hidden="true" />

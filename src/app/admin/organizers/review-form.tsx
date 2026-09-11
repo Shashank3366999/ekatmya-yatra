@@ -300,7 +300,7 @@ export function OrganizerReviewForm({
             </div>
           </div>
 
-          <p className="text-[11px] leading-relaxed text-ink-400">
+          <p className="text-[11px] leading-relaxed text-ink-500">
             Saving applies the decision and this team and role together. Changes
             are recorded in the audit trail.
           </p>
