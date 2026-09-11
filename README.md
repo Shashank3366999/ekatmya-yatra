@@ -87,9 +87,10 @@ Public: `/` (landing), `/login` (its own full-bleed shell), `/register`,
 
 The landing page offers two ways in and never mentions the Admin Panel.
 **Volunteer** goes to `/register`: an ordinary Journey-app account, open
-immediately. **Organizing Team Member** goes to `/register/organizer`: a posting
-at a level with a responsibility, which waits for an admin. The panel is at
-`/admin`, reached by signing in.
+immediately. **Serve as a Shankardoot** goes to `/register/organizer`: a seat on
+the organising team at a level with a responsibility, which waits for an admin.
+Shankardoot is the Yatra's own word for it, so it is the word the page uses. The
+panel is at `/admin`, reached by signing in.
 
 ### Mobile-first
 

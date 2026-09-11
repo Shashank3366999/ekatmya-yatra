@@ -13,7 +13,7 @@ import { RegisterOrganizerForm } from "./organizer-form";
  */
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Join the organising team" };
+export const metadata: Metadata = { title: "Become a Shankardoot" };
 
 /**
  * Joining the organising team.
@@ -32,7 +32,7 @@ export default async function RegisterOrganizerPage() {
   return (
     <div>
       <h1 className="font-display text-2xl text-ink-900">
-        Join as an Organizing Team Member
+        Become a Shankardoot
       </h1>
       <p className="mt-1.5 text-sm text-ink-500">
         A seat on the organising team at national, state or district level, with

@@ -117,18 +117,19 @@ const HERITAGE_ORDER: HeritageType[] = [
  * administrator sign-in to be gone from it: the Admin Panel lives at /admin and
  * is reached by signing in, not advertised.
  *
- * They are not the same kind of thing, which is the point. An organising team
- * member takes a posting and waits for an admin to approve it. A volunteer is
- * an ordinary account on the Journey app, the same account this site has always
- * had — nothing to approve, nothing to wait for.
+ * Shankardoot is the Yatra's own word for a member of the organising team, so
+ * it leads the card rather than our description of it. The other card is
+ * Volunteer, which is the ordinary Journey-app account this site has always
+ * had: nothing to approve, nothing to wait for. They are different kinds of
+ * thing, and the notes say so.
  */
 const ROLES = [
   {
     icon: ShieldCheck,
-    title: "Organizing Team Member",
+    title: "Serve as a Shankardoot",
     body: "A seat on the organising team at national, state or district level, with a responsibility of your own. Pick the role you are taking and the Yatra team reviews it.",
     href: "/register/organizer",
-    cta: "I am joining the organising team",
+    cta: "Register to serve",
     variant: "primary" as const,
     note: "Needs approval from the Yatra team",
   },
@@ -137,7 +138,7 @@ const ROLES = [
     title: "Volunteer",
     body: "Follow the route, see the events near you, build your own journey, and give time on the ground as the Yatra passes through your area.",
     href: "/register",
-    cta: "I am joining as a volunteer",
+    cta: "Join as a volunteer",
     variant: "secondary" as const,
     note: "Open straight away, no approval needed",
   },
@@ -253,10 +254,10 @@ export default async function LandingPage() {
 
               <Reveal delay={220} className="mt-6 flex flex-wrap gap-3 sm:mt-7">
                 <LinkButton href="/register/organizer" size="lg">
-                  Join the organising team
+                  Become a Shankardoot
                 </LinkButton>
                 <LinkButton href="/register" variant="secondary" size="lg">
-                  Volunteer for the Yatra
+                  Volunteer
                 </LinkButton>
               </Reveal>
             </div>

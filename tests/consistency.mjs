@@ -224,7 +224,7 @@ const landingStops = global.landingStops;
   const r = await p.evaluate(() => {
     const t = document.body.innerText;
     return {
-      committee: /Organizing Team Member/.test(t),
+      shankardoot: /Shankardoot/.test(t),
       volunteer: /Volunteer/.test(t),
       /*
         The Yatra team asked for the administrator sign-in to be gone from this
@@ -247,8 +247,12 @@ const landingStops = global.landingStops;
     };
   });
 
-  ok(r.committee, "landing offers the Organizing Team Member route in");
+  ok(r.shankardoot, "landing offers the Shankardoot route in");
   ok(r.volunteer, "landing offers the Volunteer route in");
+  ok(
+    !/Explore the Yatra/.test(await p.evaluate(() => document.body.innerText)),
+    "the volunteer route is named Volunteer, not \"Explore the Yatra\"",
+  );
   ok(r.signInLinks === 0, "landing links to no sign-in page", `${r.signInLinks}`);
   ok(r.adminLinks === 0, "landing links nowhere under /admin", `${r.adminLinks}`);
   /*
