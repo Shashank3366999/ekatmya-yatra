@@ -24,6 +24,24 @@ The first four block the deployment; the rest do not.
 
 ---
 
+## 1a. Surveying the instance
+
+`scripts/preflight.sh` answers everything in §1 that is a fact about the box
+rather than a decision. Run it there; it changes nothing:
+
+```sh
+scp -i ~/.ssh/Ekatmya.pem scripts/preflight.sh ubuntu@<instance>:~
+ssh -i ~/.ssh/Ekatmya.pem ubuntu@<instance> "bash preflight.sh"
+```
+
+It prints the instance type and AMI, the public IP, memory and disk (with a
+warning if `next build` is likely to be OOM-killed), which of Node, pnpm, nginx
+and certbot are present, whether the RDS host is reachable on 5432, and whether
+the domain resolves yet. Paste the output rather than screenshotting the
+console: it is the same information and it travels as text.
+
+---
+
 ## 1b. Settled already
 
 | | |
