@@ -178,6 +178,24 @@ Three things need a word from the team:
    show — 108 ft, the 54 ft pedestal, the 27 ft lotus base — appear identically
    on both pages.
 
+### Q15. The two predefined roles
+The panel ships with two roles so the first joiner has something to pick:
+**Survey Lead (State)** with a six-point checklist, and **Yatra Volunteer
+(District)** with four. Both are our wording, written to be replaced.
+
+**We need:** the roles you actually want offered, each with its checklist. Any
+admin can add, edit or hide them at `/admin/roles` without a release, so this
+is not blocking — but the two in there now are placeholders, and a joiner sees
+them.
+
+### Q16. Reports are visible but nothing is sent
+`/admin/field-reports` shows what the organising team has reported doing, and
+the sidebar badges the counts waiting for review, so an approval cannot sit
+unnoticed by someone looking at the panel. Nothing leaves the system: no email
+or SMS goes out when a submission arrives, because no provider has been chosen
+(see Q8). Say the word on a provider and the automation switches already in
+`/admin/automations` become real sends.
+
 ---
 
 ## Two things to be aware of
