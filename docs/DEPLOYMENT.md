@@ -24,6 +24,49 @@ The first four block the deployment; the rest do not.
 
 ---
 
+## 0. Where it stands
+
+Deployed on **11 September 2026** to `i-0bffc58f041045272` at `34.227.20.20`.
+
+| | |
+| --- | --- |
+| App | running as `yatra.service`, answering 200 on `/`, `/login`, `/register`, `/register/organizer` from the internet |
+| Database | **Postgres 16.15 on the instance**, loopback only, scram auth, role `yatra`, db `ekatmya_yatra` — see the note below |
+| Schema | migrated: `✔ migrations applied (Postgres via DATABASE_URL)` — the first run of the Postgres driver, and it was clean |
+| Data | 36 states, 401 districts, 21 sequenced stops, 37 heritage sites, 2 roles; demo accounts skipped |
+| Admin | `admin@ekatmadham.com`, password generated into `/srv/yatra/.env.production` (`SEED_ADMIN_PASSWORD`). Change it after first sign-in. |
+| Backups | nightly `pg_dump` to `/var/backups/yatra/`, 14 kept |
+| TLS | **not yet** — waiting on the A record |
+
+**Nobody can stay signed in until TLS is on.** The session cookie is `secure`
+in production, so browsers refuse to send it over plain `http://`. Sign-in
+succeeds and redirects, then the next request arrives without the cookie and
+lands back on `/login`. That is the correct behaviour, not a bug: the fix is
+the A record and `certbot`, not weakening the cookie.
+
+### Why the database is on the instance, and how to move it
+
+RDS could not be created from here — no AWS credentials on this machine and no
+IAM role on the instance — and the team asked for the site to be up. Postgres
+on the box is a sound stopgap: it is loopback-only, password-authenticated,
+backed up nightly, and the app talks to it through the same `DATABASE_URL` it
+would use for RDS. What it lacks is what §3 says: the data sits on the deploy
+disk, and replacing the instance means moving it.
+
+Moving to RDS later is small, and smaller the sooner it is done:
+
+```sh
+# on the instance, once the RDS instance exists and its security group
+# allows 5432 from launch-wizard-10
+sudo systemctl stop yatra
+sudo -u postgres pg_dump -Fc ekatmya_yatra > /tmp/yatra.dump
+pg_restore -h <rds-endpoint> -U <user> -d ekatmya_yatra --no-owner /tmp/yatra.dump
+# point DATABASE_URL at RDS in /srv/yatra/.env.production, then
+sudo systemctl start yatra
+```
+
+---
+
 ## 1a. Surveying the instance
 
 `scripts/preflight.sh` answers everything in §1 that is a fact about the box
