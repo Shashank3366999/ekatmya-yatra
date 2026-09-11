@@ -71,7 +71,14 @@ export function VideoHero({ className = "" }: { className?: string }) {
     <div className={`bg-hero-ink absolute inset-0 overflow-hidden ${className}`}>
       <video
         ref={ref}
-        className="h-full w-full object-cover"
+        /*
+          Brightened and warmed a little. The knockout headline shows whatever
+          the film is, and nothing inside a `multiply` group can be brighter
+          than its backdrop — white type multiplies by 1 and no more. So the
+          only way to make the letters read is to light the film itself; the
+          plate behind the headline still crushes everything around them.
+        */
+        className="h-full w-full object-cover brightness-[2.2] contrast-[1.12] saturate-[1.2]"
         poster={POSTER}
         preload="none"
         muted
@@ -96,8 +103,8 @@ export function VideoHero({ className = "" }: { className?: string }) {
         the one exception — 0.90 scaled rounds back to itself, so it is set a
         point lighter by hand.
       */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink-950/84 via-ink-950/53 to-ink-950/21" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/89 via-ink-950/27 to-ink-950/37" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink-950/80 via-ink-950/42 to-ink-950/2" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/86 via-ink-950/9 to-ink-950/22" />
     </div>
   );
 }

@@ -188,7 +188,7 @@ export default async function LandingPage() {
       {/* ------------------------------------------------------------ hero */}
       {/* overflow-hidden contains the turning mandala and the aurora blobs,
           which are deliberately larger than the hero. */}
-      <header className="bg-hero-ink relative overflow-hidden">
+      <header className="bg-hero-ink relative isolate overflow-hidden">
         {/*
           The Ekatma Dham film plays behind the copy. It carries its own scrims
           and pause control, and loops only its opening so the hero costs a few
@@ -202,7 +202,13 @@ export default async function LandingPage() {
         <div className="aurora pointer-events-none absolute inset-0 overflow-hidden" />
         <LotusMandala className="spin-slow pointer-events-none absolute -top-16 -right-16 size-56 text-pumpkin-400/10 sm:-top-28 sm:-right-24 sm:size-96 lg:-top-40 lg:-right-40 lg:size-[34rem]" />
 
-        <div className="relative z-10">
+        {/*
+          Deliberately `relative` with no z-index: a stacking context here would
+          isolate the headline's blend from the film beneath it, which is what
+          `z-10` was doing. Positioned siblings with z-auto paint in DOM order,
+          so the copy still sits above the video layer.
+        */}
+        <div className="relative">
           <div className="mx-auto flex min-h-[36rem] max-w-7xl flex-col px-5 pt-6 pb-16 sm:min-h-[40rem] sm:px-8 sm:pb-20 lg:min-h-[44rem] lg:px-12 lg:pt-8">
             <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
 
@@ -211,12 +217,39 @@ export default async function LandingPage() {
                 <p className="text-[11px] tracking-[0.2em] text-pumpkin-400 uppercase sm:text-xs">
                   Ek Bharat — Ekatmata Bharat
                 </p>
-                <h1 className="mt-3 font-display text-[2rem] leading-[1.08] text-ink-0 sm:text-5xl xl:text-6xl">
-                  One Journey.
-                  <br />
-                  One Consciousness.
-                </h1>
               </Reveal>
+                {/*
+                  The film shows through the headline.
+
+                  One element carries both the dark plate and white type, and
+                  the whole group is composited with `multiply`: white pixels
+                  multiply the backdrop by 1 and leave the film untouched, the
+                  plate multiplies it toward black. So the letters are the film
+                  and everything around them is not — no mask, and no second
+                  <video>, which would have doubled a 2.5 MB download for one
+                  visual effect.
+
+                  Why the plate and the type must sit in the same element: two
+                  separate `multiply` layers paint in order, so the type would
+                  blend against a backdrop that already included the plate and
+                  come out as dark as its surroundings.
+
+                  The plate bleeds past the type on negative margins that cancel
+                  their own padding, so the headline still occupies exactly the
+                  space it did, and its gradient fades to transparent rather
+                  than ending on an edge.
+
+                  Marcellus is a single 400 weight and its thin strokes showed
+                  almost no film, so the headline moves to Inter at 900 — the
+                  one place on the site where the display serif gives way.
+                */}
+                <div className="-mx-16 -mt-12 -mb-44 mt-3 bg-[radial-gradient(105%_150%_at_24%_34%,rgba(0,0,0,0.94)_0%,rgba(0,0,0,0.86)_38%,rgba(0,0,0,0.55)_68%,rgba(0,0,0,0)_100%)] px-16 pt-12 pb-44 mix-blend-multiply">
+                  <h1 className="text-[2.6rem] leading-[0.92] font-black tracking-[-0.025em] text-white sm:text-6xl xl:text-7xl">
+                    One Journey.
+                    <br />
+                    One Consciousness.
+                  </h1>
+                </div>
 
               <AccentRule className="my-4 max-w-xs sm:my-5" />
 
