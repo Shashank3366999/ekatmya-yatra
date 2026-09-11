@@ -142,7 +142,6 @@ export async function registerOrganizer(
     password: formData.get("password"),
     stateId: formData.get("stateId") ?? "",
     districtId: formData.get("districtId") ?? "",
-    postingKind: formData.get("postingKind") ?? "committee",
     roleTemplateId: formData.get("roleTemplateId") ?? "",
     level: formData.get("level"),
     primaryFunction: formData.get("primaryFunction"),
@@ -194,7 +193,6 @@ export async function registerOrganizer(
 
   await db.insert(organizerProfiles).values({
     userId: created.id,
-    postingKind: data.postingKind,
     roleTemplateId: data.roleTemplateId,
     level: data.level,
     stateId,
@@ -214,8 +212,7 @@ export async function registerOrganizer(
     action: "organizer.signup",
     entityType: "organizer_profile",
     detail: {
-      postingKind: data.postingKind,
-      roleTemplateId: data.roleTemplateId,
+        roleTemplateId: data.roleTemplateId,
       level: data.level,
       primaryFunction: data.primaryFunction,
     },

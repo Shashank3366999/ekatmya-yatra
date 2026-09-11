@@ -23,7 +23,6 @@ type Template = {
   id: string;
   name: string;
   description: string | null;
-  postingKind: "committee" | "volunteer";
   level: OrgLevel;
   functionArea: FunctionArea;
   items: string[];
@@ -53,21 +52,7 @@ export function RoleForm({ template }: { template?: Template }) {
         <TextArea rows={2} placeholder="One or two lines, in plain language." />
       </TextField>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Select name="postingKind" defaultSelectedKey={template?.postingKind ?? "committee"}>
-          <Label>Route in</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              <ListBoxItem id="committee">Organizing Team Member</ListBoxItem>
-              <ListBoxItem id="volunteer">Volunteer</ListBoxItem>
-            </ListBox>
-          </Select.Popover>
-        </Select>
-
+      <div className="grid gap-4 sm:grid-cols-2">
         <Select name="level" defaultSelectedKey={template?.level ?? "state"}>
           <Label>Suggested team</Label>
           <Select.Trigger>

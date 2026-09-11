@@ -21,32 +21,25 @@ export default async function AdminRolesPage() {
   await requireAdmin();
   const templates = await listRoleTemplates({ includeInactive: true });
 
-  const committee = templates.filter((t) => t.postingKind === "committee");
-  const volunteer = templates.filter((t) => t.postingKind === "volunteer");
-
   return (
     <div className="space-y-6">
       <PageTitle
         title="Roles & Checklists"
-        description="What someone can sign up as, and the checklist they take on. Active roles appear on the signup form; approving someone copies the checklist onto their own dashboard."
+        description="What an organising team member can sign up as, and the checklist they take on. Active roles appear on the signup form; approving someone copies the checklist onto their own dashboard."
       />
 
-      {[
-        ["Organizing Team Member", committee] as const,
-        ["Volunteer", volunteer] as const,
-      ].map(([label, list]) => (
-        <section key={label}>
-          <h2 className="font-display text-lg text-ink-900">{label}</h2>
-          <AccentRule className="mt-2 max-w-[7rem]" />
+      <section>
+        <h2 className="font-display text-lg text-ink-900">On offer</h2>
+        <AccentRule className="mt-2 max-w-[7rem]" />
 
-          {list.length === 0 ? (
-            <p className="mt-4 rounded-xl border border-dashed border-ink-300 bg-surface p-4 text-sm text-ink-500">
-              No roles defined for this route in yet. Anyone signing up this way
-              will be asked for their team and responsibility directly.
-            </p>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {list.map((t) => (
+        {templates.length === 0 ? (
+          <p className="mt-4 rounded-xl border border-dashed border-ink-300 bg-surface p-4 text-sm text-ink-500">
+            No roles defined yet. Anyone joining the organising team will be
+            asked for their team and responsibility directly.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {templates.map((t) => (
                 <li
                   key={t.id}
                   className="rounded-xl border border-ink-200 bg-surface p-4 sm:p-5"
@@ -101,12 +94,11 @@ export default async function AdminRolesPage() {
                       <RoleForm template={t} />
                     </div>
                   </details>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      ))}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="rounded-xl border border-ink-200 bg-surface p-4 sm:p-5">
         <h2 className="font-display text-lg text-ink-900">Add a role</h2>

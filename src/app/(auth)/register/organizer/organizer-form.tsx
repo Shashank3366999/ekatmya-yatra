@@ -17,12 +17,10 @@ type Option = { id: string; name: string };
 export function RegisterOrganizerForm({
   states,
   districtsByState,
-  postingKind,
   roleTemplates,
 }: {
   states: Option[];
   districtsByState: Record<string, Option[]>;
-  postingKind: "committee" | "volunteer";
   roleTemplates: RoleTemplateOption[];
 }) {
   const [state, formAction] = useActionState<ActionResult | null, FormData>(
@@ -58,7 +56,6 @@ export function RegisterOrganizerForm({
       <OrganizerPostingFields
         states={states}
         districtsByState={districtsByState}
-        postingKind={postingKind}
         roleTemplates={roleTemplates}
       />
 

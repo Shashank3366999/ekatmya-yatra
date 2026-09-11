@@ -179,9 +179,14 @@ Three things need a word from the team:
    on both pages.
 
 ### Q15. The two predefined roles
-The panel ships with two roles so the first joiner has something to pick:
-**Survey Lead (State)** with a six-point checklist, and **Yatra Volunteer
-(District)** with four. Both are our wording, written to be replaced.
+The panel ships with two roles so the first organising team member has
+something to pick: **Survey Lead (State)** with a six-point checklist, and
+**District Coordinator** with four. Both are our wording, written to be
+replaced.
+
+Volunteers do not appear here. A volunteer is an ordinary account on the
+Journey app, the same one this site has always had, with no posting to approve
+and no checklist to take on.
 
 **We need:** the roles you actually want offered, each with its checklist. Any
 admin can add, edit or hide them at `/admin/roles` without a release, so this

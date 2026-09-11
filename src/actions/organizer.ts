@@ -34,7 +34,6 @@ export async function requestOrganizerPosting(
   const parsed = organizerPostingRequestSchema.safeParse({
     stateId: formData.get("stateId") ?? "",
     districtId: formData.get("districtId") ?? "",
-    postingKind: formData.get("postingKind") ?? "committee",
     roleTemplateId: formData.get("roleTemplateId") ?? "",
     level: formData.get("level"),
     primaryFunction: formData.get("primaryFunction"),
@@ -62,7 +61,6 @@ export async function requestOrganizerPosting(
   );
 
   await db.insert(organizerProfiles).values({
-    postingKind: data.postingKind,
     roleTemplateId: data.roleTemplateId,
     userId: user.id,
     level: data.level,

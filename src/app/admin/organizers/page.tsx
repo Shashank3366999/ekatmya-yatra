@@ -35,7 +35,6 @@ type Row = {
   level: OrgLevel;
   stateId: string | null;
   districtId: string | null;
-  postingKind: "committee" | "volunteer";
   roleName: string | null;
   primaryFunction: FunctionArea;
   additionalFunctions: FunctionArea[] | null;
@@ -180,14 +179,10 @@ function OrganizerCard({
           </p>
 
           {/*
-            Which way in they came and which predefined role they picked. The
-            role is what the admin is really approving: its checklist becomes
-            their work the moment this is approved.
+            Which predefined role they picked. That is what the admin is really
+            approving: its checklist becomes their work the moment it is.
           */}
           <div className="mt-2 flex flex-wrap gap-1.5">
-            <Chip size="sm" variant="soft" color={row.postingKind === "committee" ? "accent" : "default"}>
-              {row.postingKind === "committee" ? "Organizing Team" : "Volunteer"}
-            </Chip>
             {row.roleName ? (
               <Chip size="sm" variant="soft" color="accent">
                 {row.roleName}

@@ -16,45 +16,28 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Join the organising team" };
 
 /**
- * The two ways in, as the landing page offers them.
+ * Joining the organising team.
  *
- * `?as=volunteer` and `?as=committee` only change the framing and which
- * predefined roles are listed; both go to the same table and both wait for an
- * admin. Anything else falls back to the committee flow rather than erroring,
- * because this link gets shared.
+ * This is the route in that needs approval, because it is a posting: a seat at
+ * a level with a responsibility attached. Volunteering is not this — a
+ * volunteer is an ordinary account at /register, with nothing to approve.
  */
-const COPY = {
-  committee: {
-    heading: "Join as an Organizing Team Member",
-    lead: "A seat on the organising committee at national, state or district level, with a responsibility of your own.",
-  },
-  volunteer: {
-    heading: "Join as a Volunteer",
-    lead: "Give time on the ground as the Yatra moves through your area. Choose what you can help with and for how long.",
-  },
-} as const;
-
-export default async function RegisterOrganizerPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ as?: string }>;
-}) {
-  const { as } = await searchParams;
-  const postingKind = as === "volunteer" ? "volunteer" : "committee";
-
-  const [states, districtsByState, allTemplates] = await Promise.all([
+export default async function RegisterOrganizerPage() {
+  const [states, districtsByState, roleTemplates] = await Promise.all([
     listStates(),
     listDistrictsByState(),
     listRoleTemplates(),
   ]);
 
-  const roleTemplates = allTemplates.filter((t) => t.postingKind === postingKind);
-  const copy = COPY[postingKind];
-
   return (
     <div>
-      <h1 className="font-display text-2xl text-ink-900">{copy.heading}</h1>
-      <p className="mt-1.5 text-sm text-ink-500">{copy.lead}</p>
+      <h1 className="font-display text-2xl text-ink-900">
+        Join as an Organizing Team Member
+      </h1>
+      <p className="mt-1.5 text-sm text-ink-500">
+        A seat on the organising team at national, state or district level, with
+        a responsibility of your own. Choose the role you are taking on.
+      </p>
 
       <Alert status="accent" className="mt-5">
         <Alert.Content>
@@ -71,39 +54,16 @@ export default async function RegisterOrganizerPage({
         <RegisterOrganizerForm
           states={states}
           districtsByState={districtsByState}
-          postingKind={postingKind}
           roleTemplates={roleTemplates}
         />
       </div>
 
       <p className="mt-6 text-sm text-ink-500">
-        {postingKind === "committee" ? (
-          <>
-            Would rather help on the ground?{" "}
-            <Link
-              href="/register/organizer?as=volunteer"
-              className="font-medium text-pumpkin-500 underline"
-            >
-              Join as a volunteer
-            </Link>
-          </>
-        ) : (
-          <>
-            Taking a seat on the committee?{" "}
-            <Link
-              href="/register/organizer?as=committee"
-              className="font-medium text-pumpkin-500 underline"
-            >
-              Join as an organizing team member
-            </Link>
-          </>
-        )}
-      </p>
-      <p className="mt-2 text-sm text-ink-500">
-        Just following the Yatra?{" "}
+        Want to volunteer or simply follow the Yatra?{" "}
         <Link href="/register" className="font-medium text-pumpkin-500 underline">
-          Create a regular account
+          Create an account
         </Link>
+        . No approval needed.
       </p>
     </div>
   );

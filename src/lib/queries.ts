@@ -358,7 +358,6 @@ export async function listOrganizerProfiles(status?: string, limit = 200) {
       email: users.email,
       phone: users.phone,
       isActive: users.isActive,
-      postingKind: organizerProfiles.postingKind,
       roleName: roleTemplates.name,
       level: organizerProfiles.level,
       stateId: organizerProfiles.stateId,
@@ -705,7 +704,6 @@ export async function listRoleTemplates(options?: { includeInactive?: boolean })
       id: roleTemplates.id,
       name: roleTemplates.name,
       description: roleTemplates.description,
-      postingKind: roleTemplates.postingKind,
       level: roleTemplates.level,
       functionArea: roleTemplates.functionArea,
       isActive: roleTemplates.isActive,
@@ -744,7 +742,6 @@ export async function getRoleTemplate(templateId: string) {
       description: roleTemplates.description,
       level: roleTemplates.level,
       functionArea: roleTemplates.functionArea,
-      postingKind: roleTemplates.postingKind,
     })
     .from(roleTemplates)
     .where(eq(roleTemplates.id, templateId))

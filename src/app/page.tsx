@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -116,26 +115,31 @@ const HERITAGE_ORDER: HeritageType[] = [
  *
  * The Yatra team asked for exactly these on the landing page, and for the
  * administrator sign-in to be gone from it: the Admin Panel lives at /admin and
- * is reached by signing in, not advertised. Following the Yatra as an ordinary
- * visitor is still possible and is offered quietly beneath these two, since the
- * ask was that these are what the page shows *prominently*.
+ * is reached by signing in, not advertised.
+ *
+ * They are not the same kind of thing, which is the point. An organising team
+ * member takes a posting and waits for an admin to approve it. A volunteer is
+ * an ordinary account on the Journey app, the same account this site has always
+ * had — nothing to approve, nothing to wait for.
  */
 const ROLES = [
   {
     icon: ShieldCheck,
     title: "Organizing Team Member",
-    body: "A seat on the organising committee at national, state or district level, with a responsibility of your own. Pick the role you are taking and the Yatra team reviews it.",
-    href: "/register/organizer?as=committee",
+    body: "A seat on the organising team at national, state or district level, with a responsibility of your own. Pick the role you are taking and the Yatra team reviews it.",
+    href: "/register/organizer",
     cta: "I am joining the organising team",
     variant: "primary" as const,
+    note: "Needs approval from the Yatra team",
   },
   {
     icon: HandHeart,
     title: "Volunteer",
-    body: "Give time on the ground as the Yatra moves through your area: welcome, outreach, logistics, whatever the day needs. Choose what you can help with and for how long.",
-    href: "/register/organizer?as=volunteer",
+    body: "Follow the route, see the events near you, build your own journey, and give time on the ground as the Yatra passes through your area.",
+    href: "/register",
     cta: "I am joining as a volunteer",
     variant: "secondary" as const,
+    note: "Open straight away, no approval needed",
   },
 ];
 
@@ -248,14 +252,10 @@ export default async function LandingPage() {
               </Reveal>
 
               <Reveal delay={220} className="mt-6 flex flex-wrap gap-3 sm:mt-7">
-                <LinkButton href="/register/organizer?as=committee" size="lg">
+                <LinkButton href="/register/organizer" size="lg">
                   Join the organising team
                 </LinkButton>
-                <LinkButton
-                  href="/register/organizer?as=volunteer"
-                  variant="secondary"
-                  size="lg"
-                >
+                <LinkButton href="/register" variant="secondary" size="lg">
                   Volunteer for the Yatra
                 </LinkButton>
               </Reveal>
@@ -689,22 +689,12 @@ export default async function LandingPage() {
                   >
                     {card.cta}
                   </LinkButton>
+                  {/* Say up front which one waits on an admin and which does not. */}
+                  <p className="mt-2.5 text-[11px] text-ink-500">{card.note}</p>
                 </div>
               </Reveal>
             ))}
           </div>
-
-          {/*
-            The ordinary visitor's way in, kept deliberately quiet: the team
-            asked for the two above to be what the page puts forward.
-          */}
-          <p className="mt-8 text-sm text-ink-500">
-            Just want to follow the Yatra?{" "}
-            <Link href="/register" className="font-medium text-pumpkin-600 underline">
-              Create an account
-            </Link>{" "}
-            to build your own journey and see events near you.
-          </p>
         </div>
       </section>
 

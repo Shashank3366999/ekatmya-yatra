@@ -38,7 +38,9 @@ function addDays(base: Date, days: number): Date {
  * The predefined roles the Admin Panel starts with.
  *
  * The Yatra team asked for "1-2 pre-made checklists/roles" already defined so
- * that the first joiner has something to pick. These are a starting point an
+ * that the first organising team member has something to pick. Volunteers do
+ * not appear here: a volunteer is an ordinary account with no posting to
+ * approve and no checklist to take on. These are a starting point an
  * admin can edit, hide or add to from /admin/roles; they are upserted by name,
  * so editing one in the panel is not undone by the next seed.
  */
@@ -47,7 +49,6 @@ const ROLE_TEMPLATES = [
     name: "Survey Lead (State)",
     description:
       "Visit the places the Yatra is considering in your state, record what you find, and file each one for the Yatra committee to review.",
-    postingKind: "committee" as const,
     level: "state" as const,
     functionArea: "survey" as const,
     position: 1,
@@ -61,18 +62,17 @@ const ROLE_TEMPLATES = [
     ],
   },
   {
-    name: "Yatra Volunteer (District)",
+    name: "District Coordinator",
     description:
-      "Help on the ground in your district as the Yatra passes through: welcome, crowd support, logistics and whatever the day needs.",
-    postingKind: "volunteer" as const,
+      "Hold your district's arrangements together as the Yatra passes through: the local team, the welcome, and the day-to-day on the ground.",
     level: "district" as const,
     functionArea: "general" as const,
     position: 2,
     items: [
-      "Confirm the dates you are available",
       "Attend the district briefing",
-      "Join the local Shankardoot group",
-      "Report what you did after each day on duty",
+      "Form the local Shankardoot group and confirm who is available",
+      "Walk the route through your district and note what is needed",
+      "Report what happened after each day of the Yatra",
     ],
   },
 ];
@@ -344,7 +344,6 @@ async function main() {
         .values({
           name: t.name,
           description: t.description,
-          postingKind: t.postingKind,
           level: t.level,
           functionArea: t.functionArea,
           position: t.position,

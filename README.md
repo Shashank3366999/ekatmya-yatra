@@ -85,6 +85,12 @@ Stop the dev server first — the local PGlite database is single-process.
 Public: `/` (landing), `/login` (its own full-bleed shell), `/register`,
 `/register/organizer`, `/pending`.
 
+The landing page offers two ways in and never mentions the Admin Panel.
+**Volunteer** goes to `/register`: an ordinary Journey-app account, open
+immediately. **Organizing Team Member** goes to `/register/organizer`: a posting
+at a level with a responsibility, which waits for an admin. The panel is at
+`/admin`, reached by signing in.
+
 ### Mobile-first
 
 The User and Organiser apps are mobile-first in the strong sense: **the phone

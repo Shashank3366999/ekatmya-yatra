@@ -13,7 +13,6 @@ import {
   functionEnum,
   orgLevelEnum,
   placeCategoryEnum,
-  postingKindEnum,
   recommendationEnum,
   surveyStatusEnum,
   yatraKindEnum,
@@ -122,14 +121,11 @@ export const registerUserSchema = z.object({
  */
 export const organizerPostingSchema = z.object({
   /**
-   * Committee seat or volunteer, and which predefined role was picked.
+   * The predefined role picked while signing up.
    *
-   * Both are chosen before the form proper: the landing page sends people here
-   * with `?as=`, and the role comes from the list an admin maintains, so the
-   * server takes the id and reads the role back rather than trusting any of its
-   * details from the client.
+   * Only the id travels: the server reads the role back from the table an admin
+   * maintains rather than trusting any of its details from the client.
    */
-  postingKind: z.enum(postingKindEnum.enumValues).default("committee"),
   roleTemplateId: optionalUuid,
   stateId: optionalUuid,
   districtId: optionalUuid,

@@ -14,7 +14,7 @@ import { z } from "zod";
 
 import { getDb } from "@/db";
 import { auditLog, roleTemplateItems, roleTemplates } from "@/db/schema";
-import { functionEnum, orgLevelEnum, postingKindEnum } from "@/db/schema";
+import { functionEnum, orgLevelEnum } from "@/db/schema";
 import { isAdmin } from "@/lib/permissions";
 import { getSessionUser } from "@/lib/session";
 import type { ActionResult } from "@/lib/types";
@@ -22,7 +22,6 @@ import type { ActionResult } from "@/lib/types";
 const roleSchema = z.object({
   name: z.string().trim().min(3, "Give the role a name").max(120),
   description: z.string().trim().max(600).optional().or(z.literal("")),
-  postingKind: z.enum(postingKindEnum.enumValues),
   level: z.enum(orgLevelEnum.enumValues),
   functionArea: z.enum(functionEnum.enumValues),
   /** One checklist item per line, which is how an admin thinks about it. */
@@ -47,7 +46,6 @@ export async function saveRoleTemplate(
   const parsed = roleSchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
-    postingKind: formData.get("postingKind"),
     level: formData.get("level"),
     functionArea: formData.get("functionArea"),
     checklist: formData.get("checklist"),
@@ -68,7 +66,6 @@ export async function saveRoleTemplate(
       .set({
         name: data.name,
         description: data.description || null,
-        postingKind: data.postingKind,
         level: data.level,
         functionArea: data.functionArea,
       })
@@ -91,7 +88,6 @@ export async function saveRoleTemplate(
       .values({
         name: data.name,
         description: data.description || null,
-        postingKind: data.postingKind,
         level: data.level,
         functionArea: data.functionArea,
         createdById: admin.id,

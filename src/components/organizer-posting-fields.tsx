@@ -83,19 +83,15 @@ export function OrganizerPostingFields({
   districtsByState,
   defaultStateId,
   defaultDistrictId,
-  postingKind = "committee",
   roleTemplates = [],
 }: {
   states: Option[];
   districtsByState: Record<string, Option[]>;
   defaultStateId?: string | null;
   defaultDistrictId?: string | null;
-  postingKind?: "committee" | "volunteer";
   roleTemplates?: RoleTemplateOption[];
 }) {
-  const [level, setLevel] = useState<OrgLevel>(
-    roleTemplates[0]?.level ?? (postingKind === "volunteer" ? "district" : "state"),
-  );
+  const [level, setLevel] = useState<OrgLevel>(roleTemplates[0]?.level ?? "state");
   const [primaryFunction, setPrimaryFunction] = useState<FunctionArea>(
     roleTemplates[0]?.functionArea ?? "survey",
   );
@@ -119,8 +115,6 @@ export function OrganizerPostingFields({
 
   return (
     <>
-      <input type="hidden" name="postingKind" value={postingKind} />
-
       {roleTemplates.length > 0 ? (
         <fieldset className="space-y-4">
           <legend className="text-[11px] font-semibold tracking-wider text-ink-500 uppercase">

@@ -104,12 +104,64 @@ async function assertNoEmDash(p, path) {
   ok(found.length === 0, `${path} uses no em dash`, found.join(" | "));
 }
 
+/*
+  Headings are Cormorant Garamond, everything else is Manrope.
+
+  The rule is not "every h-tag is serif": small uppercase section labels stay
+  in the sans whatever tag they use, and a card title set as a <p> with
+  `font-display` is a heading by any other name. So the check follows the class,
+  not the tag. The Sanskrit is the one exception, and has to be: Cormorant
+  carries no Devanagari, so the Mahavakyas are Tiro Devanagari Hindi.
+*/
+const fontsChecked = new Set();
+
+async function assertFonts(p, path) {
+  if (fontsChecked.has(path)) return;
+  fontsChecked.add(path);
+
+  const r = await p.evaluate(() => {
+    const fam = (e) => getComputedStyle(e).fontFamily.split(",")[0].replace(/"/g, "");
+    const visible = (e) => e.offsetParent !== null;
+    const all = [...document.querySelectorAll("body *")].filter(visible);
+
+    const display = all.filter(
+      (e) => e.classList.contains("font-display") && !e.closest('[lang="sa"]'),
+    );
+    const text = all.filter(
+      (e) =>
+        !e.closest(".font-display") &&
+        !e.closest('[lang="sa"]') &&
+        e.children.length === 0 &&
+        e.textContent.trim(),
+    );
+    const sanskrit = all.filter((e) => e.closest('[lang="sa"]'));
+
+    const wrong = (els, want) =>
+      els
+        .filter((e) => fam(e) !== want)
+        .slice(0, 3)
+        .map((e) => `${e.tagName} "${e.textContent.trim().slice(0, 24)}" is ${fam(e)}`);
+
+    return {
+      counted: display.length + text.length,
+      badDisplay: wrong(display, "Cormorant Garamond"),
+      badText: wrong(text, "Manrope"),
+      badSanskrit: wrong(sanskrit, "Tiro Devanagari Hindi"),
+    };
+  });
+
+  ok(r.badDisplay.length === 0, `${path}: headings are Cormorant Garamond`, r.badDisplay.join(" ; "));
+  ok(r.badText.length === 0, `${path}: body text is Manrope`, r.badText.join(" ; "));
+  ok(r.badSanskrit.length === 0, `${path}: Sanskrit is Tiro Devanagari Hindi`, r.badSanskrit.join(" ; "));
+}
+
 async function page(ctx, path) {
   const p = ctx.__page ?? (ctx.__page = await ctx.newPage());
   await p.goto(B + path, waitFor(path));
   await settle(p, path);
   await p.waitForTimeout(700);
   await assertNoEmDash(p, path);
+  await assertFonts(p, path);
   return p;
 }
 
@@ -189,6 +241,9 @@ const landingStops = global.landingStops;
           ),
         ),
       ],
+      volunteerLink: [...document.querySelectorAll("a")].some(
+        (a) => a.getAttribute("href") === "/register",
+      ),
     };
   });
 
@@ -196,21 +251,33 @@ const landingStops = global.landingStops;
   ok(r.volunteer, "landing offers the Volunteer route in");
   ok(r.signInLinks === 0, "landing links to no sign-in page", `${r.signInLinks}`);
   ok(r.adminLinks === 0, "landing links nowhere under /admin", `${r.adminLinks}`);
+  /*
+    The two ways in are not two flavours of the same signup. An organising team
+    member takes a posting and waits for approval; a volunteer is the ordinary
+    account this site has always had, with nothing to approve. So they must go
+    to different places, and the volunteer's must be /register.
+  */
   ok(
-    r.joinLinks.includes("/register/organizer?as=committee") &&
-      r.joinLinks.includes("/register/organizer?as=volunteer"),
-    "both ways in are wired to their own signup",
+    r.joinLinks.includes("/register/organizer"),
+    "the organising team route goes to the posting signup",
+    r.joinLinks.join(", "),
+  );
+  ok(r.volunteerLink, "the volunteer route goes to the ordinary account signup");
+  ok(
+    r.joinLinks.every((h) => !h.includes("as=")),
+    "no leftover variant of the organiser signup",
     r.joinLinks.join(", "),
   );
 }
 
 /* --------------------- the predefined role, on the form and in the panel */
 {
-  const p = await page(ctx, "/register/organizer?as=committee");
+  const p = await page(ctx, "/register/organizer");
   const signup = await p.evaluate(() => ({
     roles: document.querySelectorAll('input[name="roleTemplateId"]').length,
-    kind: document.querySelector('input[name="postingKind"]')?.value ?? null,
     checklistShown: /what this role involves/i.test(document.body.innerText),
+    /* Nothing here should hint at an approval-free route; that is /register. */
+    saysApproval: /approval/i.test(document.body.innerText),
   }));
 
   /*
@@ -219,8 +286,8 @@ const landingStops = global.landingStops;
     it belongs to, and the checklist is on screen before anyone commits.
   */
   ok(signup.roles > 0, "signup offers the roles an admin defined", `${signup.roles}`);
-  ok(signup.kind === "committee", "signup records which way in was chosen", String(signup.kind));
   ok(signup.checklistShown, "the role's checklist is shown before signing up");
+  ok(signup.saysApproval, "the organising team signup says it needs approval");
 }
 
 /* --------------------------------------------- the Nyas's own facts and links */

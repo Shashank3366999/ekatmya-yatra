@@ -38,16 +38,6 @@ export const accountTypeEnum = pgEnum("account_type", [
   "super_admin",
 ]);
 
-/**
- * Whether a posting is an Organizing Committee seat or a volunteer one.
- *
- * The Yatra team asks the landing page for exactly two ways in, and they are
- * not the same commitment: a committee member holds a seat at a level with a
- * functional responsibility, a volunteer offers time on the ground. Both are
- * approved by an admin, so this is one table with a kind rather than two.
- */
-export const postingKindEnum = pgEnum("posting_kind", ["committee", "volunteer"]);
-
 /** Organisational level of an organiser. Mirrors the Yatra's real structure. */
 export const orgLevelEnum = pgEnum("org_level", [
   "national",
@@ -240,9 +230,6 @@ export const organizerProfiles = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
 
-    /** Committee seat or volunteer. Chosen on the landing page. */
-    postingKind: postingKindEnum("posting_kind").notNull().default("committee"),
-
     /**
      * The predefined role the person picked while signing up.
      *
@@ -301,6 +288,9 @@ export const organizerProfiles = pgTable(
  * roles with their checklists, a joiner picks the relevant one, and the admin
  * approves. So the choice on the signup form is data an admin controls, not a
  * list in the code.
+ *
+ * These belong to the organising team only. A volunteer is an ordinary user
+ * account with no posting to approve, so there is nothing here for them.
  */
 export const roleTemplates = pgTable(
   "role_templates",
@@ -308,8 +298,6 @@ export const roleTemplates = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     description: text("description"),
-    /** Which way in this role belongs to. */
-    postingKind: postingKindEnum("posting_kind").notNull().default("committee"),
     /** Suggested posting for anyone who picks it; the admin can still override. */
     level: orgLevelEnum("level").notNull().default("state"),
     functionArea: functionEnum("function_area").notNull().default("general"),

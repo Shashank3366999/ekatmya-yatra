@@ -11,7 +11,6 @@ import type {
   functionEnum,
   orgLevelEnum,
   placeCategoryEnum,
-  postingKindEnum,
   recommendationEnum,
   surveyStatusEnum,
   yatraKindEnum,
@@ -28,7 +27,6 @@ export type Recommendation = (typeof recommendationEnum.enumValues)[number];
 export type YatraKind = (typeof yatraKindEnum.enumValues)[number];
 export type Audience = (typeof audienceEnum.enumValues)[number];
 export type ActivityStatus = (typeof activityStatusEnum.enumValues)[number];
-export type PostingKind = (typeof postingKindEnum.enumValues)[number];
 
 /** The organiser posting attached to a session, if any. */
 export type SessionOrganizer = {
