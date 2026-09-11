@@ -23,7 +23,7 @@ async function main() {
   }
 
   console.log(
-    `✔ migrations applied (${usingPglite ? "PGlite — ./.pglite" : "Postgres via DATABASE_URL"})`,
+    `✔ migrations applied (${usingPglite ? "PGlite at ./.pglite" : "Postgres via DATABASE_URL"})`,
   );
   process.exit(0);
 }

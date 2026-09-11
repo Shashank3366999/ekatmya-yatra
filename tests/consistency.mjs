@@ -54,11 +54,46 @@ const bodyNum = (re) => {
   return m ? parseInt(m[1], 10) : null;
 };
 
+/*
+  Em dashes are not used anywhere a visitor can read them: the Yatra team asked
+  for them gone, and the replacements are real punctuation rather than a deleted
+  character. Checked on every page this suite visits, once per path, because the
+  easy way to reintroduce one is a new string in a new component.
+
+  Seeded rows count too. `pnpm db:rewrite-dashes` clears an existing database;
+  the sources produce clean text on a fresh seed.
+*/
+const dashChecked = new Set();
+
+async function assertNoEmDash(p, path) {
+  if (dashChecked.has(path)) return;
+  dashChecked.add(path);
+
+  const found = await p.evaluate(() => {
+    const out = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      if (n.nodeValue.includes("\u2014")) out.push(n.nodeValue.trim().slice(0, 70));
+    }
+    for (const el of document.querySelectorAll("[alt],[title],[aria-label],[placeholder]")) {
+      for (const a of ["alt", "title", "aria-label", "placeholder"]) {
+        const v = el.getAttribute(a);
+        if (v && v.includes("\u2014")) out.push(`@${a}: ${v.slice(0, 60)}`);
+      }
+    }
+    if (document.title.includes("\u2014")) out.push(`@title: ${document.title}`);
+    return out;
+  });
+
+  ok(found.length === 0, `${path} uses no em dash`, found.join(" | "));
+}
+
 async function page(ctx, path) {
   const p = ctx.__page ?? (ctx.__page = await ctx.newPage());
   await p.goto(B + path, waitFor(path));
   await settle(p, path);
   await p.waitForTimeout(700);
+  await assertNoEmDash(p, path);
   return p;
 }
 

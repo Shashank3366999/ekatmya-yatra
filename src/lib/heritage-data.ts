@@ -318,7 +318,7 @@ export const HERITAGE_SITES: HeritageSite[] = [
     significance: "Birthplace of Adi Shankaracharya, on the banks of the Periyar.",
   },
   {
-    name: "Thrissur — Vadakkunnathan",
+    name: "Thrissur (Vadakkunnathan)",
     stateCode: "KL",
     district: "Thrissur",
     lat: 10.5276,
@@ -336,7 +336,7 @@ export const HERITAGE_SITES: HeritageSite[] = [
     significance: "Ancient Shaiva centre visited on the southern journey.",
   },
   {
-    name: "Prayagraj — Triveni Sangam",
+    name: "Prayagraj (Triveni Sangam)",
     stateCode: "UP",
     district: "Allahabad (Prayagraj)",
     lat: 25.4358,
@@ -361,7 +361,7 @@ export const HERITAGE_SITES: HeritageSite[] = [
     lng: 75.5878,
     types: ["shankaracharya_site"],
     significance:
-      "Where Adi Shankaracharya debated Mandana Mishra — a turning point in the Digvijaya.",
+      "Where Adi Shankaracharya debated Mandana Mishra, a turning point in the Digvijaya.",
   },
   {
     name: "Kanyakumari",
@@ -390,7 +390,7 @@ export const HERITAGE_SITES: HeritageSite[] = [
     lng: 74.1911,
     types: ["shankaracharya_site", "shakti_peetha"],
     significance:
-      "The Sharada temple and ancient seat of learning that Adi Shankaracharya reached in the far north. In Pakistan-occupied Kashmir, so the Yatra cannot halt here — but the journey is not complete without it.",
+      "The Sharada temple and ancient seat of learning that Adi Shankaracharya reached in the far north. In Pakistan-occupied Kashmir, so the Yatra cannot halt here, but the journey is not complete without it.",
     beyondReach: true,
   },
   {

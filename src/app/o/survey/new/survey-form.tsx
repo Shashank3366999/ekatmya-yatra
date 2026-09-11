@@ -245,9 +245,9 @@ export function SurveyForm({
                 {geoStatus === "done"
                   ? `Captured: ${coords.lat}, ${coords.lng}`
                   : geoStatus === "insecure"
-                    ? "Your browser only shares location over a secure (https) connection — type the coordinates in below."
+                    ? "Your browser only shares location over a secure (https) connection. Type the coordinates in below."
                     : geoStatus === "error"
-                      ? "Could not read location — type it in below or leave blank."
+                      ? "Could not read location. Type it in below or leave blank."
                       : "Put the place on the Yatra map."}
               </p>
             </div>

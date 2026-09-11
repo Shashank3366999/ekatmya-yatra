@@ -195,7 +195,7 @@ export const MAIN_YATRA_ROUTE: {
     image: "/places/kalady.jpg",
   },
   {
-    name: "Thrissur — Vadakkunnathan",
+    name: "Thrissur (Vadakkunnathan)",
     stateCode: "KL",
     district: "Thrissur",
     lat: 10.5276,
@@ -259,12 +259,12 @@ export const MAIN_YATRA_ROUTE: {
     lng: 75.2528,
     category: "advaita_heritage",
     significance:
-      "The Sharada Peetham — the southern Amnaya Peetham established by Adi Shankaracharya.",
+      "The Sharada Peetham, the southern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 32,
     image: "/places/sringeri.jpg",
   },
   {
-    name: "Kollur — Mookambika",
+    name: "Kollur (Mookambika)",
     stateCode: "KA",
     district: "Udupi",
     lat: 13.8636,
@@ -286,7 +286,7 @@ export const MAIN_YATRA_ROUTE: {
     image: "/places/kolhapur.webp",
   },
   {
-    name: "Nashik — Trimbakeshwar",
+    name: "Nashik (Trimbakeshwar)",
     stateCode: "MH",
     district: "Nashik",
     lat: 19.9333,
@@ -304,12 +304,12 @@ export const MAIN_YATRA_ROUTE: {
     lng: 68.9678,
     category: "advaita_heritage",
     significance:
-      "Sharada Peetham, Dwarka — the western Amnaya Peetham of the Advaita tradition.",
+      "Sharada Peetham, Dwarka: the western Amnaya Peetham of the Advaita tradition.",
     dayOffset: 58,
     image: "/places/dwarka.jpg",
   },
   {
-    name: "Omkareshwar — Ekatma Dham",
+    name: "Omkareshwar (Ekatma Dham)",
     stateCode: "MP",
     district: "Khandwa",
     lat: 22.2451,
@@ -321,7 +321,7 @@ export const MAIN_YATRA_ROUTE: {
     image: "/places/omkareshwar.jpg",
   },
   {
-    name: "Ujjain — Mahakaleshwar",
+    name: "Ujjain (Mahakaleshwar)",
     stateCode: "MP",
     district: "Ujjain",
     lat: 23.1793,
@@ -339,12 +339,12 @@ export const MAIN_YATRA_ROUTE: {
     lng: 85.8312,
     category: "advaita_heritage",
     significance:
-      "Govardhana Peetham — the eastern Amnaya Peetham established by Adi Shankaracharya.",
+      "Govardhana Peetham, the eastern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 84,
     image: "/places/puri.jpg",
   },
   {
-    name: "Varanasi — Kashi",
+    name: "Varanasi (Kashi)",
     stateCode: "UP",
     district: "Varanasi",
     lat: 25.3176,
@@ -362,7 +362,7 @@ export const MAIN_YATRA_ROUTE: {
     lat: 25.4358,
     lng: 81.8463,
     category: "crowd_gathering",
-    significance: "The Triveni Sangam — confluence of Ganga, Yamuna and Saraswati.",
+    significance: "The Triveni Sangam, where the Ganga, Yamuna and Saraswati meet.",
     dayOffset: 100,
     image: "/places/prayagraj.jpg",
   },
@@ -396,7 +396,7 @@ export const MAIN_YATRA_ROUTE: {
     lng: 79.5645,
     category: "advaita_heritage",
     significance:
-      "Jyotirmath — the northern Amnaya Peetham established by Adi Shankaracharya.",
+      "Jyotirmath, the northern Amnaya Peetham established by Adi Shankaracharya.",
     dayOffset: 116,
     image: "/places/joshimath.jpg",
   },

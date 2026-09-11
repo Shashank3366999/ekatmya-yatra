@@ -185,7 +185,7 @@ The national team works across all of Bharat, so there is no state or
             ))}
           </div>
           <Description>
-            Optional. Pick as many as apply — the admin assigns your final roles.
+            Optional. Pick as many as apply. The admin assigns your final roles.
           </Description>
         </CheckboxGroup>
 
@@ -207,7 +207,7 @@ The national team works across all of Bharat, so there is no state or
             </ListBox>
           </Select.Popover>
           <Description>
-            Contribute your time according to your convenience — any amount helps.
+            Contribute your time according to your convenience. Any amount helps.
           </Description>
         </Select>
 

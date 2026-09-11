@@ -125,7 +125,7 @@ export function StateDistrictSelect({
         </Select.Popover>
         {stateId && districts.length === 0 ? (
           <Description>
-            Districts for this state are not loaded yet — leave blank and the admin
+            Districts for this state are not loaded yet. Leave blank and the admin
             will fill it in.
           </Description>
         ) : districtDescription ? (

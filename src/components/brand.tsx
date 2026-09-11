@@ -20,7 +20,8 @@ import Image from "next/image";
  * `OBJECT_POSITION` keeps the figure in shot whatever the crop.
  */
 const ONENESS_SRC = "/brand/oneness.avif";
-const ONENESS_ALT = "The Statue of Oneness at Omkareshwar — Adi Shankaracharya";
+const ONENESS_ALT =
+  "The Statue of Oneness at Omkareshwar, depicting Adi Shankaracharya";
 /** Figure sits at ~59% across; its head at ~28% down. */
 const OBJECT_POSITION = "59% 28%";
 

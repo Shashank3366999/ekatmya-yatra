@@ -104,7 +104,7 @@ export function assertDatabaseFree(scriptName: string): void {
   console.error(`  held by PID ${held.pid} (${held.what}), since ${held.since}`);
   console.error("");
   console.error("  PGlite is single-process. Writing to it while the app is");
-  console.error("  running corrupts the data directory — the next open then");
+  console.error("  running corrupts the data directory. The next open then");
   console.error('  aborts with "RuntimeError: Aborted()" and the data is lost.');
   console.error("");
   console.error("  Stop the dev/prod server, then run this again.");

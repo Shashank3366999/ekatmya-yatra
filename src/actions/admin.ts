@@ -151,8 +151,8 @@ export async function reviewOrganizer(
     message:
       data.status === "approved"
         ? movedTeamOrRole
-          ? "Approved, with the team and role you set — their dashboard is now active."
-          : "Organiser approved — their dashboard is now active."
+          ? "Approved, with the team and role you set. Their dashboard is now active."
+          : "Organiser approved. Their dashboard is now active."
         : movedTeamOrRole
           ? "Team and role updated."
           : "Organiser request updated.",

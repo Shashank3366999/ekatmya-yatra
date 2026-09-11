@@ -65,7 +65,7 @@ export default async function JourneyPage() {
                     </div>
                   ) : null}
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-pumpkin-500 text-xs font-semibold text-ink-0">
-                    {p.routeOrder ?? "—"}
+                    {p.routeOrder ?? "?"}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink-900">{p.name}</p>

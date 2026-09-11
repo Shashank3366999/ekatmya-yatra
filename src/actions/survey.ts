@@ -250,7 +250,7 @@ export async function reviewSurvey(
     ok: true,
     message:
       status === "approved" && addToRoute
-        ? "Approved and added to the Yatra route — it now awaits sequencing."
+        ? "Approved and added to the Yatra route. It now awaits sequencing."
         : "Survey updated.",
   };
 }

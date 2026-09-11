@@ -55,8 +55,8 @@ export default async function JoinPage() {
         <Alert.Content>
           <Alert.Title>How contributing works</Alert.Title>
           <Alert.Description>
-            The organising team is structured by level — National, State and
-            District — and by responsibility. You choose both, and the Yatra team
+            The organising team is structured by level (National, State and
+            District) and by responsibility. You choose both, and the Yatra team
             confirms your posting.
           </Alert.Description>
         </Alert.Content>
@@ -86,7 +86,7 @@ export default async function JoinPage() {
       <section>
         <h2 className="mb-1 font-display text-lg text-ink-900">Your posting</h2>
         <p className="mb-4 text-xs leading-relaxed text-ink-500">
-          This is added to your existing account ({user.email}) — you will not need
+          This is added to your existing account ({user.email}), so you will not need
           to sign in again.
         </p>
         <PostingRequestForm

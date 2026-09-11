@@ -50,7 +50,7 @@ export default async function AdminUsersPage() {
                   {u.phone ? <span className="block">{u.phone}</span> : null}
                 </Td>
                 <Td className="text-ink-500">
-                  {[u.districtName, u.stateName].filter(Boolean).join(", ") || "—"}
+                  {[u.districtName, u.stateName].filter(Boolean).join(", ") || "Not set"}
                 </Td>
                 <Td>
                   <Chip

@@ -38,7 +38,7 @@ export default async function AdminRoutePage() {
             Approve a survey entry and choose “Add to the Yatra route”. It joins
             the route without a position and appears under “Awaiting sequencing”
             below. Placing stops in order and setting arrival dates comes in the
-            next phase — the route below is a researched starting point, not the
+            next phase. The route below is a researched starting point, not the
             confirmed itinerary.
           </Alert.Description>
         </Alert.Content>
@@ -98,7 +98,7 @@ export default async function AdminRoutePage() {
 
                   {p.latitude === null || p.longitude === null ? (
                     <p className="mt-2 text-[11px] text-pumpkin-700">
-                      No coordinates — will not appear as a map marker.
+                      No coordinates, so it will not appear as a map marker.
                     </p>
                   ) : null}
                 </div>

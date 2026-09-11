@@ -24,7 +24,7 @@ export default async function YatraPage() {
     <div className="space-y-5">
       <PageTitle
         title="The Yatra"
-        description="16 January to 10 May 2027, Kalady to Kedarnath — shown against every site Adi Shankaracharya sanctified."
+        description="16 January to 10 May 2027, Kalady to Kedarnath, shown against every site Adi Shankaracharya sanctified."
       />
       <YatraExplorer
         heritage={heritage

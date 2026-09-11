@@ -131,7 +131,7 @@ async function main() {
       .insert(s.yatras)
       .values({
         kind: "main",
-        name: "Ekatma Yatra 2027 — Main Yatra",
+        name: "Ekatma Yatra 2027: Main Yatra",
         startDate: YATRA_START,
         endDate: YATRA_END,
         description:
@@ -150,10 +150,26 @@ async function main() {
       ? (districtByKey.get(districtKey(stateId, stop.district)) ?? null)
       : null;
 
+    /*
+      Match on coordinates, not on the name.
+
+      Matching by name meant that renaming a stop inserted a second row rather
+      than updating the first, leaving the old name on the route and inflating
+      the stop count — which is exactly what happened when the compound names
+      were rewritten from "Varanasi — Kashi" to "Varanasi (Kashi)". Coordinates
+      are the stable identity: the closest two stops on the route, Haridwar and
+      Rishikesh, are 0.141 degrees apart, so a 0.05 degree window cannot
+      confuse them. Scoped to route places so it never claims a
+      heritage-only place that shares a city.
+    */
     const existing = await db
       .select({ id: s.places.id })
       .from(s.places)
-      .where(sql`${s.places.name} = ${stop.name} and ${s.places.isOnRoute} = true`)
+      .where(
+        sql`abs(${s.places.latitude} - ${stop.lat}) < 0.05
+            and abs(${s.places.longitude} - ${stop.lng}) < 0.05
+            and ${s.places.isOnRoute} = true`,
+      )
       .limit(1);
 
     const values = {
@@ -401,8 +417,8 @@ async function main() {
         routePlaces.map((p, i) => ({
           title:
             i === 0
-              ? `Inauguration Ceremony — ${p.name}`
-              : `Cultural Programme & Satsang — ${p.name}`,
+              ? `Inauguration Ceremony at ${p.name}`
+              : `Cultural Programme & Satsang at ${p.name}`,
           description:
             "Public gathering with discourse on Advaita, cultural performances and community participation.",
           placeId: p.id,

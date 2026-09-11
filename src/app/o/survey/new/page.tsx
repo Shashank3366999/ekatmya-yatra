@@ -39,7 +39,7 @@ export default async function NewSurveyPage() {
     <div className="space-y-5">
       <PageTitle
         title="New survey entry"
-        description="Record a place the Yatra should consider. Only the name and state are required — fill in the rest as you learn it."
+        description="Record a place the Yatra should consider. Only the name and state are required. Fill in the rest as you learn it."
         backHref="/o/survey"
       />
       <SurveyForm user={user} states={states} districtsByState={districtsByState} />

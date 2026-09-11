@@ -37,11 +37,11 @@ const devanagari = Tiro_Devanagari_Hindi({
 
 export const metadata: Metadata = {
   title: {
-    default: "Ekatma Yatra — One Journey, One Consciousness",
+    default: "Ekatma Yatra: One Journey, One Consciousness",
     template: "%s · Ekatma Yatra",
   },
   description:
-    "A Bharat Yatra for oneness, in the footsteps of Adi Shankaracharya — from Kalady to Kedarnath.",
+    "A Bharat Yatra for oneness, in the footsteps of Adi Shankaracharya, from Kalady to Kedarnath.",
   applicationName: "Ekatma Yatra",
   icons: {
     icon: [

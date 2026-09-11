@@ -62,13 +62,13 @@ const INSIDE_EKATMA_DHAM = [
   {
     icon: Building2,
     title: "Institute of Advaita Vedanta",
-    body: "The Acharya Shankar International Institute of Advaita Vedanta — the campus for study and research in the tradition.",
+    body: "The Acharya Shankar International Institute of Advaita Vedanta: the campus for study and research in the tradition.",
     href: "https://www.oneness.org.in/institute-of-advaita-vedanta",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Ekatma Yatra 2027 — One Journey, One Consciousness",
+  title: "Ekatma Yatra 2027: One Journey, One Consciousness",
   description:
     "A Bharat Yatra for oneness tracing Adi Shankaracharya's Digvijaya Yatra, 16 January to 10 May 2027, from Kalady to Kedarnath.",
 };
@@ -124,7 +124,7 @@ const ROLES = [
   {
     icon: HandHeart,
     title: "Serve as a Shankardoot",
-    body: "Survey places, plan events, handle outreach, media and logistics — at national, state or district level, for as many days as you can give.",
+    body: "Survey places, plan events, handle outreach, media and logistics, at national, state or district level, for as many days as you can give.",
     href: "/register/organizer",
     cta: "Register to serve",
     variant: "secondary" as const,
@@ -132,7 +132,7 @@ const ROLES = [
   {
     icon: ShieldCheck,
     title: "Administration",
-    body: "For the Yatra administration team — approvals, survey review and reporting.",
+    body: "For the Yatra administration team: approvals, survey review and reporting.",
     href: "/login",
     cta: "Administrator sign-in",
     variant: "outline" as const,
@@ -215,7 +215,7 @@ export default async function LandingPage() {
             <div className="mt-auto max-w-2xl">
               <Reveal>
                 <p className="text-[11px] tracking-[0.2em] text-pumpkin-400 uppercase sm:text-xs">
-                  Ek Bharat — Ekatmata Bharat
+                  Ek Bharat, Ekatmata Bharat
                 </p>
               </Reveal>
                 {/*
@@ -256,7 +256,7 @@ export default async function LandingPage() {
               <Reveal delay={90}>
                 <p className="text-sm leading-relaxed text-ink-0/80 sm:text-base">
                   Tracing the legendary <em>Digvijaya Yatra</em> of Jagadguru Adi
-                  Shankaracharya —{" "}
+                  Shankaracharya.{" "}
                   <strong className="font-medium text-ink-0">16 January</strong> to{" "}
                   <strong className="font-medium text-ink-0">10 May 2027</strong>,
                   from{" "}
@@ -325,8 +325,8 @@ export default async function LandingPage() {
               </h2>
               <p className="mt-4 max-w-prose text-sm leading-relaxed text-ink-600 sm:text-base">
                 The eternal lamp of Advaita Vedanta, Sanatana culture and cultural
-                unity lit by Jagadguru Adi Shankaracharya — as he sanctified the
-                sacred land of Bharat with his holy steps — continues to
+                unity lit by Jagadguru Adi Shankaracharya, as he sanctified the
+                sacred land of Bharat with his holy steps, continues to
                 illuminate our consciousness today.
               </p>
               <p className="mt-4 max-w-prose text-sm leading-relaxed text-ink-600 sm:text-base">
@@ -508,7 +508,7 @@ export default async function LandingPage() {
                   <CountUp value={heritage.length} />
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-ink-600">
-                  sacred sites mapped along the Digvijaya Yatra — the Char Dham,
+                  sacred sites mapped along the Digvijaya Yatra: the Char Dham,
                   the four Mathas, the Jyotirlingas, Shakti Peethas and Saptapuris.
                 </p>
               </div>
@@ -710,7 +710,7 @@ export default async function LandingPage() {
             <p className="mt-4 text-sm leading-relaxed text-ink-600 sm:text-base">
               It is a sacred privilege to step forward and dedicate yourself to
               this grand initiative for awakening our spiritual heritage.
-              Contribute your time according to your convenience — in managing
+              Contribute your time according to your convenience: in managing
               arrangements, public awareness and ground operations; in spreading
               the wisdom of Advaita; and in walking the footsteps of Acharya
               Shankar yourself.
@@ -801,7 +801,7 @@ export default async function LandingPage() {
                 <br />
                 Madhya Pradesh Tribal Museum, Shyamla Hills
                 <br />
-                Bhopal, Madhya Pradesh — 462003
+                Bhopal, Madhya Pradesh 462003
               </address>
               <a
                 href="tel:+917554928869"

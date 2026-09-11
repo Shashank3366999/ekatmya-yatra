@@ -81,7 +81,7 @@ async function main() {
   console.log(`  ${account.accountType} → ${role}`);
 
   if (!account.isActive) {
-    console.log("  ⚠ this account is deactivated — it cannot sign in until reactivated");
+    console.log("  ⚠ this account is deactivated. It cannot sign in until reactivated");
   }
   if (role === "admin") {
     console.log("  Signs in to /admin. Only a super_admin can grant admin access to others.");

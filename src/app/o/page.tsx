@@ -75,7 +75,7 @@ export default async function OrganizerDashboard() {
         />
         <StatCard
           label="Checklist progress"
-          value={checklistTotal ? `${checklistDone}/${checklistTotal}` : "—"}
+          value={checklistTotal ? `${checklistDone}/${checklistTotal}` : "None yet"}
           hint={`${activities.length} active ${activities.length === 1 ? "task" : "tasks"}`}
           icon={ListChecks}
           tone="success"

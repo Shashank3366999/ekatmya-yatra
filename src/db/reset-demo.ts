@@ -33,7 +33,7 @@ async function main() {
     .limit(1);
 
   if (!user) {
-    console.log(`• ${DEMO_PENDING_ORGANIZER} not found — run pnpm db:seed first.`);
+    console.log(`• ${DEMO_PENDING_ORGANIZER} not found. Run pnpm db:seed first.`);
     process.exit(0);
   }
 

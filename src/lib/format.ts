@@ -3,7 +3,7 @@
 const IST = "Asia/Kolkata";
 
 export function formatDate(value: Date | string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "Not set";
   return new Date(value).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
@@ -13,7 +13,7 @@ export function formatDate(value: Date | string | null | undefined): string {
 }
 
 export function formatDateShort(value: Date | string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "Not set";
   return new Date(value).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
@@ -22,7 +22,7 @@ export function formatDateShort(value: Date | string | null | undefined): string
 }
 
 export function formatDateTime(value: Date | string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "Not set";
   return new Date(value).toLocaleString("en-IN", {
     day: "numeric",
     month: "short",
@@ -35,7 +35,7 @@ export function formatDateTime(value: Date | string | null | undefined): string 
 
 /** "2 hours ago" — used in activity feeds. */
 export function formatRelative(value: Date | string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "Not set";
   const then = new Date(value).getTime();
   const diff = Date.now() - then;
 
@@ -51,7 +51,7 @@ export function formatRelative(value: Date | string | null | undefined): string 
 
 /** Indian digit grouping: 1,24,800. */
 export function formatNumber(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "Not set";
   return value.toLocaleString("en-IN");
 }
 

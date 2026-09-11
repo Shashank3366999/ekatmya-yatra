@@ -210,6 +210,6 @@ export const TEAM_LABELS: Record<OrgLevel, string> = {
 /** What each team covers, shown under the choice. */
 export const TEAM_DESCRIPTIONS: Record<OrgLevel, string> = {
   national: "Works across all of Bharat, alongside the national organising team.",
-  state: "Your state's chapter — everything happening in that state.",
+  state: "Your state's chapter: everything happening in that state.",
   district: "Your district's team, including its local Sub-Yatra.",
 };

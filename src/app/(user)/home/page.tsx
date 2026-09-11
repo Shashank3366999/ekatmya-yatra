@@ -61,7 +61,7 @@ export default async function UserHomePage() {
         <div>
           <p className="max-w-prose flex-1 text-sm leading-relaxed text-ink-600 sm:text-base">
             A Bharat Yatra for oneness, in the footsteps of{" "}
-            <strong className="font-medium text-ink-900">Adi Shankaracharya</strong> —
+            <strong className="font-medium text-ink-900">Adi Shankaracharya</strong>,
             travelling the places he journeyed to, and connecting them as one.
           </p>
 
@@ -71,7 +71,7 @@ export default async function UserHomePage() {
             <div>
               <dt className="text-[10px] tracking-wide text-ink-500 uppercase">Begins</dt>
               <dd className="mt-0.5 text-sm font-semibold tabular-nums text-ink-900">
-                {first?.expectedArrival ? formatDateShort(first.expectedArrival) : "—"}
+                {first?.expectedArrival ? formatDateShort(first.expectedArrival) : "Not set"}
               </dd>
             </div>
             <div>
@@ -83,7 +83,7 @@ export default async function UserHomePage() {
             <div>
               <dt className="text-[10px] tracking-wide text-ink-500 uppercase">Concludes</dt>
               <dd className="mt-0.5 text-sm font-semibold tabular-nums text-ink-900">
-                {last?.expectedArrival ? formatDateShort(last.expectedArrival) : "—"}
+                {last?.expectedArrival ? formatDateShort(last.expectedArrival) : "Not set"}
               </dd>
             </div>
           </dl>

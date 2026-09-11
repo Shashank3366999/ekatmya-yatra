@@ -141,7 +141,7 @@ export default async function AdminSurveysPage({
                     <Td className="text-right text-ink-600">
                       {s.expectedGathering !== null
                         ? formatNumber(s.expectedGathering)
-                        : "—"}
+                        : "Not set"}
                     </Td>
                     <Td>
                       <RecommendationChip recommendation={s.recommendation} />
@@ -151,7 +151,7 @@ export default async function AdminSurveysPage({
                     </Td>
                     <Td className="whitespace-nowrap text-xs text-ink-400">
                       {formatRelative(s.submittedAt)}
-                      <span className="block">{s.submittedByName ?? "—"}</span>
+                      <span className="block">{s.submittedByName ?? "Unknown"}</span>
                     </Td>
                   </tr>
                 ))}
