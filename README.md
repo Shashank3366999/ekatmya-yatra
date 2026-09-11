@@ -237,6 +237,34 @@ Markers are only ~4px across at phone width, so taps resolve to the *nearest*
 stop via a single overlay rather than per-marker hit circles, which overlapped
 badly (Thrissur's would swallow Kalady, 15 units away).
 
+### The film
+
+`public/video/` holds the Government of Madhya Pradesh film *Ekatma Dham — A
+Journey of Oneness* (1280×720, 7m48s, **86 MB**), and it is used two ways:
+
+| | File | Size | Behaviour |
+| --- | --- | --- | --- |
+| Hero background | `hero-loop.mp4` | **0.77 MB** | 18s, 960×540, silent, loops behind the copy |
+| Watch section | `ekatma-dham-journey-of-oneness.mp4` | 86 MB | `preload="none"` — fetched only when someone presses play |
+
+**Why a separate loop, rather than looping the film itself.** The first attempt
+pointed the hero at the full file and reset playback after 26 seconds. Measured
+result: **64 MB pulled in the first eight seconds.** A playback cap does not
+limit the download — the browser buffers roughly 44 seconds ahead regardless. On
+a phone in the field that is someone's data allowance.
+
+The loop was cut from the source with Chrome's MediaRecorder (`MediaRecorder`
+supports H.264 mp4 in current Chrome, so it stays universally playable). Now the
+hero costs 0.77 MB and does not grow however long you watch, and the full film
+transfers **0 bytes** until the play button is pressed. `pnpm test:mobile`
+asserts both.
+
+Autoplay is still withheld on a metered connection or when the viewer prefers
+reduced motion, and the background always carries a visible pause control.
+
+> **Production:** the 86 MB original should be compressed or moved behind a
+> CDN/YouTube embed before launch — see docs/TEAM-QUESTIONS.md Q7.
+
 ### Imagery
 
 The statue photograph appears in exactly one place — the landing hero — where

@@ -84,6 +84,21 @@ own area.
 from their own state, or does everything go to the national admin? Same question
 for approving organisers — can a State lead approve district organisers?
 
+### Q7b. The film — hosting
+You supplied *Ekatma Dham — A Journey of Oneness* (7m48s, **86 MB**). It is in
+the build: an 18-second 0.77 MB cut loops behind the landing hero, and the full
+film sits in a "Watch" section that downloads nothing until pressed.
+
+**We need:** where the full film should live for launch. 86 MB served from our
+own host is slow and expensive at scale. Either
+
+- a **YouTube/Vimeo link** — simplest, and gives you view counts; or
+- a **compressed version** (the same film at ~8–10 MB would look fine at 1080p); or
+- confirmation that a CDN will front it.
+
+Also: is there a **shorter cut** (30–60s) already made for social? That would be
+a better hero background than one we cut ourselves.
+
 ### Q7. Photographs from the field
 Surveyors will want to attach photos. The column exists; upload does not, because
 it needs a storage decision: S3, Cloudinary, Google Drive, or the Yatra's own

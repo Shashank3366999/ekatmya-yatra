@@ -10,3 +10,9 @@ next-env.d.ts
 .env*.local
 .DS_Store
 npm-debug.log*
+
+# Large source media. The 86 MB film would sit in git history forever and make
+# every clone expensive; the small derived assets it produces ARE committed.
+# See public/video/README.md for where to put the original.
+public/video/*.mp4
+!public/video/hero-loop.mp4

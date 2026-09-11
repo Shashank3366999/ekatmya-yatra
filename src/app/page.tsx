@@ -6,9 +6,10 @@ import {
   AccentRule,
   BrandLockup,
   LotusMandala,
-  ShankaraPortrait,
 } from "@/components/brand";
 import { IndiaMap, MapLegend } from "@/components/india-map";
+import { FilmSection } from "@/components/film-section";
+import { VideoHero } from "@/components/video-hero";
 import {
   CountUp,
   Countdown,
@@ -146,34 +147,24 @@ export default async function LandingPage() {
       {/* overflow-hidden contains the turning mandala and the aurora blobs,
           which are deliberately larger than the hero. */}
       <header className="bg-hero-ink relative overflow-hidden">
-        {/* Drifting glow and a slowly turning mandala, so the hero is never still.
-            The mandala scales with the breakpoint: at a fixed 34rem it was wider
-            than a phone screen and swamped the corner. */}
+        {/*
+          The Ekatma Dham film plays behind the copy. It carries its own scrims
+          and pause control, and loops only its opening so the hero costs a few
+          MB rather than the whole 86 MB file.
+        */}
+        <Parallax strength={0.1} className="absolute inset-0">
+          <VideoHero />
+        </Parallax>
+
+        {/* Drifting glow and a slowly turning mandala over the film. */}
         <div className="aurora pointer-events-none absolute inset-0 overflow-hidden" />
         <LotusMandala className="spin-slow pointer-events-none absolute -top-16 -right-16 size-56 text-pumpkin-400/10 sm:-top-28 sm:-right-24 sm:size-96 lg:-top-40 lg:-right-40 lg:size-[34rem]" />
 
-        {/* Brand bar sits above the statue at every size. */}
-        <div className="relative z-10 mx-auto max-w-7xl px-5 pt-6 sm:px-8 lg:px-12 lg:pt-8">
-          <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
-        </div>
-
-        {/*
-          The statue.
-
-          On a phone it is a band of its own, so the figure is actually visible —
-          overlaying the whole hero with copy hid it behind text. From `sm` up
-          there is room to lay the copy over it, so it fills the hero instead.
-        */}
-        <Parallax
-          strength={0.14}
-          className="relative mt-4 aspect-[16/10] w-full sm:absolute sm:inset-0 sm:mt-0 sm:aspect-auto"
-        >
-          <ShankaraPortrait priority className="drift h-full w-full" />
-        </Parallax>
-
         <div className="relative z-10">
-          <div className="mx-auto flex max-w-7xl flex-col px-5 pt-7 pb-10 sm:min-h-[40rem] sm:justify-end sm:px-8 sm:pt-64 lg:min-h-[44rem] lg:px-12">
-            <div className="max-w-2xl">
+          <div className="mx-auto flex min-h-[36rem] max-w-7xl flex-col px-5 pt-6 pb-16 sm:min-h-[40rem] sm:px-8 sm:pb-20 lg:min-h-[44rem] lg:px-12 lg:pt-8">
+            <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
+
+            <div className="mt-auto max-w-2xl">
               <Reveal>
                 <p className="text-[11px] tracking-[0.2em] text-pumpkin-400 uppercase sm:text-xs">
                   Ek Bharat — Ekatmata Bharat
@@ -223,10 +214,6 @@ export default async function LandingPage() {
                   Explore the Yatra
                 </LinkButton>
               </Reveal>
-            </div>
-
-            <div className="mt-10 hidden justify-center sm:flex lg:mt-12">
-              <ArrowDown size={20} className="nudge text-ink-0/50" aria-hidden="true" />
             </div>
           </div>
         </div>
@@ -426,6 +413,28 @@ export default async function LandingPage() {
               </div>
             </Reveal>
           ) : null}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------- the film */}
+      <section className="border-t border-ink-200 bg-ink-50">
+        <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+          <Reveal className="mb-8 max-w-3xl">
+            <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+              Watch
+            </p>
+            <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
+              Ekatma Dham — A Journey of Oneness
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-ink-600 sm:text-base">
+              The film on Adi Shankaracharya and the Ekatma Dham at Omkareshwar,
+              from the Government of Madhya Pradesh.
+            </p>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <FilmSection />
+          </Reveal>
         </div>
       </section>
 

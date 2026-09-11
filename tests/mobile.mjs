@@ -181,28 +181,56 @@ ok(
   tooBig.map((d) => `${d.cls}=${d.ratio}x`).join(", "),
 );
 
-const heroFit = await landing.evaluate(() => {
-  const img = document.querySelector('img[alt*="Statue of Oneness"]');
+/* ------------------------------------------------- the hero background */
+const hero = await landing.evaluate(() => {
+  const v = document.querySelector("video");
   const h1 = document.querySelector("h1");
-  if (!img || !h1) return null;
-  const ib = img.getBoundingClientRect();
+  if (!v || !h1) return null;
+  const vb = v.getBoundingClientRect();
   const hb = h1.getBoundingClientRect();
   return {
-    // On a phone the statue gets its own band; copy must not sit over it.
-    overlap: Math.max(0, Math.min(ib.bottom, hb.bottom) - Math.max(ib.top, hb.top)),
+    src: (v.currentSrc || v.getAttribute("src") || "").split("/").pop(),
+    hasPoster: Boolean(v.poster),
+    muted: v.muted,
+    inline: v.playsInline,
+    coversHero: vb.width >= window.innerWidth - 2,
     headingAboveFold: hb.bottom <= window.innerHeight,
+    // A scrim must sit between the film and the copy, or text is unreadable
+    // over a moving image.
+    scrims: document.querySelectorAll("header .bg-gradient-to-t, header .bg-gradient-to-r").length,
+    control: Boolean(document.querySelector('button[aria-label*="background film"]')),
   };
 });
-if (heroFit) {
+
+if (hero) {
+  /*
+    Guards the measurement that mattered: pointing the hero at the full 86 MB
+    film pulled 64 MB in eight seconds, because capping playback position does
+    not stop the browser buffering ahead. The hero must use the short cut.
+  */
   ok(
-    heroFit.overlap === 0,
-    "hero copy does not sit on top of the statue on a phone",
-    `${Math.round(heroFit.overlap)}px overlap`,
+    hero.src === "hero-loop.mp4",
+    "hero uses the small loop, not the full film",
+    hero.src,
   );
-  ok(heroFit.headingAboveFold, "hero heading is above the fold");
+  ok(hero.hasPoster, "hero video has a poster so first paint is an image");
+  ok(hero.muted && hero.inline, "hero video is muted and plays inline");
+  ok(hero.coversHero, "hero video spans the viewport width");
+  ok(hero.scrims >= 2, "scrims sit between the film and the copy", `${hero.scrims}`);
+  ok(hero.control, "the background film has a visible pause control");
+  ok(hero.headingAboveFold, "hero heading is above the fold");
 }
 
-await publicCtx.close();
+/* The full film must not be fetched unless asked for. */
+const filmBytes = await landing.evaluate(() =>
+  performance
+    .getEntriesByType("resource")
+    .filter((r) => r.name.includes("ekatma-dham-journey"))
+    .reduce((a, r) => a + (r.transferSize || 0), 0),
+);
+ok(filmBytes === 0, "the 86 MB film is not downloaded on page load", `${filmBytes} bytes`);
+
+await publicCtx.close();await publicCtx.close();
 await browser.close();
 
 console.log(`\n=== mobile audit: ${pass.length} passed, ${fail.length} failed ===`);
