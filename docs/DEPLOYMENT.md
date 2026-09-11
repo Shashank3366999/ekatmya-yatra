@@ -36,13 +36,25 @@ Deployed on **11 September 2026** to `i-0bffc58f041045272` at `34.227.20.20`.
 | Data | 36 states, 401 districts, 21 sequenced stops, 37 heritage sites, 2 roles; demo accounts skipped |
 | Admin | `admin@ekatmadham.com`, password generated into `/srv/yatra/.env.production` (`SEED_ADMIN_PASSWORD`). Change it after first sign-in. |
 | Backups | nightly `pg_dump` to `/var/backups/yatra/`, 14 kept |
-| TLS | **not yet** — waiting on the A record |
+| TLS | **live** — https://ekatmayatra.xoidlabs.com, issued by Let's Encrypt, expires 2026-12-10, auto-renewal via `certbot-renew.timer` |
 
-**Nobody can stay signed in until TLS is on.** The session cookie is `secure`
-in production, so browsers refuse to send it over plain `http://`. Sign-in
-succeeds and redirects, then the next request arrives without the cookie and
-lands back on `/login`. That is the correct behaviour, not a bug: the fix is
-the A record and `certbot`, not weakening the cookie.
+**This was hit in practice** before the A record existed: the admin reported
+being logged out "after a few minutes." The session cookie's `Secure` flag was
+hard-coded from `NODE_ENV`, true for any production build regardless of actual
+transport, so every Set-Cookie was silently refused by the browser over plain
+HTTP — the apparent few minutes of being signed in was Next's client router
+cache rendering the redirect without a fresh server check. Fixed by deriving
+`Secure` from `X-Forwarded-Proto` instead (nginx sets it on every proxied
+request; Node is not reachable except through nginx, confirmed by port scan),
+so it now reflects the real connection and converges to fully secure now that
+TLS is live. See `tests/session-security.mjs`.
+
+**A gap found while enabling TLS, fixed for next time:** AL2023's `certbot`
+package ships `certbot-renew.timer` *disabled* — unlike Ubuntu's snap package,
+which self-enables it. A certificate with no active renewal timer fails
+silently for 90 days and then the site is simply down. `provision-ec2.sh` now
+enables it as part of provisioning; it was also enabled by hand on this
+instance and confirmed active (`systemctl is-enabled certbot-renew.timer`).
 
 ### Why the database is on the instance, and how to move it
 

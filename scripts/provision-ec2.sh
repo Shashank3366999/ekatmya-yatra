@@ -193,6 +193,15 @@ if ! command -v certbot >/dev/null 2>&1; then
 fi
 echo "  installed; run it once ${DOMAIN} resolves to this instance"
 
+if [ "$PKG" = dnf ]; then
+  # Unlike Ubuntu's snap package, which self-enables its renewal timer,
+  # AL2023's dnf package ships certbot-renew.timer disabled. Found the hard
+  # way: a fresh certificate with a silently-inactive renewal timer, 90 days
+  # from a self-inflicted outage with no warning.
+  sudo systemctl enable --now certbot-renew.timer >/dev/null
+  echo "  certbot-renew.timer enabled ($(systemctl is-enabled certbot-renew.timer))"
+fi
+
 say "Done"
 cat <<EOF
 
