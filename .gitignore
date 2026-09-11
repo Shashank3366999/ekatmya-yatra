@@ -26,3 +26,8 @@ public/video/*.mp4
 *.key
 id_rsa*
 id_ed25519*
+
+# Design references dropped into public/ during the build. Not used by the
+# app, and anything in public/ is served to whoever asks for it.
+public/landing page demo .png
+public/103827461.avif
