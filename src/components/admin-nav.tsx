@@ -14,6 +14,8 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   CalendarDays,
+  ClipboardList,
+  FileText,
   LayoutDashboard,
   Megaphone,
   Menu,
@@ -28,6 +30,8 @@ const LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/surveys", label: "Survey Inbox", icon: CalendarDays },
   { href: "/admin/organizers", label: "Organisers", icon: UserCheck },
+  { href: "/admin/roles", label: "Roles & Checklists", icon: ClipboardList },
+  { href: "/admin/field-reports", label: "Field Reports", icon: FileText },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/route", label: "Yatra Route", icon: Route },
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
@@ -44,11 +48,20 @@ function useIsActive() {
       : pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/**
+ * What is waiting, keyed by the section it is waiting in.
+ *
+ * The team asked to be notified when someone submits: an approval nobody has
+ * looked at is the failure this panel cannot have, so the counts travel with
+ * the navigation and are visible from every screen, not only the dashboard.
+ */
+export type NavBadges = Record<string, number>;
+
 function NavList({
-  pendingCount,
+  badges,
   onNavigate,
 }: {
-  pendingCount: number;
+  badges: NavBadges;
   onNavigate?: () => void;
 }) {
   const isActive = useIsActive();
@@ -58,6 +71,7 @@ function NavList({
       {LINKS.map((link) => {
         const active = isActive(link.href);
         const Icon = link.icon;
+        const waiting = badges[link.href] ?? 0;
 
         return (
           <li key={link.href}>
@@ -74,14 +88,14 @@ function NavList({
               <Icon size={17} strokeWidth={1.9} aria-hidden="true" />
               <span className="flex-1">{link.label}</span>
 
-              {link.href === "/admin/organizers" && pendingCount > 0 ? (
+              {waiting > 0 ? (
                 <span
-                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
                     active ? "bg-ink-0 text-pumpkin-700" : "bg-pumpkin-500 text-ink-0"
                   }`}
-                  aria-label={`${pendingCount} awaiting approval`}
+                  aria-label={`${waiting} waiting for review`}
                 >
-                  {pendingCount}
+                  {waiting}
                 </span>
               ) : null}
             </Link>
@@ -93,20 +107,20 @@ function NavList({
 }
 
 /** Desktop sidebar list. */
-export function AdminNav({ pendingCount = 0 }: { pendingCount?: number }) {
+export function AdminNav({ badges = {} }: { badges?: NavBadges }) {
   return (
     <nav aria-label="Admin sections">
-      <NavList pendingCount={pendingCount} />
+      <NavList badges={badges} />
     </nav>
   );
 }
 
 /** Mobile drawer trigger + panel. */
 export function AdminMobileNav({
-  pendingCount = 0,
+  badges = {},
   children,
 }: {
-  pendingCount?: number;
+  badges?: NavBadges;
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -142,7 +156,8 @@ export function AdminMobileNav({
         className="relative grid size-10 place-items-center rounded-lg text-ink-0/80 hover:bg-yatra-800 hover:text-ink-0"
       >
         <Menu size={20} aria-hidden="true" />
-        {pendingCount > 0 ? (
+        {/* One dot for anything waiting, since the drawer is closed. */}
+        {Object.values(badges).some((n) => n > 0) ? (
           <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-pumpkin-500" />
         ) : null}
       </button>
@@ -170,7 +185,7 @@ export function AdminMobileNav({
             </div>
 
             <nav aria-label="Admin sections" className="flex-1 overflow-y-auto">
-              <NavList pendingCount={pendingCount} onNavigate={() => setOpen(false)} />
+              <NavList badges={badges} onNavigate={() => setOpen(false)} />
             </nav>
 
             {children ? (

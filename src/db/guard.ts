@@ -59,6 +59,32 @@ function readLock(): Lock | null {
 export function claimDatabase(what: string): void {
   if (!usingPglite()) return;
 
+  /*
+    Refuse to open a data directory another live process already holds.
+    
+    Writing the claim was never enough: two servers could each write it and
+    both open PGlite, and that is what corrupts the directory beyond its own
+    recovery — it aborts on open afterwards, with every row gone. It has cost
+    this project its local database twice, once through `db:reset-demo` racing
+    the dev server (which is why `assertDatabaseFree` exists) and once through a
+    second `next start` while the first was still up, which the claim alone did
+    nothing to stop.
+
+    So the claim now blocks. PGLITE_ALLOW_CONCURRENT=1 still overrides it for
+    anyone who means it.
+  */
+  if (process.env.PGLITE_ALLOW_CONCURRENT !== "1") {
+    const held = readLock();
+    if (held && held.pid !== process.pid && alive(held.pid)) {
+      const message =
+        `The local PGlite database at ./.pglite is already open by PID ${held.pid} ` +
+        `(${held.what}, since ${held.since}). Opening it twice corrupts it. ` +
+        `Stop that process first, or set PGLITE_ALLOW_CONCURRENT=1 if you are sure.`;
+      console.error(`✖ ${what}: ${message}`);
+      throw new Error(message);
+    }
+  }
+
   try {
     mkdirSync(dirname(lockPath()), { recursive: true });
     writeFileSync(

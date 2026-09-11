@@ -17,7 +17,10 @@ import {
   events,
   journeyPlaces,
   organizerProfiles,
+  activityReports,
   places,
+  roleTemplateItems,
+  roleTemplates,
   states,
   surveySubmissions,
   users,
@@ -355,6 +358,8 @@ export async function listOrganizerProfiles(status?: string, limit = 200) {
       email: users.email,
       phone: users.phone,
       isActive: users.isActive,
+      postingKind: organizerProfiles.postingKind,
+      roleName: roleTemplates.name,
       level: organizerProfiles.level,
       stateId: organizerProfiles.stateId,
       districtId: organizerProfiles.districtId,
@@ -375,6 +380,7 @@ export async function listOrganizerProfiles(status?: string, limit = 200) {
     .innerJoin(users, eq(users.id, organizerProfiles.userId))
     .leftJoin(states, eq(states.id, organizerProfiles.stateId))
     .leftJoin(districts, eq(districts.id, organizerProfiles.districtId))
+    .leftJoin(roleTemplates, eq(roleTemplates.id, organizerProfiles.roleTemplateId))
     .where(status ? eq(organizerProfiles.status, status as never) : undefined)
     .orderBy(desc(organizerProfiles.createdAt))
     .limit(limit);
@@ -677,4 +683,158 @@ export async function listAllAnnouncements(limit = 50) {
 export async function listAutomations() {
   const db = await getDb();
   return db.select().from(automations).orderBy(asc(automations.name));
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Predefined roles                                                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The roles a joiner can pick from, with the checklist each one carries.
+ *
+ * Two queries rather than a join with a group-by: the lists are a handful of
+ * rows, and keeping the items separate means the signup form can render a
+ * template with no checklist without a special case.
+ */
+export async function listRoleTemplates(options?: { includeInactive?: boolean }) {
+  const db = await getDb();
+
+  const templates = await db
+    .select({
+      id: roleTemplates.id,
+      name: roleTemplates.name,
+      description: roleTemplates.description,
+      postingKind: roleTemplates.postingKind,
+      level: roleTemplates.level,
+      functionArea: roleTemplates.functionArea,
+      isActive: roleTemplates.isActive,
+      position: roleTemplates.position,
+    })
+    .from(roleTemplates)
+    .where(options?.includeInactive ? undefined : eq(roleTemplates.isActive, true))
+    .orderBy(asc(roleTemplates.position), asc(roleTemplates.name));
+
+  if (templates.length === 0) return [];
+
+  const items = await db
+    .select({
+      templateId: roleTemplateItems.templateId,
+      label: roleTemplateItems.label,
+      position: roleTemplateItems.position,
+    })
+    .from(roleTemplateItems)
+    .where(inArray(roleTemplateItems.templateId, templates.map((t) => t.id)))
+    .orderBy(asc(roleTemplateItems.position));
+
+  return templates.map((t) => ({
+    ...t,
+    items: items.filter((i) => i.templateId === t.id).map((i) => i.label),
+  }));
+}
+
+/** One template with its checklist, for copying onto an approved organiser. */
+export async function getRoleTemplate(templateId: string) {
+  const db = await getDb();
+
+  const [template] = await db
+    .select({
+      id: roleTemplates.id,
+      name: roleTemplates.name,
+      description: roleTemplates.description,
+      level: roleTemplates.level,
+      functionArea: roleTemplates.functionArea,
+      postingKind: roleTemplates.postingKind,
+    })
+    .from(roleTemplates)
+    .where(eq(roleTemplates.id, templateId))
+    .limit(1);
+
+  if (!template) return null;
+
+  const items = await db
+    .select({ label: roleTemplateItems.label, position: roleTemplateItems.position })
+    .from(roleTemplateItems)
+    .where(eq(roleTemplateItems.templateId, templateId))
+    .orderBy(asc(roleTemplateItems.position));
+
+  return { ...template, items };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Field reports                                                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * What organisers have reported doing, newest first, within the admin's scope.
+ *
+ * The Yatra team wants to track activity, not just approvals: "users should be
+ * able to report what they are doing, and the Admin Panel should show these
+ * reports and their status".
+ */
+export async function listFieldReports(admin: SessionUser, limit = 60) {
+  const db = await getDb();
+
+  return db
+    .select({
+      id: activityReports.id,
+      body: activityReports.body,
+      peopleMet: activityReports.peopleMet,
+      status: activityReports.statusAtReport,
+      createdAt: activityReports.createdAt,
+      activityId: activities.id,
+      activityTitle: activities.title,
+      functionArea: activities.functionArea,
+      level: activities.level,
+      authorName: users.fullName,
+      stateName: states.name,
+      districtName: districts.name,
+    })
+    .from(activityReports)
+    .innerJoin(activities, eq(activities.id, activityReports.activityId))
+    .leftJoin(users, eq(users.id, activityReports.authorId))
+    .leftJoin(states, eq(states.id, activities.stateId))
+    .leftJoin(districts, eq(districts.id, activities.districtId))
+    .where(scopeFilter(admin, { stateId: activities.stateId, districtId: activities.districtId }))
+    .orderBy(desc(activityReports.createdAt))
+    .limit(limit);
+}
+
+/**
+ * What is waiting for an admin right now, for the badges in the sidebar.
+ *
+ * An approval that nobody has looked at is the one failure mode this panel
+ * cannot have, so the counts travel with the navigation rather than living only
+ * on the dashboard.
+ */
+export async function adminPendingCounts(admin: SessionUser) {
+  const db = await getDb();
+
+  const [organisers] = await db
+    .select({ n: count() })
+    .from(organizerProfiles)
+    .where(
+      and(
+        eq(organizerProfiles.status, "pending"),
+        scopeFilter(admin, {
+          stateId: organizerProfiles.stateId,
+          districtId: organizerProfiles.districtId,
+        }),
+      ),
+    );
+
+  const [surveys] = await db
+    .select({ n: count() })
+    .from(surveySubmissions)
+    .where(
+      and(
+        inArray(surveySubmissions.status, ["submitted", "under_review"]),
+        scopeFilter(admin, {
+          stateId: surveySubmissions.stateId,
+          districtId: surveySubmissions.districtId,
+        }),
+      ),
+    );
+
+  return { organisers: Number(organisers?.n ?? 0), surveys: Number(surveys?.n ?? 0) };
 }

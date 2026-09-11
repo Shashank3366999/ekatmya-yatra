@@ -35,8 +35,8 @@ export function StatCard({
           </span>
         ) : null}
       </div>
-      {/* Sans + tabular figures: the display serif (Marcellus) renders "0" as a
-          ring and "1" as an I-like glyph, which is unreadable for metrics. */}
+      {/* Sans + tabular figures, so columns of numbers line up rather than
+          shifting as the digits change. */}
       <p className="mt-2 text-2xl font-semibold tabular-nums leading-none text-ink-900">
         {typeof value === "number" ? formatNumber(value) : value}
       </p>

@@ -1,28 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Marcellus, Tiro_Devanagari_Hindi } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Tiro_Devanagari_Hindi } from "next/font/google";
 
 import { AppProviders } from "@/components/app-providers";
 
 import "./globals.css";
 
-const inter = Inter({
+/** Body text. Variable, so weights 200-800 are available from one file. */
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-body",
   display: "swap",
 });
 
-/** Marcellus carries the devotional register without tipping into pastiche. */
-const marcellus = Marcellus({
+/**
+ * Headings. Variable too, which matters here: the previous display serif was a
+ * single 400 weight, so a heading could never be set heavier than its body text.
+ */
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-marcellus",
+  variable: "--font-display",
   display: "swap",
 });
 
 /**
  * Devanagari, for the Mahavakyas and any Sanskrit on the page.
  *
- * This has to be loaded explicitly: Marcellus and Inter carry no Devanagari
+ * This has to be loaded explicitly: Cormorant Garamond and Manrope carry no Devanagari
  * glyphs, so the browser was silently substituting whatever the device
  * happened to have — verified as "Noto Serif Devanagari" on this machine, and
  * anyone's guess on a phone. Tiro Devanagari Hindi is designed for Sanskrit
@@ -73,7 +76,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme="light" className={`${inter.variable} ${marcellus.variable} ${devanagari.variable}`}>
+    <html lang="en" data-theme="light" className={`${manrope.variable} ${cormorant.variable} ${devanagari.variable}`}>
       <body className="font-sans">
         <AppProviders>{children}</AppProviders>
       </body>

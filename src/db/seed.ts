@@ -34,6 +34,49 @@ function addDays(base: Date, days: number): Date {
   return new Date(base.getTime() + days * 86_400_000);
 }
 
+/**
+ * The predefined roles the Admin Panel starts with.
+ *
+ * The Yatra team asked for "1-2 pre-made checklists/roles" already defined so
+ * that the first joiner has something to pick. These are a starting point an
+ * admin can edit, hide or add to from /admin/roles; they are upserted by name,
+ * so editing one in the panel is not undone by the next seed.
+ */
+const ROLE_TEMPLATES = [
+  {
+    name: "Survey Lead (State)",
+    description:
+      "Visit the places the Yatra is considering in your state, record what you find, and file each one for the Yatra committee to review.",
+    postingKind: "committee" as const,
+    level: "state" as const,
+    functionArea: "survey" as const,
+    position: 1,
+    items: [
+      "Read the survey brief and the current route",
+      "List the places in your state worth surveying",
+      "Visit each place and record access, capacity and facilities",
+      "File a survey entry for every place visited",
+      "Add a photograph and the local contact for each entry",
+      "Report progress to your state coordinator",
+    ],
+  },
+  {
+    name: "Yatra Volunteer (District)",
+    description:
+      "Help on the ground in your district as the Yatra passes through: welcome, crowd support, logistics and whatever the day needs.",
+    postingKind: "volunteer" as const,
+    level: "district" as const,
+    functionArea: "general" as const,
+    position: 2,
+    items: [
+      "Confirm the dates you are available",
+      "Attend the district briefing",
+      "Join the local Shankardoot group",
+      "Report what you did after each day on duty",
+    ],
+  },
+];
+
 const AUTOMATIONS = [
   {
     key: "organizer_welcome",
@@ -285,6 +328,48 @@ async function main() {
     .values(AUTOMATIONS)
     .onConflictDoNothing({ target: s.automations.key });
   console.log(`  automations: ${AUTOMATIONS.length}`);
+
+  /* ------------------------------------------------------- role templates */
+  for (const t of ROLE_TEMPLATES) {
+    const [existing] = await db
+      .select({ id: s.roleTemplates.id })
+      .from(s.roleTemplates)
+      .where(eq(s.roleTemplates.name, t.name))
+      .limit(1);
+
+    let templateId = existing?.id;
+    if (!templateId) {
+      const [row] = await db
+        .insert(s.roleTemplates)
+        .values({
+          name: t.name,
+          description: t.description,
+          postingKind: t.postingKind,
+          level: t.level,
+          functionArea: t.functionArea,
+          position: t.position,
+        })
+        .returning({ id: s.roleTemplates.id });
+      templateId = row.id;
+    }
+
+    /*
+      Only fill the checklist when the template has none. An admin who has
+      edited the list in the panel should keep their edits.
+    */
+    const [anyItem] = await db
+      .select({ id: s.roleTemplateItems.id })
+      .from(s.roleTemplateItems)
+      .where(eq(s.roleTemplateItems.templateId, templateId))
+      .limit(1);
+
+    if (!anyItem) {
+      await db.insert(s.roleTemplateItems).values(
+        t.items.map((label, i) => ({ templateId, label, position: i })),
+      );
+    }
+  }
+  console.log(`  role templates: ${ROLE_TEMPLATES.length}`);
 
   /* --------------------------------------------------------------- admin */
   const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@ekatmadham.com").toLowerCase();

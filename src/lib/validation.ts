@@ -8,11 +8,12 @@ import { z } from "zod";
 
 import {
   accountTypeEnum,
-  availabilityEnum,
   approvalStatusEnum,
+  availabilityEnum,
   functionEnum,
   orgLevelEnum,
   placeCategoryEnum,
+  postingKindEnum,
   recommendationEnum,
   surveyStatusEnum,
   yatraKindEnum,
@@ -39,10 +40,20 @@ const phone = z
   .refine((v) => v === "" || /^(\+91)?0?[6-9]\d{9}$/.test(v), "Enter a valid 10-digit mobile number");
 
 const uuid = z.string().uuid("Select a valid option");
+/**
+ * An id that may be absent.
+ *
+ * It has to accept `undefined` as well as `""`: a field that is not rendered at
+ * all is missing from FormData rather than empty, and this schema is shared by
+ * forms that render different subsets of it. As a bare `z.string()` it failed
+ * any such form with "expected string, received undefined", naming no field.
+ */
 const optionalUuid = z
-  .string()
-  .trim()
-  .transform((v) => (v === "" ? null : v))
+  .union([z.string(), z.undefined(), z.null()])
+  .transform((v) => {
+    const trimmed = typeof v === "string" ? v.trim() : "";
+    return trimmed === "" ? null : trimmed;
+  })
   .refine((v) => v === null || z.string().uuid().safeParse(v).success, "Select a valid option");
 
 /** Checkbox values arrive as "on"/absent; selects as "true"/"false"/"". */
@@ -110,6 +121,16 @@ export const registerUserSchema = z.object({
  * own account (src/actions/organizer.ts).
  */
 export const organizerPostingSchema = z.object({
+  /**
+   * Committee seat or volunteer, and which predefined role was picked.
+   *
+   * Both are chosen before the form proper: the landing page sends people here
+   * with `?as=`, and the role comes from the list an admin maintains, so the
+   * server takes the id and reads the role back rather than trusting any of its
+   * details from the client.
+   */
+  postingKind: z.enum(postingKindEnum.enumValues).default("committee"),
+  roleTemplateId: optionalUuid,
   stateId: optionalUuid,
   districtId: optionalUuid,
   level: z.enum(orgLevelEnum.enumValues),

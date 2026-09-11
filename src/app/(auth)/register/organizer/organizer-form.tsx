@@ -4,7 +4,10 @@ import { useActionState } from "react";
 import { Description, Input, Label, TextField } from "@heroui/react";
 
 import { registerOrganizer } from "@/actions/auth";
-import { OrganizerPostingFields } from "@/components/organizer-posting-fields";
+import {
+  OrganizerPostingFields,
+  type RoleTemplateOption,
+} from "@/components/organizer-posting-fields";
 import { FormBanner } from "@/components/ui/form-banner";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { ActionResult } from "@/lib/types";
@@ -14,9 +17,13 @@ type Option = { id: string; name: string };
 export function RegisterOrganizerForm({
   states,
   districtsByState,
+  postingKind,
+  roleTemplates,
 }: {
   states: Option[];
   districtsByState: Record<string, Option[]>;
+  postingKind: "committee" | "volunteer";
+  roleTemplates: RoleTemplateOption[];
 }) {
   const [state, formAction] = useActionState<ActionResult | null, FormData>(
     registerOrganizer,
@@ -48,7 +55,12 @@ export function RegisterOrganizerForm({
         </TextField>
       </fieldset>
 
-      <OrganizerPostingFields states={states} districtsByState={districtsByState} />
+      <OrganizerPostingFields
+        states={states}
+        districtsByState={districtsByState}
+        postingKind={postingKind}
+        roleTemplates={roleTemplates}
+      />
 
       <fieldset className="space-y-4 border-t border-ink-200 pt-5">
         <TextField name="password" isRequired>

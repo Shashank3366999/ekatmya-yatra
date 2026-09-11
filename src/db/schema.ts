@@ -38,6 +38,16 @@ export const accountTypeEnum = pgEnum("account_type", [
   "super_admin",
 ]);
 
+/**
+ * Whether a posting is an Organizing Committee seat or a volunteer one.
+ *
+ * The Yatra team asks the landing page for exactly two ways in, and they are
+ * not the same commitment: a committee member holds a seat at a level with a
+ * functional responsibility, a volunteer offers time on the ground. Both are
+ * approved by an admin, so this is one table with a kind rather than two.
+ */
+export const postingKindEnum = pgEnum("posting_kind", ["committee", "volunteer"]);
+
 /** Organisational level of an organiser. Mirrors the Yatra's real structure. */
 export const orgLevelEnum = pgEnum("org_level", [
   "national",
@@ -230,6 +240,18 @@ export const organizerProfiles = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
 
+    /** Committee seat or volunteer. Chosen on the landing page. */
+    postingKind: postingKindEnum("posting_kind").notNull().default("committee"),
+
+    /**
+     * The predefined role the person picked while signing up.
+     *
+     * Kept as a reference rather than copied, so an admin editing a template
+     * does not rewrite history on people already approved under it. The
+     * checklist is copied at approval time instead (see src/actions/admin.ts).
+     */
+    roleTemplateId: uuid("role_template_id"),
+
     level: orgLevelEnum("level").notNull(),
     /** Geographic scope. national => both null; state => stateId; district => both. */
     stateId: uuid("state_id").references(() => states.id, { onDelete: "set null" }),
@@ -266,6 +288,57 @@ export const organizerProfiles = pgTable(
     index("organizer_profiles_status_idx").on(t.status),
     index("organizer_profiles_scope_idx").on(t.level, t.stateId, t.districtId),
   ],
+);
+
+/* -------------------------------------------------------------------------- */
+/* Predefined roles, with the checklist each one comes with                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * A role an admin has defined in advance, for someone to pick while signing up.
+ *
+ * The Yatra team's framing: the Admin Panel already holds one or two ready-made
+ * roles with their checklists, a joiner picks the relevant one, and the admin
+ * approves. So the choice on the signup form is data an admin controls, not a
+ * list in the code.
+ */
+export const roleTemplates = pgTable(
+  "role_templates",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    description: text("description"),
+    /** Which way in this role belongs to. */
+    postingKind: postingKindEnum("posting_kind").notNull().default("committee"),
+    /** Suggested posting for anyone who picks it; the admin can still override. */
+    level: orgLevelEnum("level").notNull().default("state"),
+    functionArea: functionEnum("function_area").notNull().default("general"),
+    /** Hidden from the signup form without being deleted. */
+    isActive: boolean("is_active").notNull().default(true),
+    position: integer("position").notNull().default(0),
+    createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("role_templates_active_idx").on(t.isActive, t.position)],
+);
+
+/**
+ * The checklist a role comes with.
+ *
+ * Shown on the signup form so someone can see what they are taking on before
+ * they commit, and copied into a real activity when the admin approves them.
+ */
+export const roleTemplateItems = pgTable(
+  "role_template_items",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    templateId: uuid("template_id")
+      .notNull()
+      .references(() => roleTemplates.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    position: integer("position").notNull().default(0),
+  },
+  (t) => [index("role_template_items_template_idx").on(t.templateId, t.position)],
 );
 
 /* -------------------------------------------------------------------------- */

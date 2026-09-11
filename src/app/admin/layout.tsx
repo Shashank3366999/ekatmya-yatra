@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { count, eq } from "drizzle-orm";
 
 import { logout } from "@/actions/auth";
 import { AdminMobileNav, AdminNav } from "@/components/admin-nav";
 import { YatraMark } from "@/components/brand";
-import { getDb } from "@/db";
-import { organizerProfiles } from "@/db/schema";
 import { initials } from "@/lib/format";
+import { adminPendingCounts } from "@/lib/queries";
 import { requireAdmin } from "@/lib/session";
 
 /**
@@ -24,13 +22,15 @@ export default async function AdminLayout({
 }) {
   const admin = await requireAdmin();
 
-  const db = await getDb();
-  const [pending] = await db
-    .select({ n: count() })
-    .from(organizerProfiles)
-    .where(eq(organizerProfiles.status, "pending"));
-
-  const pendingCount = Number(pending?.n ?? 0);
+  /*
+    What is waiting for this admin, scoped to what they can act on. Read here
+    rather than per screen so every section shows the same counts.
+  */
+  const pending = await adminPendingCounts(admin);
+  const badges = {
+    "/admin/organizers": pending.organisers,
+    "/admin/surveys": pending.surveys,
+  };
 
   const account = (
     <div>
@@ -61,7 +61,7 @@ export default async function AdminLayout({
         className="bg-nav-green sticky top-0 z-40 flex items-center gap-3 px-4 py-2.5 lg:hidden"
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.625rem)" }}
       >
-        <AdminMobileNav pendingCount={pendingCount}>{account}</AdminMobileNav>
+        <AdminMobileNav badges={badges}>{account}</AdminMobileNav>
 
         <Link href="/admin" className="flex min-w-0 items-center gap-2.5">
           <YatraMark size={26} className="shrink-0 text-pumpkin-400" />
@@ -89,7 +89,7 @@ export default async function AdminLayout({
             </span>
           </Link>
 
-          <AdminNav pendingCount={pendingCount} />
+          <AdminNav badges={badges} />
         </div>
 
         <div className="border-t border-yatra-800 p-4">{account}</div>

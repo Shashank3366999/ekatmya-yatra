@@ -6,11 +6,20 @@
  * access changes are exactly the decisions a committee later asks about.
  */
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { announcements, auditLog, automations, organizerProfiles, users } from "@/db/schema";
+import {
+  activities,
+  announcements,
+  auditLog,
+  automations,
+  checklistItems,
+  organizerProfiles,
+  users,
+} from "@/db/schema";
 import { canApproveOrganizers, isAdmin, isSuperAdmin } from "@/lib/permissions";
+import { getRoleTemplate } from "@/lib/queries";
 import { getSessionUser } from "@/lib/session";
 import type { ActionResult } from "@/lib/types";
 import {
@@ -141,8 +150,81 @@ export async function reviewOrganizer(
     detail: { note: data.reviewNote, changes },
   });
 
+  /*
+    Approving somebody turns the role they picked into actual work.
+
+    The Yatra team's flow is: the panel holds a role with its checklist, a
+    joiner picks one, an admin approves, and then that person has something to
+    do and to report against. The checklist is COPIED here rather than read
+    from the template forever, so an admin editing the template later does not
+    silently rewrite the tasks of people already working.
+
+    Guarded on the transition into `approved` and on the activity not already
+    existing, because re-approving or editing an approved posting must not hand
+    someone a second copy of the same checklist.
+  */
+  let checklistCreated = 0;
+  if (
+    data.status === "approved" &&
+    before.status !== "approved" &&
+    before.roleTemplateId
+  ) {
+    const template = await getRoleTemplate(before.roleTemplateId);
+
+    if (template) {
+      const [already] = await db
+        .select({ id: activities.id })
+        .from(activities)
+        .where(
+          and(
+            eq(activities.assignedToId, before.userId),
+            eq(activities.title, template.name),
+          ),
+        )
+        .limit(1);
+
+      if (!already) {
+        const [activity] = await db
+          .insert(activities)
+          .values({
+            title: template.name,
+            description: template.description,
+            functionArea: primaryFunction,
+            level,
+            stateId,
+            districtId,
+            assignedToId: before.userId,
+            createdById: admin!.id,
+            status: "not_started",
+          })
+          .returning({ id: activities.id });
+
+        if (template.items.length > 0) {
+          await db.insert(checklistItems).values(
+            template.items.map((item, i) => ({
+              activityId: activity.id,
+              label: item.label,
+              position: i,
+            })),
+          );
+        }
+        checklistCreated = template.items.length;
+
+        await db.insert(auditLog).values({
+          actorId: admin!.id,
+          action: "organizer.checklist_assigned",
+          entityType: "activity",
+          entityId: activity.id,
+          detail: { template: template.name, items: template.items.length },
+        });
+      }
+    }
+  }
+
   revalidatePath("/admin/organizers");
   revalidatePath("/admin");
+  revalidatePath("/o");
+  revalidatePath("/o/activities");
 
   const movedTeamOrRole = Boolean(changes.team || changes.role);
 
@@ -150,9 +232,11 @@ export async function reviewOrganizer(
     ok: true,
     message:
       data.status === "approved"
-        ? movedTeamOrRole
-          ? "Approved, with the team and role you set. Their dashboard is now active."
-          : "Organiser approved. Their dashboard is now active."
+        ? checklistCreated > 0
+          ? `Approved. Their dashboard is active and the ${checklistCreated}-point checklist for this role is now assigned to them.`
+          : movedTeamOrRole
+            ? "Approved, with the team and role you set. Their dashboard is now active."
+            : "Organiser approved. Their dashboard is now active."
         : movedTeamOrRole
           ? "Team and role updated."
           : "Organiser request updated.",

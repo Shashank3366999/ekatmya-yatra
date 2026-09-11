@@ -30,18 +30,34 @@ async function settle(p, path, ms = 1800) {
 }
 
 
-/** Read a stat tile / definition-list figure by its label. */
+/**
+ * Read a stat tile / definition-list figure by its label.
+ *
+ * Two ways this read the wrong number, both found by it reporting a
+ * contradiction the product did not have:
+ *
+ *  - climbing until *any* `.tabular-nums` turned up: four levels above a tile's
+ *    label is the grid of tiles, so it returned a neighbour's figure. The
+ *    ancestor must now hold exactly one figure to count as the card.
+ *  - matching a label anywhere in the document: the admin sidebar also says
+ *    "Organisers", next to a badge which is a number. So the search is scoped
+ *    to <main> and skips anything inside a <nav>.
+ */
 const STAT = (label) => {
   const wanted = label.toLowerCase();
-  for (const el of document.querySelectorAll("p, dt, span")) {
+  const scope = document.querySelector("main") ?? document.body;
+  for (const el of scope.querySelectorAll("p, dt, span")) {
     if ((el.textContent || "").trim().toLowerCase() !== wanted) continue;
+    // The sidebar also says "Organisers", beside a badge that is a number.
+    if (el.closest("nav")) continue;
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
       node = node.parentElement;
       if (!node) break;
-      const v = node.querySelector(".tabular-nums");
-      if (v) {
-        const n = parseInt((v.textContent || "").replace(/[^0-9]/g, ""), 10);
+      const found = node.querySelectorAll(".tabular-nums");
+      if (found.length > 1) break; // climbed out of the card
+      if (found.length === 1) {
+        const n = parseInt((found[0].textContent || "").replace(/[^0-9]/g, ""), 10);
         if (!Number.isNaN(n)) return n;
       }
     }
@@ -149,6 +165,63 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
   ok(cards.broken.length === 0, "landing: no broken timeline photos", cards.broken.join(", "));
 }
 const landingStops = global.landingStops;
+
+/* ------------------------------- the two ways in, and no admin door in sight */
+{
+  const p = await page(ctx, "/");
+  const r = await p.evaluate(() => {
+    const t = document.body.innerText;
+    return {
+      committee: /Organizing Team Member/.test(t),
+      volunteer: /Volunteer/.test(t),
+      /*
+        The Yatra team asked for the administrator sign-in to be gone from this
+        page: the panel is reached by signing in, not advertised. Checked as
+        "no link to /login at all" rather than as wording, because the wording
+        is the easy half to change.
+      */
+      signInLinks: document.querySelectorAll('a[href^="/login"]').length,
+      adminLinks: document.querySelectorAll('a[href^="/admin"]').length,
+      joinLinks: [
+        ...new Set(
+          [...document.querySelectorAll('a[href^="/register/organizer"]')].map((a) =>
+            a.getAttribute("href"),
+          ),
+        ),
+      ],
+    };
+  });
+
+  ok(r.committee, "landing offers the Organizing Team Member route in");
+  ok(r.volunteer, "landing offers the Volunteer route in");
+  ok(r.signInLinks === 0, "landing links to no sign-in page", `${r.signInLinks}`);
+  ok(r.adminLinks === 0, "landing links nowhere under /admin", `${r.adminLinks}`);
+  ok(
+    r.joinLinks.includes("/register/organizer?as=committee") &&
+      r.joinLinks.includes("/register/organizer?as=volunteer"),
+    "both ways in are wired to their own signup",
+    r.joinLinks.join(", "),
+  );
+}
+
+/* --------------------- the predefined role, on the form and in the panel */
+{
+  const p = await page(ctx, "/register/organizer?as=committee");
+  const signup = await p.evaluate(() => ({
+    roles: document.querySelectorAll('input[name="roleTemplateId"]').length,
+    kind: document.querySelector('input[name="postingKind"]')?.value ?? null,
+    checklistShown: /what this role involves/i.test(document.body.innerText),
+  }));
+
+  /*
+    The role list is data an admin maintains, so this asserts the wiring rather
+    than a particular role: at least one is offered, the form says which way in
+    it belongs to, and the checklist is on screen before anyone commits.
+  */
+  ok(signup.roles > 0, "signup offers the roles an admin defined", `${signup.roles}`);
+  ok(signup.kind === "committee", "signup records which way in was chosen", String(signup.kind));
+  ok(signup.checklistShown, "the role's checklist is shown before signing up");
+}
 
 /* --------------------------------------------- the Nyas's own facts and links */
 {

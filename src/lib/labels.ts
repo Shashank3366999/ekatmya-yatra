@@ -6,6 +6,7 @@
  * a label here changes it everywhere it appears.
  */
 import type {
+  ActivityStatus,
   ApprovalStatus,
   Availability,
   PlaceCategory,
@@ -103,4 +104,17 @@ export const RECOMMENDATION_COLOR: Record<
   recommended: "accent",
   possible: "warning",
   not_suitable: "danger",
+};
+
+/**
+ * How an activity's progress reads to a person.
+ *
+ * The Yatra team's own convention for the states, from the voice note: yellow
+ * while it is with someone, done once it is finished.
+ */
+export const ACTIVITY_STATUS_LABELS: Record<ActivityStatus, string> = {
+  not_started: "Not started",
+  in_progress: "In progress",
+  blocked: "Blocked",
+  completed: "Completed",
 };

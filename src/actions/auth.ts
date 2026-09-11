@@ -142,6 +142,8 @@ export async function registerOrganizer(
     password: formData.get("password"),
     stateId: formData.get("stateId") ?? "",
     districtId: formData.get("districtId") ?? "",
+    postingKind: formData.get("postingKind") ?? "committee",
+    roleTemplateId: formData.get("roleTemplateId") ?? "",
     level: formData.get("level"),
     primaryFunction: formData.get("primaryFunction"),
     additionalFunctions: formData.getAll("additionalFunctions") as string[],
@@ -192,6 +194,8 @@ export async function registerOrganizer(
 
   await db.insert(organizerProfiles).values({
     userId: created.id,
+    postingKind: data.postingKind,
+    roleTemplateId: data.roleTemplateId,
     level: data.level,
     stateId,
     districtId,
@@ -209,7 +213,12 @@ export async function registerOrganizer(
     actorId: created.id,
     action: "organizer.signup",
     entityType: "organizer_profile",
-    detail: { level: data.level, primaryFunction: data.primaryFunction },
+    detail: {
+      postingKind: data.postingKind,
+      roleTemplateId: data.roleTemplateId,
+      level: data.level,
+      primaryFunction: data.primaryFunction,
+    },
   });
 
   await createSession(created.id);

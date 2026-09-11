@@ -28,8 +28,8 @@
 @source "../../node_modules/@heroui/styles/dist";
 
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-marcellus), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-display), "Iowan Old Style", Georgia, serif;
   /* Sanskrit/Hindi. Explicit, because the Latin faces carry no Devanagari. */
   --font-sanskrit: var(--font-devanagari), "Noto Serif Devanagari", serif;
 
@@ -167,9 +167,22 @@
   }
 
   /* Devotional headings use the serif; UI chrome stays sans. */
+  /*
+    Headings.
+
+    Cormorant Garamond is a display face drawn on the light side: at 400 it is
+    noticeably thinner than the body text beside it, which reads as a mistake
+    rather than as a choice. 600 gives it the weight a heading needs while
+    keeping the Garamond line. It is a variable font, so this costs nothing
+    extra to load.
+
+    The tracking is slightly negative because Cormorant sets wide at display
+    sizes; the previous face needed the opposite.
+  */
   .font-display {
     font-family: var(--font-serif);
-    letter-spacing: 0.01em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   /*

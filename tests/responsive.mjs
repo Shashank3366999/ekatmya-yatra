@@ -243,17 +243,42 @@ for (const { w, h, name } of WIDTHS) {
   const burgerVisible = burger > 0 && (await p.getByRole("button", { name: "Open navigation" }).first().isVisible());
 
   ok(desktop ? sidebar : !sidebar, `${name}: admin sidebar ${desktop ? "shown" : "hidden"}`);
+
   ok(desktop ? !burgerVisible : burgerVisible, `${name}: admin ${desktop ? "no hamburger" : "hamburger shown"}`);
 
-  // Drawer must expose every section on a phone
+  /*
+    The drawer must expose every section on a phone.
+
+    Counted against the sidebar's own list rather than a number written here:
+    the count was hard-coded at 8, so adding a section made the audit fail even
+    though the drawer was correct. What matters is that the phone drawer hides
+    nothing the desktop sidebar shows.
+  */
   if (!desktop) {
+    const countLinks = () =>
+      p.evaluate(() =>
+        [...document.querySelectorAll('nav[aria-label="Admin sections"] a')]
+          .filter((a) => a.getBoundingClientRect().height > 0)
+          .map((a) => a.getAttribute("href")),
+      );
+
+    // What the desktop sidebar shows, measured on this same page.
+    await p.setViewportSize({ width: 1440, height: 950 });
+    await p.waitForTimeout(350);
+    const onDesktop = await countLinks();
+
+    await p.setViewportSize({ width: w, height: h });
+    await p.waitForTimeout(350);
     await p.getByRole("button", { name: "Open navigation" }).first().click();
     await p.waitForTimeout(400);
-    const links = await p.evaluate(() =>
-      [...document.querySelectorAll('nav[aria-label="Admin sections"] a')]
-        .filter((a) => a.getBoundingClientRect().height > 0).length,
+    const inDrawer = await countLinks();
+
+    const missing = onDesktop.filter((href) => !inDrawer.includes(href));
+    ok(
+      missing.length === 0 && inDrawer.length === onDesktop.length,
+      `${name}: drawer lists every section the sidebar does (${onDesktop.length})`,
+      missing.length ? `missing ${missing.join(", ")}` : `${inDrawer.length}`,
     );
-    ok(links === 8, `${name}: drawer lists all 8 sections`, `${links}`);
     await p.keyboard.press("Escape");
     await p.waitForTimeout(300);
     const stillOpen = await p.evaluate(() => !!document.querySelector('nav[aria-label="Admin sections"]')?.getBoundingClientRect().height);

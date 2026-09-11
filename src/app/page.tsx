@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowDown,
   ArrowUpRight,
   Building2,
-  Compass,
   HandHeart,
   Landmark,
   ShieldCheck,
@@ -111,30 +111,31 @@ const HERITAGE_ORDER: HeritageType[] = [
   "shankaracharya_site",
 ];
 
+/**
+ * The two ways in.
+ *
+ * The Yatra team asked for exactly these on the landing page, and for the
+ * administrator sign-in to be gone from it: the Admin Panel lives at /admin and
+ * is reached by signing in, not advertised. Following the Yatra as an ordinary
+ * visitor is still possible and is offered quietly beneath these two, since the
+ * ask was that these are what the page shows *prominently*.
+ */
 const ROLES = [
   {
-    icon: Compass,
-    title: "Explore the Yatra",
-    body: "Follow the route, see events near you, and build your own journey.",
-    href: "/register",
-    cta: "Create an account",
+    icon: ShieldCheck,
+    title: "Organizing Team Member",
+    body: "A seat on the organising committee at national, state or district level, with a responsibility of your own. Pick the role you are taking and the Yatra team reviews it.",
+    href: "/register/organizer?as=committee",
+    cta: "I am joining the organising team",
     variant: "primary" as const,
   },
   {
     icon: HandHeart,
-    title: "Serve as a Shankardoot",
-    body: "Survey places, plan events, handle outreach, media and logistics, at national, state or district level, for as many days as you can give.",
-    href: "/register/organizer",
-    cta: "Register to serve",
+    title: "Volunteer",
+    body: "Give time on the ground as the Yatra moves through your area: welcome, outreach, logistics, whatever the day needs. Choose what you can help with and for how long.",
+    href: "/register/organizer?as=volunteer",
+    cta: "I am joining as a volunteer",
     variant: "secondary" as const,
-  },
-  {
-    icon: ShieldCheck,
-    title: "Administration",
-    body: "For the Yatra administration team: approvals, survey review and reporting.",
-    href: "/login",
-    cta: "Administrator sign-in",
-    variant: "outline" as const,
   },
 ];
 
@@ -247,11 +248,15 @@ export default async function LandingPage() {
               </Reveal>
 
               <Reveal delay={220} className="mt-6 flex flex-wrap gap-3 sm:mt-7">
-                <LinkButton href="/register/organizer" size="lg">
-                  Become a Shankardoot
+                <LinkButton href="/register/organizer?as=committee" size="lg">
+                  Join the organising team
                 </LinkButton>
-                <LinkButton href="/register" variant="secondary" size="lg">
-                  Explore the Yatra
+                <LinkButton
+                  href="/register/organizer?as=volunteer"
+                  variant="secondary"
+                  size="lg"
+                >
+                  Volunteer for the Yatra
                 </LinkButton>
               </Reveal>
             </div>
@@ -663,7 +668,7 @@ export default async function LandingPage() {
 
           <AccentRule className="mx-auto my-8 max-w-xs" />
 
-          <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+          <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 sm:gap-6">
             {ROLES.map((card, i) => (
               <Reveal key={card.title} delay={i * 80}>
                 <div className="lift flex h-full flex-col rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
@@ -688,6 +693,18 @@ export default async function LandingPage() {
               </Reveal>
             ))}
           </div>
+
+          {/*
+            The ordinary visitor's way in, kept deliberately quiet: the team
+            asked for the two above to be what the page puts forward.
+          */}
+          <p className="mt-8 text-sm text-ink-500">
+            Just want to follow the Yatra?{" "}
+            <Link href="/register" className="font-medium text-pumpkin-600 underline">
+              Create an account
+            </Link>{" "}
+            to build your own journey and see events near you.
+          </p>
         </div>
       </section>
 
