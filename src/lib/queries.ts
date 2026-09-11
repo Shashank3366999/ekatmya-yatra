@@ -83,8 +83,10 @@ export async function listRoutePlaces() {
 /**
  * Sites Adi Shankaracharya sanctified across Bharat, for the journey map.
  *
- * Includes places the 2027 Yatra does not halt at — Sharada Peeth in PoK among
- * them — because the Digvijaya Yatra's full reach is the point.
+ * Sites flagged `isBeyondReach` are left out at the Yatra team's request. The
+ * rows stay in the database and keep their flag, so this is the only filter to
+ * lift if they should appear again — along with the "Beyond reach today" row in
+ * `MapLegend` and the same condition in `heritageCounts` below.
  */
 export async function listHeritagePlaces() {
   const db = await getDb();
@@ -102,17 +104,24 @@ export async function listHeritagePlaces() {
     })
     .from(places)
     .leftJoin(states, eq(states.id, places.stateId))
-    .where(eq(places.isHeritageSite, true))
+    .where(and(eq(places.isHeritageSite, true), eq(places.isBeyondReach, false)))
     .orderBy(asc(places.name));
 }
 
-/** Counts per heritage grouping, for the "sacred geography" summary. */
+/**
+ * Counts per heritage grouping, for the "sacred geography" summary.
+ *
+ * Excludes beyond-reach sites for the same reason `listHeritagePlaces` does,
+ * and it has to match: the summary count and the markers on the map are read
+ * off the same page, so a filter applied to one and not the other is a visible
+ * contradiction.
+ */
 export async function heritageCounts(): Promise<Record<string, number>> {
   const db = await getDb();
   const rows = await db
     .select({ types: places.heritageTypes })
     .from(places)
-    .where(eq(places.isHeritageSite, true));
+    .where(and(eq(places.isHeritageSite, true), eq(places.isBeyondReach, false)));
 
   const out: Record<string, number> = {};
   for (const r of rows) {

@@ -110,7 +110,15 @@ const MARKER_STYLES: Record<
     r: 6,
     strokeWidth: 2,
   },
-  /** Beyond reach — drawn hollow and dashed, present but unvisitable. */
+  /**
+   * Beyond reach: hollow and dashed, present but unvisitable.
+   *
+   * Nothing renders with this kind at the moment — `listHeritagePlaces` filters
+   * beyond-reach sites out at the Yatra team's request. The style and the kind
+   * are kept so lifting that filter brings the marker back; its legend row was
+   * removed, since a legend entry for a marker that never appears is worse than
+   * no entry at all.
+   */
   beyondReach: {
     fill: "var(--color-ink-0)",
     stroke: "var(--color-gold)",
@@ -572,7 +580,6 @@ export function MapLegend({ className = "" }: { className?: string }) {
     { label: "Yatra 2027 route", kind: "main" },
     { label: "Awaiting sequencing", kind: "pending" },
     { label: "Acharya Shankar sites", kind: "heritage" },
-    { label: "Beyond reach today", kind: "beyondReach" },
     { label: "Surveyed", kind: "survey" },
   ];
 

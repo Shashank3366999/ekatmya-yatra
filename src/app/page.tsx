@@ -7,7 +7,6 @@ import {
   Compass,
   HandHeart,
   Landmark,
-  MapPin,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -157,7 +156,6 @@ export default async function LandingPage() {
   const first = sequenced[0];
   const last = sequenced[sequenced.length - 1];
   const offRoute = heritage.filter((h) => !h.isOnRoute);
-  const beyondReach = heritage.filter((h) => h.isBeyondReach);
 
   const mapPlaces = [
     // Heritage first; the map paints the 2027 route on top.
@@ -482,27 +480,6 @@ export default async function LandingPage() {
             </Reveal>
           </div>
 
-          {/* The site the Yatra cannot reach, named rather than omitted. */}
-          {beyondReach.length > 0 ? (
-            <Reveal delay={120}>
-              <div className="mt-6 rounded-xl border border-dashed border-gold/50 bg-surface p-4 sm:p-5">
-                <p className="text-[10px] tracking-[0.16em] text-gold uppercase">
-                  Beyond reach today
-                </p>
-                {beyondReach.map((h) => (
-                  <div key={h.id} className="mt-2">
-                    <p className="flex items-center gap-1.5 font-display text-base text-ink-900">
-                      <MapPin size={14} className="text-gold" aria-hidden="true" />
-                      {h.name}
-                    </p>
-                    <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-600">
-                      {h.significance}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          ) : null}
         </div>
       </section>
 

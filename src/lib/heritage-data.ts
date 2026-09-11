@@ -3,9 +3,8 @@
  *
  * The Yatra team's central point about the map: the 2027 itinerary is only part
  * of the story. Adi Shankaracharya's Digvijaya Yatra covered the whole of
- * Bharat, and the product should convey that depth — including Sharada Peeth in
- * Pakistan-occupied Kashmir, which the Yatra cannot reach but which belongs to
- * the journey. These sites are drawn on the map alongside the route.
+ * Bharat, and the product should convey that depth. These sites are drawn on
+ * the map alongside the route.
  *
  * Grouped by why each place matters:
  *   char_dham            the four Dhams
@@ -15,7 +14,11 @@
  *   saptapuri            the seven holy cities
  *   shankaracharya_site  places tied directly to his life and works
  *
- * `beyondReach` marks a site the Yatra cannot visit.
+ * `beyondReach` marks a site the Yatra cannot visit. Entries carrying it are
+ * **not shown anywhere on the site** — the Yatra team asked for the "Beyond
+ * reach today" section to be removed. The entry and the flag are kept so the
+ * decision is reversible: `listHeritagePlaces` and `heritageCounts` in
+ * src/lib/queries.ts filter on it, and MapLegend would need its row back.
  *
  * NOTE: coordinates are for map display. The canonical list of sites the Yatra
  * will actually halt at must come from the Yatra team — see
@@ -382,7 +385,7 @@ export const HERITAGE_SITES: HeritageSite[] = [
     significance: "Ancient temple city and a centre of Tamil learning and debate.",
   },
 
-  /* --------------------------------------------------- Beyond reach today */
+  /* ------------------------------------- Not shown: see the header note */
   {
     name: "Sharada Peeth, Kashmir",
     stateCode: "JK",
