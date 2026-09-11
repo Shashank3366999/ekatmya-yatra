@@ -171,9 +171,17 @@ green and only ever appears as a tinted chip.
 The first release is built around the client's stated priority — **getting survey
 data out of notebooks and in front of the admin.**
 
-- **Auth & onboarding** — user signup, organiser signup, admin login. Organisers
-  declare their level, area and functional stream, and stay inert until approved.
-  An existing signed-in user can request a posting on their own account.
+- **Auth & onboarding** — user signup, organiser signup, admin login. Joining the
+  organising team is two choices, in the Yatra team's own framing: **which team**
+  (National / State / District) and **which role** (Survey, Event Planning,
+  Digital & Social Media, Print Media, Logistics, and ten more), plus any extra
+  roles you can cover and how many days you can give. Access stays inert until
+  an admin approves it. An existing signed-in user can request a posting on
+  their own account.
+- **Admin controls every posting** — not just approve/reject. The admin can move
+  someone between teams, change their main role and extra roles, set their state
+  or district, and edit their designation, all in one save: "admin panel पे सारे
+  role control होते हैं". Every change is written to the audit trail.
 - **Survey capture** — a four-step mobile form with device geolocation, tri-state
   facility answers ("not known" is real field data), draft saving, and a short
   reference (`SUR-0001`) for phone coordination.
@@ -281,9 +289,19 @@ admin triage and promotion onto the route, organiser approval, automation
 toggles, announcements, public registration, the map, and My Journey. Asserts a
 clean browser console throughout.
 
-It writes to the database, and it approves the demo organiser — so run
-**`pnpm db:reset-demo`** before each run. Use that rather than `pnpm db:reset`
-once the database has real users in it: a full reset deletes them.
+It writes to the database but resets its own preconditions through the UI, so it
+can be re-run without reseeding. For a pristine fixture use
+**`pnpm db:reset-demo`** — and that rather than `pnpm db:reset` once the
+database has real users, since a full reset deletes them.
+
+> **The database scripts refuse to run while the app is up.** PGlite is
+> single-process: writing to it from a script while `next dev`/`next start`
+> holds it corrupts the data directory, and the next open aborts with
+> `RuntimeError: Aborted()` — no hint as to why. The app now claims a lock when
+> it opens the database and the scripts check it, so you get a clear refusal
+> naming the process instead of losing your data. A lock left by a hard kill is
+> detected as stale and ignored. Override with `PGLITE_ALLOW_CONCURRENT=1` only
+> if you know why.
 
 **`pnpm test:consistency`** — 16 cross-page invariants: the same quantity must
 not be computed two different ways. It exists because the landing page once

@@ -1,7 +1,14 @@
 "use client";
 
 /**
- * The "where do you sit in the Yatra structure" fields.
+ * Joining the organising team is two choices, in the Yatra team's own framing:
+ *
+ *   1. Which team do you want to join?   National / State / District
+ *   2. Which role?                       Survey, Event Planning, Digital Media…
+ *
+ * Those map to `level` and `primaryFunction`. Everything else here is supporting
+ * detail: where the team sits geographically, any extra roles you can cover, how
+ * much time you can give.
  *
  * Shared by organiser signup and by the in-place posting request an existing
  * user makes from /join, so the two can never ask different questions.
@@ -22,7 +29,11 @@ import {
 import { CheckOption, SwitchField } from "@/components/ui/choice";
 import { AVAILABILITY_LABELS } from "@/lib/labels";
 import { StateDistrictSelect } from "@/components/ui/state-district-select";
-import { FUNCTION_LABELS, LEVEL_LABELS } from "@/lib/permissions";
+import {
+  FUNCTION_LABELS,
+  TEAM_DESCRIPTIONS,
+  TEAM_LABELS,
+} from "@/lib/permissions";
 import type { Availability, FunctionArea, OrgLevel } from "@/lib/types";
 
 type Option = { id: string; name: string };
@@ -74,7 +85,7 @@ export function OrganizerPostingFields({
     <>
       <fieldset className="space-y-4">
         <legend className="text-[11px] font-semibold tracking-wider text-ink-500 uppercase">
-          Your place in the Yatra
+          1 · Which team do you want to join?
         </legend>
 
         <Select
@@ -83,7 +94,7 @@ export function OrganizerPostingFields({
           onSelectionChange={(k) => setLevel(k as OrgLevel)}
           isRequired
         >
-          <Label>Organisational level</Label>
+          <Label>Team</Label>
           <Select.Trigger>
             <Select.Value />
             <Select.Indicator />
@@ -92,20 +103,18 @@ export function OrganizerPostingFields({
             <ListBox>
               {LEVELS.map((l) => (
                 <ListBoxItem key={l} id={l}>
-                  {LEVEL_LABELS[l]}
+                  {TEAM_LABELS[l]}
                 </ListBoxItem>
               ))}
             </ListBox>
           </Select.Popover>
-          <Description>
-            National, State, or District team. The admin can adjust this.
-          </Description>
+          <Description>{TEAM_DESCRIPTIONS[level]}</Description>
         </Select>
 
         {level === "national" ? (
           <p className="rounded-lg border border-ink-200 bg-ink-50 px-3.5 py-3 text-sm text-ink-500">
-            National team members work across all of Bharat, so no state or
-            district is needed.
+The national team works across all of Bharat, so there is no state or
+            district to choose.
           </p>
         ) : (
           <StateDistrictSelect
@@ -121,7 +130,9 @@ export function OrganizerPostingFields({
         <TextField name="designation">
           <Label>Designation or title</Label>
           <Input placeholder="e.g. State Survey Coordinator" />
-          <Description>Optional. Use the title you have been given, if any.</Description>
+          <Description>
+            Optional. Use the title you have been given, if any.
+          </Description>
         </TextField>
 
         <div className="rounded-lg border border-ink-200 bg-ink-50/70 px-3.5 py-3">
@@ -139,7 +150,7 @@ export function OrganizerPostingFields({
 
       <fieldset className="space-y-4 border-t border-ink-200 pt-5">
         <legend className="text-[11px] font-semibold tracking-wider text-ink-500 uppercase">
-          What you will work on
+          2 · Which role?
         </legend>
 
         <Select
@@ -148,7 +159,7 @@ export function OrganizerPostingFields({
           onSelectionChange={(k) => setPrimaryFunction(k as FunctionArea)}
           isRequired
         >
-          <Label>Primary responsibility</Label>
+          <Label>Your main role</Label>
           <Select.Trigger>
             <Select.Value />
             <Select.Indicator />
@@ -165,7 +176,7 @@ export function OrganizerPostingFields({
         </Select>
 
         <CheckboxGroup name="additionalFunctions">
-          <Label>Also happy to help with</Label>
+          <Label>Other roles you could help with</Label>
           <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
             {SELECTABLE_FUNCTIONS.filter((f) => f !== primaryFunction).map((f) => (
               <CheckOption key={f} value={f}>
@@ -173,7 +184,9 @@ export function OrganizerPostingFields({
               </CheckOption>
             ))}
           </div>
-          <Description>Optional. Pick as many as apply.</Description>
+          <Description>
+            Optional. Pick as many as apply — the admin assigns your final roles.
+          </Description>
         </CheckboxGroup>
 
         {/* How much time — asked for alongside the responsibility itself, so

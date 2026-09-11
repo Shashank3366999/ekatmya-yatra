@@ -200,10 +200,30 @@ export const surveyReviewSchema = z.object({
 /* Admin                                                                      */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Admin review of an organiser posting.
+ *
+ * The admin controls the whole posting, not just the verdict — "admin panel पे
+ * सारे role control होते हैं". Someone may ask to join the national Survey team
+ * and be placed in the Maharashtra chapter on Digital Media instead, so every
+ * part of the posting is editable here.
+ *
+ * The team/role fields are optional so a plain approve or reject still works
+ * without resubmitting the whole posting.
+ */
 export const organizerReviewSchema = z.object({
   profileId: uuid,
   status: z.enum(approvalStatusEnum.enumValues),
   reviewNote: optionalText(1000),
+
+  /* -- the posting itself -- */
+  level: z.enum(orgLevelEnum.enumValues).optional(),
+  stateId: optionalUuid.optional(),
+  districtId: optionalUuid.optional(),
+  primaryFunction: z.enum(functionEnum.enumValues).optional(),
+  additionalFunctions: z.array(z.enum(functionEnum.enumValues)).max(12).optional(),
+  designation: optionalText(160).optional(),
+  isSpiritualRepresentative: z.coerce.boolean().optional(),
 });
 
 export const userAccessSchema = z.object({

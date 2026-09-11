@@ -14,8 +14,10 @@
 import { eq } from "drizzle-orm";
 
 import { loadEnv } from "../lib/env";
+import { assertDatabaseFree } from "./guard";
 
 loadEnv();
+assertDatabaseFree("db:reset-demo");
 
 const DEMO_PENDING_ORGANIZER = "media.mp@ekatmadham.com";
 
@@ -35,15 +37,39 @@ async function main() {
     process.exit(0);
   }
 
+  /*
+    Restore the whole posting, not just the status. The admin can now move a
+    person's team and role, so a test run leaves the fixture in a different
+    chapter on a different role — resetting only the status would hand the next
+    run a subtly different starting point.
+  */
+  const [mp] = await db
+    .select({ id: s.states.id })
+    .from(s.states)
+    .where(eq(s.states.code, "MP"))
+    .limit(1);
+
   const result = await db
     .update(s.organizerProfiles)
-    .set({ status: "pending", reviewNote: null, reviewedById: null, reviewedAt: null })
+    .set({
+      status: "pending",
+      reviewNote: null,
+      reviewedById: null,
+      reviewedAt: null,
+      level: "state",
+      stateId: mp?.id ?? null,
+      districtId: null,
+      primaryFunction: "media_pr",
+      additionalFunctions: ["social_media"],
+      designation: "State Media Coordinator",
+      isSpiritualRepresentative: false,
+    })
     .where(eq(s.organizerProfiles.userId, user.id))
     .returning({ id: s.organizerProfiles.id });
 
   console.log(
     result.length
-      ? `✔ ${user.name} reset to pending — the approval flow has something to approve again.`
+      ? `✔ ${user.name} reset: pending, State team (Madhya Pradesh), Media & PR.`
       : `• ${user.name} has no organiser posting to reset.`,
   );
   process.exit(0);

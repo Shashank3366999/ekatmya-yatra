@@ -7,6 +7,7 @@
 import { eq, sql } from "drizzle-orm";
 
 import { loadEnv } from "../lib/env";
+import { assertDatabaseFree } from "./guard";
 import {
   DISTRICTS,
   MAIN_YATRA_ROUTE,
@@ -16,6 +17,7 @@ import { HERITAGE_SITES } from "../lib/heritage-data";
 import { hashPassword } from "../lib/password";
 
 loadEnv();
+assertDatabaseFree("db:seed");
 
 /**
  * The Yatra window, as confirmed by the Yatra team's official announcement:

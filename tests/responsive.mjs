@@ -22,6 +22,7 @@ const WIDTHS = [
 ];
 
 const pass = [], fail = [];
+/** ok(condition, name, extra?) — condition first in this suite. */
 const ok = (c, n, extra = "") => (c ? pass : fail).push(n + (extra ? ` — ${extra}` : ""));
 
 const browser = await chromium.launch({ channel: "chrome" });

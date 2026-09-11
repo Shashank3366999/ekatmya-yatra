@@ -346,6 +346,8 @@ export async function listOrganizerProfiles(status?: string, limit = 200) {
       phone: users.phone,
       isActive: users.isActive,
       level: organizerProfiles.level,
+      stateId: organizerProfiles.stateId,
+      districtId: organizerProfiles.districtId,
       primaryFunction: organizerProfiles.primaryFunction,
       additionalFunctions: organizerProfiles.additionalFunctions,
       designation: organizerProfiles.designation,

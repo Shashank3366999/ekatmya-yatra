@@ -3,8 +3,10 @@
  * Run with `pnpm db:migrate`.
  */
 import { loadEnv } from "../lib/env";
+import { assertDatabaseFree } from "./guard";
 
 loadEnv();
+assertDatabaseFree("db:migrate");
 
 const MIGRATIONS_FOLDER = "./src/db/migrations";
 

@@ -52,6 +52,15 @@ async function createDb(): Promise<Database> {
 
   const { drizzle } = await import("drizzle-orm/pglite");
   const { PGlite } = await import("@electric-sql/pglite");
+  const { claimDatabase } = await import("./guard");
+
+  /*
+    Announce that this process holds the database, so the CLI scripts refuse to
+    write to it concurrently — PGlite is single-process and concurrent writes
+    corrupt the data directory rather than failing cleanly.
+  */
+  claimDatabase(`${process.env.NODE_ENV ?? "node"} server`);
+
   const client = await PGlite.create({ dataDir: PGLITE_DIR });
   // Structurally identical query API; see the Database type note above.
   return drizzle(client, { schema, casing: "snake_case" }) as unknown as Database;

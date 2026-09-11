@@ -12,14 +12,16 @@
  * announcements, public registration, the Yatra map, My Journey, and the
  * in-place organiser posting request. Also asserts a clean console throughout.
  *
- * It writes to the database, so run it against a freshly seeded one:
- *   pnpm db:reset
+ * It writes to the database but resets its own preconditions through the UI,
+ * so it can be run repeatedly without reseeding. For a pristine fixture:
+ *   pnpm db:reset-demo   (stop the server first — PGlite is single-process)
  */
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3100";
 const SHOTS = process.env.SHOTS;
 const pass = [], fail = [];
+/** ok(name, condition, extra?) — name first in this suite. */
 const ok = (n, c, extra = "") => (c ? pass : fail).push(n + (extra ? ` — ${extra}` : ""));
 
 const browser = await chromium.launch({ channel: "chrome" });
@@ -152,6 +154,38 @@ async function newPage(w = 430, h = 900) {
   // Approve the pending organiser. HeroUI Tabs mount only the selected panel,
   // so scope to the visible card. Assert the *outcome* (they move to Approved)
   // rather than the flash message, which revalidation clears.
+  /*
+    Make the precondition true through the UI rather than depending on a freshly
+    seeded database. A previous run leaves the demo organiser approved, and
+    resetting the fixture out-of-band means stopping the server first — PGlite is
+    single-process. Setting the status back here keeps the suite self-contained
+    and re-runnable.
+  */
+  await page.getByRole("tab", { name: /^All/ }).click();
+  await page.waitForTimeout(700);
+  const amit = page.locator("li", { hasText: "Amit Verma" }).filter({ visible: true }).first();
+  const amitStatus = await amit
+    .getByRole("button")
+    .filter({ hasText: /Pending Approval|Approved|Rejected|Changes Requested/ })
+    .first()
+    .innerText();
+
+  if (!/Pending Approval/.test(amitStatus)) {
+    await amit
+      .getByRole("button")
+      .filter({ hasText: /Approved|Rejected|Changes Requested/ })
+      .first()
+      .click();
+    await page.getByRole("option", { name: "Pending Approval", exact: true }).click();
+    await amit.getByRole("button", { name: /^Save$/ }).click();
+    await page.waitForTimeout(3000);
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(800);
+  }
+
+  await page.getByRole("tab", { name: /^Pending/ }).click();
+  await page.waitForTimeout(700);
+
   const tabsBefore = (await page.getByRole("tab").allTextContents()).join(" ");
   const card = page.locator("li", { hasText: "Amit Verma" }).filter({ visible: true }).first();
   await card.getByRole("button").filter({ hasText: /Pending Approval/ }).first().click();
@@ -168,6 +202,51 @@ async function newPage(w = 430, h = 900) {
   await page.waitForTimeout(700);
   ok("approved organiser appears in Approved tab",
     (await page.locator("body").innerText()).includes("Amit Verma"));
+
+  /* ------------- 4b. Admin controls the team and the role, not just status */
+  /*
+    The Yatra team's framing: joining is two choices — which team, and which
+    role — and "admin panel पे सारे role control होते हैं". So the admin must be
+    able to move someone between teams and roles, not only approve them.
+  */
+  await page.goto(`${BASE}/admin/organizers`, { waitUntil: "networkidle" });
+  await page.getByRole("tab", { name: /^Approved/ }).click();
+  await page.waitForTimeout(700);
+
+  const moved = page.locator("li", { hasText: "Amit Verma" }).filter({ visible: true }).first();
+  const beforeText = (await moved.innerText()).replace(/\s+/g, " ");
+
+  await moved.getByRole("button", { name: /Change team & role/i }).click();
+  await page.waitForTimeout(500);
+
+  // State team -> National team
+  await moved.getByRole("button", { name: /team\s*$/i }).first().click();
+  await page.getByRole("option", { name: "National team", exact: true }).click();
+  await page.waitForTimeout(300);
+  // Media & PR -> Survey & Research
+  await moved.getByRole("button", { name: /Main role/i }).first().click();
+  await page.getByRole("option", { name: "Survey & Research", exact: true }).click();
+  await page.waitForTimeout(300);
+  await moved.getByRole("button", { name: /^Save$/ }).click();
+  await page.waitForTimeout(3200);
+
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("tab", { name: /^Approved/ }).click();
+  await page.waitForTimeout(800);
+  const afterText = (
+    await page.locator("li", { hasText: "Amit Verma" }).filter({ visible: true }).first().innerText()
+  ).replace(/\s+/g, " ");
+
+  ok(
+    "admin moved the organiser to another team",
+    /National/.test(afterText) && !/Madhya Pradesh/.test(afterText),
+    `${(beforeText.match(/State · [^·]+/) || ["?"])[0].trim()} -> ${(afterText.match(/National[^·]*/) || ["?"])[0].trim()}`,
+  );
+  ok(
+    "admin changed the organiser's role",
+    /Survey & Research/.test(afterText),
+    afterText.includes("Survey & Research") ? "Media & PR -> Survey & Research" : afterText.slice(0, 40),
+  );
 
   /* ------------------------------ 5. Automations toggle */
   await page.goto(`${BASE}/admin/automations`, { waitUntil: "networkidle" });
@@ -234,8 +313,8 @@ async function newPage(w = 430, h = 900) {
 
   // Request an organiser posting in place
   await page.goto(`${BASE}/join`, { waitUntil: "networkidle" });
-  await page.getByLabel("Organisational level").click();
-  await page.getByRole("option", { name: "District / Zilla" }).click();
+  await page.getByRole("button", { name: /Team\*?$/ }).first().click();
+  await page.getByRole("option", { name: /District \/ Zilla team/ }).click();
   await page.getByRole("button", { name: /Select state/ }).click();
   await page.getByRole("option", { name: "Kerala", exact: true }).click();
   await page.waitForTimeout(400);

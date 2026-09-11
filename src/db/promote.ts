@@ -14,8 +14,10 @@
 import { eq } from "drizzle-orm";
 
 import { loadEnv } from "../lib/env";
+import { assertDatabaseFree } from "./guard";
 
 loadEnv();
+assertDatabaseFree("db:promote");
 
 const ROLES = ["user", "organizer", "admin", "super_admin"] as const;
 type Role = (typeof ROLES)[number];

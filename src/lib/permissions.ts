@@ -170,6 +170,12 @@ export function scopeFilter(
 /* Display metadata                                                           */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The Yatra team describes joining as two choices: *which team* you want to
+ * join, and *which role* within it — "national team में survey choose किया या
+ * event planning या digital media". So `OrgLevel` is presented as the team and
+ * `FunctionArea` as the role. These are the labels for that choice.
+ */
 export const FUNCTION_LABELS: Record<FunctionArea, string> = {
   survey: "Survey & Research",
   route_planning: "Route Planning",
@@ -180,15 +186,30 @@ export const FUNCTION_LABELS: Record<FunctionArea, string> = {
   boarding_lodging: "Boarding & Lodging",
   concept_design: "Concept Design",
   print_media: "Print Media",
-  social_media: "Social Media",
+  social_media: "Digital & Social Media",
   invite_outreach: "Invite & Outreach",
   event_planning: "Event Planning",
   finance: "Finance",
   general: "General",
 };
 
+/** Compact form, for dense display next to a state or district name. */
 export const LEVEL_LABELS: Record<OrgLevel, string> = {
   national: "National",
   state: "State",
   district: "District / Zilla",
+};
+
+/** The team you join, as it is phrased when choosing. */
+export const TEAM_LABELS: Record<OrgLevel, string> = {
+  national: "National team",
+  state: "State team",
+  district: "District / Zilla team",
+};
+
+/** What each team covers, shown under the choice. */
+export const TEAM_DESCRIPTIONS: Record<OrgLevel, string> = {
+  national: "Works across all of Bharat, alongside the national organising team.",
+  state: "Your state's chapter — everything happening in that state.",
+  district: "Your district's team, including its local Sub-Yatra.",
 };

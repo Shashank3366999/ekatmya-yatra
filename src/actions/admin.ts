@@ -31,45 +31,131 @@ export async function reviewOrganizer(
     return { ok: false, error: "You do not have permission to approve organisers." };
   }
 
+  // `has` distinguishes "left blank" from "not part of this submission", so a
+  // plain approve does not wipe the team and role.
+  const has = (k: string) => formData.has(k);
+
   const parsed = organizerReviewSchema.safeParse({
     profileId: formData.get("profileId"),
     status: formData.get("status"),
     reviewNote: formData.get("reviewNote") ?? "",
+    ...(has("level") ? { level: formData.get("level") } : {}),
+    ...(has("stateId") ? { stateId: formData.get("stateId") ?? "" } : {}),
+    ...(has("districtId") ? { districtId: formData.get("districtId") ?? "" } : {}),
+    ...(has("primaryFunction")
+      ? { primaryFunction: formData.get("primaryFunction") }
+      : {}),
+    ...(has("additionalFunctions")
+      ? { additionalFunctions: formData.getAll("additionalFunctions") as string[] }
+      : {}),
+    ...(has("designation") ? { designation: formData.get("designation") ?? "" } : {}),
+    ...(has("reviewTeamRole")
+      ? { isSpiritualRepresentative: formData.get("isSpiritualRepresentative") === "on" }
+      : {}),
   });
 
   if (!parsed.success) {
     return { ok: false, error: firstError(parsed.error), fieldErrors: fieldErrors(parsed.error) };
   }
 
+  const data = parsed.data;
   const db = await getDb();
+
+  const [before] = await db
+    .select()
+    .from(organizerProfiles)
+    .where(eq(organizerProfiles.id, data.profileId))
+    .limit(1);
+
+  if (!before) return { ok: false, error: "That posting no longer exists." };
+
+  /*
+    Scope has to agree with the team, or the permission tuple is meaningless —
+    a "state team" posting with no state can see nothing. Normalise rather than
+    reject, since the admin is deliberately moving someone between teams.
+  */
+  const level = data.level ?? before.level;
+  const stateId =
+    level === "national" ? null : (data.stateId ?? before.stateId ?? null);
+  const districtId =
+    level === "district" ? (data.districtId ?? before.districtId ?? null) : null;
+
+  if (level !== "national" && !stateId) {
+    return {
+      ok: false,
+      error: "A state or district team needs a state. Choose one before saving.",
+      fieldErrors: { stateId: ["Choose a state"] },
+    };
+  }
+  if (level === "district" && !districtId) {
+    return {
+      ok: false,
+      error: "A district team needs a district. Choose one before saving.",
+      fieldErrors: { districtId: ["Choose a district"] },
+    };
+  }
+
+  const primaryFunction = data.primaryFunction ?? before.primaryFunction;
+  // A role listed as primary should not also appear as an extra.
+  const additionalFunctions = (
+    data.additionalFunctions ?? before.additionalFunctions ?? []
+  ).filter((f) => f !== primaryFunction);
 
   await db
     .update(organizerProfiles)
     .set({
-      status: parsed.data.status,
-      reviewNote: parsed.data.reviewNote,
+      status: data.status,
+      reviewNote: data.reviewNote,
       reviewedById: admin!.id,
       reviewedAt: new Date(),
+      level,
+      stateId,
+      districtId,
+      primaryFunction,
+      additionalFunctions,
+      designation: data.designation ?? before.designation,
+      isSpiritualRepresentative:
+        data.isSpiritualRepresentative ?? before.isSpiritualRepresentative,
     })
-    .where(eq(organizerProfiles.id, parsed.data.profileId));
+    .where(eq(organizerProfiles.id, data.profileId));
+
+  /* Record what actually changed — this is the trail a committee asks about. */
+  const changes: Record<string, unknown> = {};
+  if (before.status !== data.status) {
+    changes.status = { from: before.status, to: data.status };
+  }
+  if (before.level !== level) changes.team = { from: before.level, to: level };
+  if (before.primaryFunction !== primaryFunction) {
+    changes.role = { from: before.primaryFunction, to: primaryFunction };
+  }
+  if (before.stateId !== stateId) changes.stateId = { from: before.stateId, to: stateId };
+  if (before.districtId !== districtId) {
+    changes.districtId = { from: before.districtId, to: districtId };
+  }
 
   await db.insert(auditLog).values({
     actorId: admin!.id,
-    action: `organizer.${parsed.data.status}`,
+    action: `organizer.${data.status}`,
     entityType: "organizer_profile",
-    entityId: parsed.data.profileId,
-    detail: { note: parsed.data.reviewNote },
+    entityId: data.profileId,
+    detail: { note: data.reviewNote, changes },
   });
 
   revalidatePath("/admin/organizers");
   revalidatePath("/admin");
 
+  const movedTeamOrRole = Boolean(changes.team || changes.role);
+
   return {
     ok: true,
     message:
-      parsed.data.status === "approved"
-        ? "Organiser approved — their dashboard is now active."
-        : "Organiser request updated.",
+      data.status === "approved"
+        ? movedTeamOrRole
+          ? "Approved, with the team and role you set — their dashboard is now active."
+          : "Organiser approved — their dashboard is now active."
+        : movedTeamOrRole
+          ? "Team and role updated."
+          : "Organiser request updated.",
   };
 }
 

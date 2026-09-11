@@ -43,14 +43,42 @@ records, and `none` compiles to an impossible predicate rather than no filter.
 Admins and national organisers resolve to `all`. A district organiser also sees
 state-wide rows that carry no district, since those legitimately concern them.
 
-## 3. Roles that are still undecided
+## 3. Team and role: the two choices
+
+The Yatra team frames joining as two questions — "which kind of team you want to
+join, और दूसरा कौन से role?" — so the UI asks exactly those, in that order:
+
+1. **Which team?** `organizer_profiles.level` → National / State / District
+2. **Which role?** `organizer_profiles.primary_function` → Survey, Event
+   Planning, Digital & Social Media, Print Media, Logistics, and ten more
+
+`additional_functions` carries any further roles the person can cover, and the
+geographic scope (`state_id`, `district_id`) belongs to the team rather than the
+role. Those are the same two columns the permission tuple in §2 resolves, so the
+question a volunteer answers and the access they receive are the same thing.
+
+**The admin controls all of it.** `reviewOrganizer` does not merely set a status:
+it can move someone to a different team, change their main and extra roles, set
+their state or district, and edit their designation — "admin panel पे सारे role
+control होते हैं". Someone may apply to the national Survey team and be placed
+in the Maharashtra chapter on Digital Media instead. Two things make that safe:
+
+- Scope is normalised against the team on every save, so a "state team" posting
+  can never end up without a state and silently see nothing.
+- The team/role fields are optional in the schema and the action distinguishes
+  "absent" from "blank", so a plain approve never wipes a posting.
+
+The audit log records the before and after of each change, because who was moved
+to which team, by whom, is exactly what gets asked about months later.
+
+## 4. Roles that are still undecided
 
 Sannyasis / Acharyas are modelled as a **configurable posting**, not a separate
 role: `is_spiritual_representative` plus a free-text `designation`. That way the
 committee can settle the terminology without a migration, and permissions stay
 driven by the same tuple as everyone else.
 
-## 4. Main Yatra and Sub-Yatras
+## 5. Main Yatra and Sub-Yatras
 
 `yatras` is self-referential (`parent_id`), with `convergence_place_id` for where
 a Sub-Yatra meets the Main Yatra. With ~700 districts each potentially running a
@@ -68,7 +96,7 @@ under "Awaiting sequencing" in the admin route screen and is drawn with a
 distinct map marker. Anything deriving the journey's start and end filters to
 sequenced stops only.
 
-## 5. Survey as the first source of truth
+## 6. Survey as the first source of truth
 
 The client's stated first problem: survey teams are deciding where the Yatra
 goes, and that information needs to reach the admin.
@@ -88,7 +116,7 @@ were involved, and the surveyor's recommendation. Three deliberate decisions:
 `reference` (`SUR-0001`) exists because coordination happens on the phone and on
 WhatsApp, where a UUID is unusable.
 
-## 6. What is deliberately incomplete
+## 7. What is deliberately incomplete
 
 | Area | State | Blocked on |
 | --- | --- | --- |
@@ -98,7 +126,7 @@ WhatsApp, where a UUID is unusable.
 | Organisations | Not modelled yet | Ownership rules (Q6) |
 | Community posts | `announcements` covers targeting; no threads | Scope decision |
 
-## 7. Request lifecycle
+## 8. Request lifecycle
 
 ```
 Browser (Chrome, mobile or desktop)
@@ -122,7 +150,7 @@ immediately rather than at token expiry.
 `audit_log` is append-only and records approvals, rejections and access changes —
 precisely the decisions a committee asks about months later.
 
-## 8. Mobile-first, and where it stops
+## 9. Mobile-first, and where it stops
 
 The two field-facing surfaces are mobile-first in the strong sense: the phone
 layout is the design at every screen size, and there is no desktop variant to
@@ -181,7 +209,7 @@ viewport, nav swapping, drawer behaviour, tap-target height, column layout,
 single map instance. That caught the duplicate map, four sub-40px tap targets,
 and overlapping marker hit areas.
 
-## 9. Library and asset findings worth knowing
+## 10. Library and asset findings worth knowing
 
 All of these were found by testing the built app rather than by reading docs,
 and each is recorded next to the code that works around it:
@@ -218,7 +246,7 @@ And one on typography: Marcellus, the display serif, has letter-like figures —
 "0" reads as a ring and "1" as an I. Every metric, count and date therefore uses
 the sans stack with `tabular-nums`; the serif is for prose headings only.
 
-## 10. Layout
+## 11. Layout
 
 ```
 src/
@@ -236,7 +264,7 @@ src/
 └── components/               brand, india-map, shells, ui/
 ```
 
-## 11. Phasing
+## 12. Phasing
 
 Delivered: Phase 1 (foundation, auth, roles, geography), Phase 2 (organiser
 onboarding + approval), Phase 3 (survey + admin dashboard), Phase 4 (activity

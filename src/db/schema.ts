@@ -536,7 +536,7 @@ export const announcements = pgTable(
 /**
  * Automations are declared in the DB and toggled by admins. The MVP ships the
  * registry and the switches; the dispatcher that actually sends mail is a later
- * phase (docs/ARCHITECTURE.md §6) and needs a provider decision — Q8.
+ * phase (docs/ARCHITECTURE.md §7) and needs a provider decision — Q8.
  */
 export const automations = pgTable(
   "automations",

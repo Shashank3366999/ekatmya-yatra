@@ -8,7 +8,11 @@ import { ApprovalStatusChip } from "@/components/ui/status-chip";
 import { formatRelative } from "@/lib/format";
 import { AVAILABILITY_LABELS } from "@/lib/labels";
 import { FUNCTION_LABELS, LEVEL_LABELS } from "@/lib/permissions";
-import { listOrganizerProfiles } from "@/lib/queries";
+import {
+  listDistrictsByState,
+  listOrganizerProfiles,
+  listStates,
+} from "@/lib/queries";
 import { requireAdmin } from "@/lib/session";
 import type {
   ApprovalStatus,
@@ -21,12 +25,16 @@ import { OrganizerReviewForm } from "./review-form";
 
 export const metadata: Metadata = { title: "Organisers" };
 
+type Option = { id: string; name: string };
+
 type Row = {
   profileId: string;
   fullName: string;
   email: string;
   phone: string | null;
   level: OrgLevel;
+  stateId: string | null;
+  districtId: string | null;
   primaryFunction: FunctionArea;
   additionalFunctions: FunctionArea[] | null;
   designation: string | null;
@@ -44,10 +52,12 @@ type Row = {
 export default async function AdminOrganizersPage() {
   await requireAdmin();
 
-  const [pending, approved, all] = await Promise.all([
+  const [pending, approved, all, states, districtsByState] = await Promise.all([
     listOrganizerProfiles("pending", 200),
     listOrganizerProfiles("approved", 200),
     listOrganizerProfiles(undefined, 300),
+    listStates(),
+    listDistrictsByState(),
   ]);
 
   return (
@@ -74,7 +84,12 @@ export default async function AdminOrganizersPage() {
           ) : (
             <ul className="space-y-3">
               {pending.map((o) => (
-                <OrganizerCard key={o.profileId} row={o as Row} showReview />
+                <OrganizerCard
+                  key={o.profileId}
+                  row={o as Row}
+                  states={states}
+                  districtsByState={districtsByState}
+                />
               ))}
             </ul>
           )}
@@ -86,7 +101,12 @@ export default async function AdminOrganizersPage() {
           ) : (
             <ul className="space-y-3">
               {approved.map((o) => (
-                <OrganizerCard key={o.profileId} row={o as Row} showReview />
+                <OrganizerCard
+                  key={o.profileId}
+                  row={o as Row}
+                  states={states}
+                  districtsByState={districtsByState}
+                />
               ))}
             </ul>
           )}
@@ -95,7 +115,12 @@ export default async function AdminOrganizersPage() {
         <Tabs.Panel id="all" className="pt-4">
           <ul className="space-y-3">
             {all.map((o) => (
-              <OrganizerCard key={o.profileId} row={o as Row} showReview />
+              <OrganizerCard
+                key={o.profileId}
+                row={o as Row}
+                states={states}
+                districtsByState={districtsByState}
+              />
             ))}
           </ul>
         </Tabs.Panel>
@@ -104,7 +129,15 @@ export default async function AdminOrganizersPage() {
   );
 }
 
-function OrganizerCard({ row, showReview }: { row: Row; showReview?: boolean }) {
+function OrganizerCard({
+  row,
+  states,
+  districtsByState,
+}: {
+  row: Row;
+  states: Option[];
+  districtsByState: Record<string, Option[]>;
+}) {
   const motivation =
     row.intake && typeof row.intake.motivation === "string"
       ? row.intake.motivation
@@ -184,11 +217,21 @@ function OrganizerCard({ row, showReview }: { row: Row; showReview?: boolean }) 
         </div>
       </div>
 
-      {showReview ? (
-        <div className="mt-3.5 border-t border-ink-200 pt-3.5">
-          <OrganizerReviewForm profileId={row.profileId} currentStatus={row.status} />
-        </div>
-      ) : null}
+      <div className="mt-3.5 border-t border-ink-200 pt-3.5">
+        <OrganizerReviewForm
+          profileId={row.profileId}
+          currentStatus={row.status}
+          currentLevel={row.level}
+          currentStateId={row.stateId}
+          currentDistrictId={row.districtId}
+          currentPrimaryFunction={row.primaryFunction}
+          currentAdditionalFunctions={row.additionalFunctions ?? []}
+          currentDesignation={row.designation}
+          currentIsSpiritual={row.isSpiritualRepresentative}
+          states={states}
+          districtsByState={districtsByState}
+        />
+      </div>
     </li>
   );
 }
