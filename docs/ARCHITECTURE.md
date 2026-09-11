@@ -246,42 +246,6 @@ And one on typography: Marcellus, the display serif, has letter-like figures —
 "0" reads as a ring and "1" as an I. Every metric, count and date therefore uses
 the sans stack with `tabular-nums`; the serif is for prose headings only.
 
-### The film shows through the hero headline
-
-One element carries a dark radial plate *and* white type, and the whole group is
-composited with `mix-blend-mode: multiply`: white multiplies the backdrop by one
-and leaves the film untouched, the plate multiplies it toward black. So the
-letters are the film and nothing around them is.
-
-Three constraints, each learned the hard way:
-
-- **The plate and the type must be the same element.** Two separate `multiply`
-  layers paint in order, so the type would blend against a backdrop that already
-  included the plate and come out as dark as its surroundings.
-- **Nothing between the headline and the film may create a stacking context**,
-  because a stacking context forces `isolation: isolate`. The first attempt had
-  `z-10` on the hero copy layer; the letters rendered solid white — measured 244
-  mean luminance, 0.4 saturation, 0.07 change between frames — and every
-  structural check passed, because the markup was right. `tests/mobile.mjs` now
-  walks the ancestors and fails on z-index, opacity, transform, filter,
-  `will-change`, `contain: paint` or a nested blend mode, naming the culprit.
-- **Nothing in a `multiply` group can be brighter than its backdrop.** The
-  letters are the film, so the film's own brightness is the ceiling. The hero
-  scrims were opened from 26% to ~40% transmission and the video carries
-  `brightness(2.2) contrast(1.12)`; legibility for the copy moved to the plate,
-  which darkens the film locally rather than everywhere.
-
-Measured at 1440x900 and 390x844: headline contrast **3.17:1** against its plate
-(over the 3:1 large-text threshold), no blown-out pixels, and the body copy and
-brand lockup still at 18:1 and 16.6:1.
-
-A second `<video>` masked to the text would have been simpler and was rejected:
-it doubles a 2.5 MB download on a phone for one visual effect.
-
-Also note the headline is the one place the display serif gives way. Marcellus is
-a single 400 weight and its thin strokes showed almost no film, so the headline
-is Inter at 900.
-
 ### The map is drawn as a raised plate, not a flat fill
 
 Two attempts failed before the current one, and both failures are worth keeping:
