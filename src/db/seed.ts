@@ -20,6 +20,18 @@ loadEnv();
 assertDatabaseFree("db:seed");
 
 /**
+ * Whether this is the local, throwaway database.
+ *
+ * PGlite means a file in the working tree, which is by definition somebody's
+ * machine, so the demo fixtures belong there without being asked for. A real
+ * DATABASE_URL could be staging or it could be production, and the seed cannot
+ * tell, so it stays out unless SEED_DEMO=1 says otherwise.
+ */
+function usingPgliteLocally(): boolean {
+  return !process.env.DATABASE_URL;
+}
+
+/**
  * The Yatra window, as confirmed by the Yatra team's official announcement:
  * 16 January to 10 May 2027, Kalady (Kerala) to Kedarnath (Uttarakhand).
  */
@@ -392,6 +404,18 @@ async function main() {
     console.log(`  admin: ${adminEmail} (already present)`);
   }
 
+  /*
+    Demo accounts, and only where they belong.
+
+    These carry a password that is written down in the repository and in the
+    README. Seeding them into production would hand anyone who reads either an
+    approved organiser login, so the block is skipped unless it is asked for:
+    set SEED_DEMO=1 for a staging environment that needs the e2e fixtures.
+  */
+  const seedDemo = process.env.SEED_DEMO === "1" || usingPgliteLocally();
+  if (!seedDemo) {
+    console.log("  demo data: skipped (set SEED_DEMO=1 to include it)");
+  } else {
   /* ------------------------------------------------- demo organiser + data */
   const demoEmail = "survey.kerala@ekatmadham.com";
   const [existingDemo] = await db
@@ -512,6 +536,7 @@ async function main() {
       );
       console.log(`  events: ${routePlaces.length}`);
     }
+  }
   }
 
   console.log("✔ seed complete");

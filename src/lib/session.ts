@@ -28,6 +28,17 @@ function secret(): Uint8Array {
       "AUTH_SECRET is missing or too short (needs >= 32 chars). Copy .env.example to .env.local.",
     );
   }
+  /*
+    The example secret is in the repository, so in production it is a published
+    signing key: anyone could mint a session cookie for any account, including
+    an admin. Refusing to start is the only safe response.
+  */
+  if (process.env.APP_ENV === "production" && value.includes("dev-only-insecure")) {
+    throw new Error(
+      "AUTH_SECRET is still the example value from .env.example, which is public. " +
+        "Generate one with `openssl rand -base64 32` and restart.",
+    );
+  }
   return new TextEncoder().encode(value);
 }
 

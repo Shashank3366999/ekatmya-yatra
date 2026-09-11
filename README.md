@@ -210,6 +210,8 @@ data out of notebooks and in front of the admin.**
 Automations are **registered and toggleable but do not send** — no provider has
 been chosen (Q8). Route re-ordering and arrival dates are Phase 5. Media upload
 needs a storage decision (Q7). See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- `docs/DEPLOYMENT.md` — putting it on EC2: what the team still needs to
+  supply, and the steps in order.
 
 ---
 

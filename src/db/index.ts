@@ -28,6 +28,27 @@ export const PGLITE_DIR = process.env.PGLITE_DIR ?? "./.pglite";
 
 export const usingPglite = !process.env.DATABASE_URL;
 
+/*
+  On a deployed instance, PGlite is not a fallback, it is data loss.
+
+  It writes to a directory inside the working tree: a deploy that replaces that
+  directory, or an instance that is replaced, takes every registered account
+  with it, silently, with the app still serving happily.
+
+  Keyed on APP_ENV rather than NODE_ENV, which was the first attempt and was
+  wrong: `next build` and `next start` both set NODE_ENV=production, so the
+  check fired on a developer's own machine and broke the build. APP_ENV is set
+  by the systemd unit and by nothing else, so it means "this is the real
+  deployment" — see docs/DEPLOYMENT.md.
+*/
+if (usingPglite && process.env.APP_ENV === "production") {
+  throw new Error(
+    "DATABASE_URL is not set. In production the app must point at a real " +
+      "Postgres: PGlite writes to ./.pglite on the instance and would lose " +
+      "every account on the next deploy. Set DATABASE_URL and restart.",
+  );
+}
+
 /**
  * Cached across hot reloads. Next.js re-evaluates modules on every edit in dev;
  * without this, each reload would open another PGlite instance on the same
