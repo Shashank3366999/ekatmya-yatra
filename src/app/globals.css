@@ -1,0 +1,575 @@
+/* ---------------------------------------------------------------------------
+   Ekatmya Yatra — theme
+   ---------------------------------------------------------------------------
+   HeroUI v3 ships a layered CSS architecture (theme / base / components /
+   utilities) and themes itself through semantic CSS variables. We import it and
+   then override only those variables, so every HeroUI component picks up the
+   Yatra palette without per-component styling.
+
+   PALETTE
+     Pumpkin  #F5761A (245,118,26)  the brand accent — primary actions, active
+                                    states, the Yatra route on the map
+     White / black                  all surfaces and text
+     Green    #14523C family        RESERVED FOR SIDEBARS AND NAV CHROME.
+                                    Never a page surface, never a button.
+
+   The one considered exception to the green rule is the small "Approved"
+   status chip: a green success chip is the universal convention and turning it
+   orange would make it indistinguishable from "Submitted". It uses the very
+   same green as the sidebar, so the palette stays coherent, and it only ever
+   appears as a tinted chip — never as a fill.
+--------------------------------------------------------------------------- */
+
+@import "@heroui/react/styles";
+
+/* HeroUI's own class strings live in node_modules; tell Tailwind to scan them
+   so the utilities its variants reference are generated. */
+@source "../../node_modules/@heroui/react/dist";
+@source "../../node_modules/@heroui/styles/dist";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-marcellus), "Iowan Old Style", Georgia, serif;
+  /* Sanskrit/Hindi. Explicit, because the Latin faces carry no Devanagari. */
+  --font-sanskrit: var(--font-devanagari), "Noto Serif Devanagari", serif;
+
+  /* -- Pumpkin: the brand accent ----------------------------------------- */
+  --color-pumpkin-50: #fef3e9;
+  --color-pumpkin-100: #fde2cb;
+  --color-pumpkin-200: #fbc496;
+  --color-pumpkin-300: #f9a461;
+  --color-pumpkin-400: #f7893a;
+  --color-pumpkin-500: #f5761a;
+  --color-pumpkin-600: #dc5f0c;
+  --color-pumpkin-700: #b44a08;
+  --color-pumpkin-800: #8a3907;
+  --color-pumpkin-900: #5e2705;
+
+  /* -- Neutrals: white through black ------------------------------------- */
+  --color-ink-0: #ffffff;
+  --color-ink-50: #fafafa;
+  --color-ink-100: #f4f4f5;
+  --color-ink-200: #e7e7e9;
+  --color-ink-300: #d6d6d9;
+  --color-ink-400: #a5a5aa;
+  --color-ink-500: #78787e;
+  --color-ink-600: #545459;
+  --color-ink-700: #3a3a3e;
+  --color-ink-800: #232326;
+  --color-ink-900: #111113;
+  --color-ink-950: #000000;
+
+  /* -- Green: sidebars and nav chrome only ------------------------------- */
+  --color-yatra-50: #eff6f2;
+  --color-yatra-100: #d7e9df;
+  --color-yatra-500: #2d7657;
+  --color-yatra-600: #1e6046;
+  --color-yatra-700: #14523c;
+  --color-yatra-800: #103f2f;
+  --color-yatra-900: #0a2b20;
+
+  /* Warm gold — "needs attention" states, kept distinct from pumpkin. */
+  --color-gold: #b8873b;
+
+  /*
+    The phone column width for the User and Organiser apps. They are mobile-first
+    in the strong sense — the same layout at every screen size — so this caps the
+    app rather than letting it sprawl on a laptop.
+  */
+  --spacing-app: 30rem;
+}
+
+/* -- Override HeroUI's semantic tokens ------------------------------------- */
+@layer base {
+  :root,
+  .light,
+  [data-theme="light"] {
+    --background: #fafafa;
+    --foreground: #111113;
+
+    --surface: #ffffff;
+    --surface-foreground: #111113;
+    --surface-secondary: #f4f4f5;
+    --surface-secondary-foreground: #111113;
+    --surface-tertiary: #e7e7e9;
+    --surface-tertiary-foreground: #111113;
+
+    --overlay: #ffffff;
+    --overlay-foreground: #111113;
+
+    --muted: #78787e;
+
+    --default: #f4f4f5;
+    --default-foreground: #3a3a3e;
+
+    /* HeroUI's "accent" is the primary action colour. */
+    --accent: #f5761a;
+    --accent-hover: #dc5f0c;
+    --accent-foreground: #ffffff;
+
+    --field-background: #ffffff;
+    --field-foreground: #111113;
+    --field-placeholder: #a5a5aa;
+    --field-border: #d6d6d9;
+    --field-border-width: 1px;
+
+    /* Status colours. Success is the sidebar green; warning is gold so it can
+       never be confused with a pumpkin primary action. */
+    --success: #1e6046;
+    --success-foreground: #ffffff;
+    --warning: #b8873b;
+    --warning-foreground: #ffffff;
+    --danger: #c0392b;
+    --danger-foreground: #ffffff;
+
+    --border-width: 1px;
+    --radius: 0.75rem;
+  }
+}
+
+/* -- App-level base styles ------------------------------------------------- */
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    /*
+      Mobile-first behaviour. The phone is the primary surface — most
+      Shankardoots will use this one-handed in the field — so the page behaves
+      like an app there: no grey tap flashes, no accidental sideways scroll, no
+      double-tap zoom lurch, and text that never auto-shrinks in landscape.
+    */
+    -webkit-tap-highlight-color: transparent;
+    /*
+      `clip`, not `hidden`: overflow-x:hidden on body turns it into a scroll
+      container, which silently breaks `position: sticky` for the header and
+      bottom tab bar. `clip` prevents sideways scroll without that side effect.
+    */
+    overflow-x: clip;
+    overscroll-behavior-y: none;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Anything tappable should respond immediately rather than waiting 300ms. */
+  a,
+  button,
+  [role="button"],
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+
+  /* Keep focus rings for keyboards without showing them on touch. */
+  :focus-visible {
+    outline: 2px solid var(--color-pumpkin-500);
+    outline-offset: 2px;
+  }
+
+  /* Devotional headings use the serif; UI chrome stays sans. */
+  .font-display {
+    font-family: var(--font-serif);
+    letter-spacing: 0.01em;
+  }
+
+  /*
+    Sanskrit. Without this the Mahavakyas fell back to whatever Devanagari face
+    the device shipped with — different on every phone, and not a choice.
+  */
+  .font-sanskrit,
+  [lang="sa"] {
+    font-family: var(--font-sanskrit);
+    line-height: 1.7;
+  }
+
+  /*
+    Chrome paints autofilled inputs pale blue, which overrides the field styling
+    and looks like a different design system. There is no way to set the
+    background directly, so an inset shadow stands in for it.
+  */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--field-foreground);
+    -webkit-box-shadow: 0 0 0 1000px var(--field-background) inset;
+    box-shadow: 0 0 0 1000px var(--field-background) inset;
+    caret-color: var(--field-foreground);
+    transition: background-color 0s 600000s;
+  }
+}
+
+@layer utilities {
+  /* Dark ground behind the statue in hero panels. Neutral, not green. */
+  .bg-hero-ink {
+    background-image:
+      radial-gradient(ellipse 70% 55% at 70% 20%, rgba(245, 118, 26, 0.22), transparent 70%),
+      linear-gradient(160deg, #232326 0%, #111113 55%, #000000 100%);
+  }
+
+  /* Green ground for sidebars and nav chrome — the only place green belongs. */
+  .bg-nav-green {
+    background-image: linear-gradient(180deg, #14523c 0%, #103f2f 60%, #0a2b20 100%);
+  }
+
+  /* Thin pumpkin rule used to separate devotional sections. */
+  .rule-accent {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-pumpkin-500) 20%,
+      var(--color-pumpkin-500) 80%,
+      transparent
+    );
+  }
+
+  /* -- Yatra map animation ------------------------------------------------
+     The map is the emotional centre of the product, so the route draws itself
+     on, the dashes then march along it (a journey in motion), markers arrive in
+     sequence, and the first and last stops breathe. All of it is animation-only
+     — the reduced-motion block below collapses every duration, leaving the same
+     final picture. */
+
+  /* The route drawing itself on. Paths carry pathLength="1", so the dash
+     lengths are normalised and one keyframe works for any path. */
+  .map-route-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: map-draw 2200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes map-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Dashes travelling along the finished route. */
+  .map-route-march {
+    stroke-dasharray: 9 13;
+    opacity: 0;
+    animation:
+      map-fade-in 700ms ease-out 1900ms forwards,
+      map-march 1400ms linear 1900ms infinite;
+  }
+
+  @keyframes map-march {
+    to {
+      stroke-dashoffset: -22;
+    }
+  }
+
+  @keyframes map-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Markers arriving in route order. */
+  .map-marker-in {
+    transform-origin: 0 0;
+    animation: map-marker-in 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes map-marker-in {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Hover/selected lift, kept on its own element so it never fights the
+     entrance animation's final transform. */
+  .map-marker-lift {
+    transform-origin: 0 0;
+    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Driven by data-active: pointer picking happens on an overlay, so the
+     marker groups never see :hover themselves. */
+  .map-marker-hit:focus-visible .map-marker-lift,
+  .map-marker-hit[data-active="true"] .map-marker-lift {
+    transform: scale(1.35);
+  }
+
+  .map-marker-hit:focus {
+    outline: none;
+  }
+
+  .map-marker-hit:focus-visible circle:nth-of-type(2) {
+    stroke: var(--color-ink-900);
+  }
+
+  /* The breathing halo on the first and last stop. */
+  .map-pulse {
+    transform-origin: 0 0;
+    animation: map-pulse 2600ms ease-out infinite;
+  }
+
+  @keyframes map-pulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.45;
+    }
+    70% {
+      transform: scale(2.7);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(2.7);
+      opacity: 0;
+    }
+  }
+
+  /* Tooltip arrival. */
+  .map-tip {
+    animation: map-tip-in 160ms ease-out both;
+  }
+
+  @keyframes map-tip-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* -- Scroll reveal ------------------------------------------------------
+     The base state is visible: nothing is hidden behind JavaScript. The
+     component only adds data-reveal after mount, and only for elements that
+     were below the fold at the time. */
+  .reveal {
+    transition:
+      opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal[data-reveal="out"] {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .reveal[data-reveal="in"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* -- Marquee ------------------------------------------------------------ */
+  .marquee__track {
+    animation: marquee 46s linear infinite;
+  }
+
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      /* Two identical copies sit in the track, so half is one full cycle. */
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* -- Card lift on hover, press on touch -------------------------------- */
+  .lift {
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms ease,
+      border-color 220ms ease;
+  }
+
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-pumpkin-200);
+      box-shadow: 0 14px 34px -14px rgb(17 17 19 / 0.22);
+    }
+  }
+
+  .lift:active {
+    transform: scale(0.99);
+  }
+
+  /* -- Slow drift on the hero ground ------------------------------------- */
+  .drift {
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(-2.5%, -2%, 0) scale(1.06);
+    }
+  }
+
+  /* -- Down-arrow nudge, inviting the first scroll ----------------------- */
+  .nudge {
+    animation: nudge 2.4s ease-in-out infinite;
+  }
+
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.55;
+    }
+    50% {
+      transform: translateY(6px);
+      opacity: 1;
+    }
+  }
+
+  /* Backdrop the app column sits on once the screen is wider than a phone. */
+  .bg-app-backdrop {
+    background-color: var(--color-ink-100);
+    background-image:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgb(245 118 26 / 0.07), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgb(20 82 60 / 0.06), transparent 70%);
+  }
+
+  /* -- Spotlight card content fading in on each change ------------------- */
+  .quote-in {
+    animation: quote-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes quote-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* -- Slowly turning mandala, behind devotional sections ---------------- */
+  .spin-slow {
+    animation: spin-slow 90s linear infinite;
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* -- Aurora: a soft drifting glow on dark sections -------------------- */
+  .aurora::before,
+  .aurora::after {
+    content: "";
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(72px);
+    pointer-events: none;
+  }
+
+  .aurora::before {
+    inset: -20% 40% 40% -20%;
+    background: rgb(245 118 26 / 0.22);
+    animation: aurora-a 26s ease-in-out infinite alternate;
+  }
+
+  .aurora::after {
+    inset: 30% -15% -25% 45%;
+    background: rgb(20 82 60 / 0.3);
+    animation: aurora-b 32s ease-in-out infinite alternate;
+  }
+
+  @keyframes aurora-a {
+    to {
+      transform: translate3d(12%, 8%, 0) scale(1.15);
+    }
+  }
+
+  @keyframes aurora-b {
+    to {
+      transform: translate3d(-10%, -6%, 0) scale(1.1);
+    }
+  }
+
+  /* -- Staggered children of a revealed row -----------------------------
+     For rows that scroll horizontally: an IntersectionObserver cannot see
+     children clipped by the container, so the row reveals itself and its
+     children cascade in from CSS. The base state is visible, so nothing is ever
+     stuck hidden. */
+  [data-reveal="in"] .stagger > * {
+    animation: card-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 60ms; }
+  .stagger > *:nth-child(3) { animation-delay: 120ms; }
+  .stagger > *:nth-child(4) { animation-delay: 180ms; }
+  .stagger > *:nth-child(5) { animation-delay: 240ms; }
+  .stagger > *:nth-child(6) { animation-delay: 300ms; }
+  .stagger > *:nth-child(7) { animation-delay: 360ms; }
+  .stagger > *:nth-child(n + 8) { animation-delay: 420ms; }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* -- Horizontal timeline with snap ------------------------------------ */
+  .snap-row {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .snap-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .snap-row > * {
+    scroll-snap-align: start;
+  }
+
+  /* Respect users who prefer less motion, app-wide. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* Belt and braces: never leave revealed content hidden. */
+    .reveal[data-reveal="out"] {
+      opacity: 1;
+      transform: none;
+    }
+
+    [data-reveal="in"] .stagger > *,
+    .marquee__track,
+    .drift,
+    .nudge,
+    .spin-slow,
+    .aurora::before,
+    .aurora::after {
+      animation: none !important;
+    }
+  }
+}

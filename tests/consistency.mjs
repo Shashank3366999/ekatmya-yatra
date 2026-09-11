@@ -1,0 +1,194 @@
+/**
+ * Cross-page consistency.
+ *
+ * Catches the class of bug where the same quantity is computed two different
+ * ways and the two disagree — e.g. the landing page once showed "22" for Stops
+ * while its own map card said "21 stops", because one counted every place on
+ * the route and the other only the sequenced itinerary.
+ *
+ *   pnpm build && PORT=3200 pnpm start
+ *   pnpm test:consistency
+ */
+import { chromium } from "playwright";
+
+const B = process.env.BASE_URL ?? "http://localhost:3200";
+const pass = [], fail = [];
+const ok = (c, n, extra = "") => (c ? pass : fail).push(n + (extra ? ` — ${extra}` : ""));
+const eq = (a, b, n) => ok(a === b && a !== null, n, `${a} vs ${b}`);
+
+const browser = await chromium.launch({ channel: "chrome" });
+
+/** Read a stat tile / definition-list figure by its label. */
+const STAT = (label) => {
+  const wanted = label.toLowerCase();
+  for (const el of document.querySelectorAll("p, dt, span")) {
+    if ((el.textContent || "").trim().toLowerCase() !== wanted) continue;
+    let node = el;
+    for (let i = 0; i < 4 && node; i++) {
+      node = node.parentElement;
+      if (!node) break;
+      const v = node.querySelector(".tabular-nums");
+      if (v) {
+        const n = parseInt((v.textContent || "").replace(/[^0-9]/g, ""), 10);
+        if (!Number.isNaN(n)) return n;
+      }
+    }
+  }
+  return null;
+};
+
+const bodyNum = (re) => {
+  const m = document.body.innerText.match(re);
+  return m ? parseInt(m[1], 10) : null;
+};
+
+async function page(ctx, path) {
+  const p = ctx.__page ?? (ctx.__page = await ctx.newPage());
+  await p.goto(B + path, { waitUntil: "networkidle" });
+  await p.waitForTimeout(700);
+  return p;
+}
+
+async function login(ctx, email) {
+  const p = await page(ctx, "/login");
+  await p.getByLabel("Email address").fill(email);
+  await p.getByLabel("Password").fill("Yatra@2026");
+  await p.getByRole("button", { name: /sign in/i }).click();
+  await p.waitForTimeout(2600);
+}
+
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } });
+
+/* ------------------------------------------------- public landing page */
+{
+  const p = await page(ctx, "/");
+  const statStops = await p.evaluate(STAT, "Stops");
+  const badgeStops = await p.evaluate(bodyNum, /(\d+)\s+stops/i);
+  eq(statStops, badgeStops, "landing: Stops figure matches the map card badge");
+  ok(statStops > 0, "landing: stop count is non-zero", `${statStops}`);
+  global.landingStops = statStops;
+}
+const landingStops = global.landingStops;
+
+/* ------------------------------------------------------- user surfaces */
+await login(ctx, "survey.kerala@ekatmadham.com");
+{
+  const p = await page(ctx, "/home");
+  const statStops = await p.evaluate(STAT, "Stops");
+  const heroStops = await p.evaluate(bodyNum, /·\s*(\d+)\s+stops/i);
+  eq(statStops, heroStops, "home: Stops figure matches the hero line");
+  eq(statStops, landingStops, "home stop count matches the landing page");
+}
+{
+  const p = await page(ctx, "/yatra");
+  // Numbered itinerary entries are the sequenced stops; "?" entries are not.
+  const counts = await p.evaluate(() => {
+    const badges = [...document.querySelectorAll("ol li span")]
+      .map((s) => (s.textContent || "").trim())
+      .filter((t) => /^(\d+|\?)$/.test(t));
+    return {
+      numbered: badges.filter((t) => t !== "?").length,
+      pending: badges.filter((t) => t === "?").length,
+    };
+  });
+  eq(counts.numbered, landingStops, "yatra: numbered itinerary entries match the stop count");
+  global.yatraPending = counts.pending;
+}
+
+/* -------------------------------------------------- organiser surfaces */
+{
+  const p = await page(ctx, "/o");
+  const inView = await p.evaluate(STAT, "Surveys in view");
+
+  const list = await page(ctx, "/o/survey");
+  const tabs = await list.evaluate(() =>
+    [...document.querySelectorAll('[role="tab"]')].map((t) => {
+      const m = t.textContent.match(/\((\d+)\)/);
+      return m ? parseInt(m[1], 10) : null;
+    }),
+  );
+  // The second tab is the scope view, which is what the tile counts.
+  eq(inView, tabs[1], "organiser: Surveys in view matches the scope tab count");
+  ok(
+    tabs[0] !== null && tabs[1] !== null && tabs[0] <= tabs[1],
+    "organiser: own surveys do not exceed those in scope",
+    `${tabs[0]} vs ${tabs[1]}`,
+  );
+}
+
+/* ------------------------------------------------------ admin surfaces */
+await login(ctx, "admin@ekatmadham.com");
+{
+  const p = await page(ctx, "/admin");
+  const routeStops = await p.evaluate(STAT, "Route stops");
+  const surveys = await p.evaluate(STAT, "Survey entries");
+  const organisers = await p.evaluate(STAT, "Organisers");
+  const awaiting = await p.evaluate(STAT, "Awaiting approval");
+  const sidebarBadge = await p.evaluate(() => {
+    const a = [...document.querySelectorAll('nav[aria-label="Admin sections"] a')]
+      .find((x) => /Organisers/.test(x.textContent));
+    const m = a && a.textContent.match(/(\d+)\s*$/);
+    return m ? parseInt(m[1], 10) : 0;
+  });
+
+  eq(routeStops, landingStops, "admin: Route stops matches the public stop count");
+  eq(awaiting, sidebarBadge, "admin: Awaiting approval matches the sidebar badge");
+  global.admin = { routeStops, surveys, organisers, awaiting };
+}
+{
+  const p = await page(ctx, "/admin/route");
+  const counts = await p.evaluate(() => {
+    const nums = [...document.querySelectorAll("ol li span")]
+      .map((s) => (s.textContent || "").trim())
+      .filter((t) => /^\d+$/.test(t)).length;
+    const pend = document.querySelectorAll("section ul li").length;
+    const hasPendingSection = /Awaiting sequencing/.test(document.body.innerText);
+    return { nums, pend: hasPendingSection ? pend : 0 };
+  });
+  eq(counts.nums, global.admin.routeStops, "admin route: sequenced list matches the Route stops tile");
+  eq(counts.pend, global.yatraPending, "admin route: awaiting-sequencing count matches the Yatra itinerary");
+}
+{
+  const p = await page(ctx, "/admin/surveys");
+  const total = await p.evaluate(() => {
+    const m = document.body.innerText.match(/Showing\s+(\d+)\s+of\s+(\d+)\s+entries/i);
+    return m ? parseInt(m[2], 10) : null;
+  });
+  eq(total, global.admin.surveys, "admin: Survey entries tile matches the inbox total");
+
+  const tally = await p.evaluate(() => {
+    // The status summary chips must add up to the stated total.
+    const m = document.body.innerText.match(/Total\s+(\d+)/i);
+    return m ? parseInt(m[1], 10) : null;
+  });
+  eq(tally, global.admin.surveys, "admin inbox: status chips total matches the tile");
+}
+{
+  const p = await page(ctx, "/admin/organizers");
+  const tabs = await p.evaluate(() =>
+    Object.fromEntries(
+      [...document.querySelectorAll('[role="tab"]')].map((t) => {
+        const m = t.textContent.match(/(\w[\w\s]*)\((\d+)\)/);
+        return m ? [m[1].trim(), parseInt(m[2], 10)] : ["?", 0];
+      }),
+    ),
+  );
+  eq(tabs.Pending, global.admin.awaiting, "organisers: Pending tab matches the Awaiting approval tile");
+  eq(tabs.Approved, global.admin.organisers, "organisers: Approved tab matches the Organisers tile");
+  ok(
+    tabs.Pending + tabs.Approved <= tabs.All,
+    "organisers: Pending + Approved does not exceed All",
+    `${tabs.Pending}+${tabs.Approved} vs ${tabs.All}`,
+  );
+}
+
+await browser.close();
+
+console.log(`\n=== consistency: ${pass.length} passed, ${fail.length} failed ===`);
+if (fail.length) {
+  console.log("\nFAILURES:");
+  for (const f of fail) console.log("  ✗ " + f);
+} else {
+  console.log("all figures agree");
+}
+process.exit(fail.length ? 1 : 0);
