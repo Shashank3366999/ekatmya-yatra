@@ -47,3 +47,29 @@ export const INDIA_OUTLINE_PATHS: readonly string[] = [
   // 9 points
   "M828.8 960.0 L831.3 964.4 L831.2 967.7 L828.8 970.5 L829.8 971.4 L828.0 973.6 L823.4 972.9 L823.3 963.3 L828.8 960.0 Z",
 ];
+
+/**
+ * How deep a side wall each outline can carry when the map is drawn as a raised
+ * plate, as a multiplier on the base depth.
+ *
+ * The mainland is ~1054 units tall and takes the full depth. The five island
+ * groups are 13 to 27 units tall, and the same depth on them stamps copies
+ * clear of the shape itself — they came out as orange smears rather than
+ * islands. So the depth scales with each shape's own height and is clamped to
+ * 1, computed once here rather than measured in the browser.
+ */
+export const OUTLINE_DEPTH_SCALE: readonly number[] = INDIA_OUTLINE_PATHS.map((d) => {
+  const nums = d.match(/-?\d+(?:\.\d+)?/g);
+  if (!nums) return 1;
+
+  let min = Infinity;
+  let max = -Infinity;
+  for (let i = 1; i < nums.length; i += 2) {
+    const y = Number(nums[i]);
+    if (y < min) min = y;
+    if (y > max) max = y;
+  }
+
+  // A shape 200 units tall or more carries the full wall; below that it tapers.
+  return Math.min(1, (max - min) / 200);
+});

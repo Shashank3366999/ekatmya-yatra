@@ -157,6 +157,27 @@ surfaces are served from one deployment, so the subdomain is only a proxy rule i
 you want it. **We need:** the confirmed domain, who controls DNS, and where it
 will be hosted.
 
+### Q14. Details taken from oneness.org.in
+The landing page now names the Nyas's wider work at Omkareshwar and carries its
+contact details, all read from **oneness.org.in** — the postal address at Shyamla
+Hills, `+91 755-4928869`, and the X / Facebook / Instagram / YouTube profiles,
+each checked on two pages of that site.
+
+Three things need a word from the team:
+
+1. **The email address is missing on purpose.** It is obfuscated on their site,
+   and a guessed address printed on a public page is worse than none. Send the
+   one you want shown.
+2. **Confirm the phone number and address are the right point of contact for
+   Yatra enquiries** — they are the Nyas's general details, and a Yatra-specific
+   line may be better.
+3. Their home page also states the statue depicts Adi Shankaracharya **at twelve
+   years old**, is **88% copper, 8% tin and 4% lead**, and is built to last
+   **500 years**. Those are not repeated on their Statue of Oneness page, so we
+   have not printed them. Confirm and we will add them. The three figures we do
+   show — 108 ft, the 54 ft pedestal, the 27 ft lotus base — appear identically
+   on both pages.
+
 ---
 
 ## Two things to be aware of

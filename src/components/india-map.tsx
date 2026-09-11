@@ -18,6 +18,7 @@ import { useId, useRef, useState } from "react";
 import {
   INDIA_OUTLINE_PATHS,
   MAP_VIEW_BOX,
+  OUTLINE_DEPTH_SCALE,
   projectPoint,
 } from "@/lib/india-outline";
 
@@ -57,6 +58,22 @@ type MarkerKind = NonNullable<MapPlace["kind"]> | "pending";
  * (pumpkin, black, white, gold) — so they differ in fill AND in treatment,
  * not just hue: solid pumpkin, hollow pumpkin, solid black, solid gold.
  */
+/**
+ * The thickness of the plate, drawn as stacked offsets of the same outline.
+ *
+ * Bottom-most first and darkest, so the stack reads as a side wall falling away
+ * from the lit top face. Six steps is enough to look solid at the sizes the map
+ * is used; more just costs paint time.
+ */
+const EXTRUSION = [
+  { dy: 11, color: "var(--color-pumpkin-700)", opacity: 0.5 },
+  { dy: 9, color: "var(--color-pumpkin-600)", opacity: 0.6 },
+  { dy: 7, color: "var(--color-pumpkin-500)", opacity: 0.7 },
+  { dy: 5, color: "var(--color-pumpkin-400)", opacity: 0.8 },
+  { dy: 3, color: "var(--color-pumpkin-300)", opacity: 0.9 },
+  { dy: 1.5, color: "var(--color-pumpkin-200)", opacity: 1 },
+] as const;
+
 const MARKER_STYLES: Record<
   MarkerKind,
   { fill: string; stroke: string; r: number; strokeWidth: number; dashed?: boolean }
@@ -138,9 +155,10 @@ export function IndiaMap({
   const uid = useId();
   const landId = `land-${uid}`;
   const glowId = `glow-${uid}`;
-  const shadowId = `shadow-${uid}`;
-  const skyId = `sky-${uid}`;
-  const ringId = `ring-${uid}`;
+  const haloId = `halo-${uid}`;
+  const haloBlurId = `halo-blur-${uid}`;
+  const reliefId = `relief-${uid}`;
+  const beadId = `bead-${uid}`;
   const [hovered, setHovered] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -227,71 +245,132 @@ export function IndiaMap({
         aria-label={`Map of India showing ${plotted.length} Yatra locations`}
       >
         <defs>
-          <linearGradient id={landId} x1="0" y1="0" x2="0.3" y2="1">
+          {/*
+            The top face of the plate. Lit from the upper left, so the gradient
+            runs that way too and agrees with the specular highlight below.
+          */}
+          <linearGradient id={landId} x1="0.1" y1="0" x2="0.85" y2="1">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="60%" stopColor="#fffaf5" />
-            <stop offset="100%" stopColor="var(--color-pumpkin-50)" />
+            <stop offset="55%" stopColor="#fffaf4" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-100)" />
           </linearGradient>
 
           {/*
-            The ground the country sits on. A flat white panel left the map
-            looking like a spreadsheet; this is a warm dawn wash, brightest
-            behind the route and fading to nothing at the edges so it never
-            reads as a box.
+            The warm ground.
+
+            This was a full-bleed rect filled with a radial gradient, and it
+            read as a box — with `cx` at the middle, the nearest edge is only
+            0.5 away in gradient units, so the wash was still at meaningful
+            opacity where the rect stopped, leaving four straight edges. A
+            gradient cannot solve that; the shape has to.
+
+            So the glow is the country itself: the same outline, scaled up a
+            little and blurred hard. It hugs the coastline, has no edges of its
+            own, and doubles as the ambient light the plate sits in.
           */}
-          <radialGradient id={skyId} cx="0.5" cy="0.42" r="0.72">
-            <stop offset="0%" stopColor="var(--color-pumpkin-200)" stopOpacity="0.75" />
-            <stop offset="55%" stopColor="var(--color-pumpkin-200)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="var(--color-pumpkin-100)" stopOpacity="0" />
+          <radialGradient id={haloId} cx="0.5" cy="0.45" r="0.6">
+            <stop offset="0%" stopColor="var(--color-pumpkin-300)" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-200)" />
           </radialGradient>
 
-          {/* Concentric rings, as on a yantra — the journey's widening circles. */}
-          <radialGradient id={ringId} cx="0.5" cy="0.42" r="0.72">
-            <stop offset="0%" stopColor="var(--color-pumpkin-400)" stopOpacity="0.30" />
-            <stop offset="100%" stopColor="var(--color-pumpkin-400)" stopOpacity="0" />
+          <filter id={haloBlurId} x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="26" />
+          </filter>
+
+          {/*
+            Relief on the top face: the alpha channel becomes a height map, and
+            a distant light from the upper left picks out the coastline as a lit
+            rim. `specularExponent` is kept high so the highlight stays a thin
+            edge rather than a sheen across the whole country.
+          */}
+          <filter id={reliefId} x="-10%" y="-10%" width="120%" height="125%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="bump" />
+            <feSpecularLighting
+              in="bump"
+              surfaceScale="5"
+              specularConstant="0.9"
+              specularExponent="24"
+              lightingColor="#ffffff"
+              result="spec"
+            >
+              <feDistantLight azimuth="315" elevation="58" />
+            </feSpecularLighting>
+            <feComposite in="spec" in2="SourceAlpha" operator="in" result="lit" />
+            <feComposite
+              in="SourceGraphic"
+              in2="lit"
+              operator="arithmetic"
+              k1="0"
+              k2="1"
+              k3="1"
+              k4="0"
+              result="surface"
+            />
+            {/* The plate's own shadow, cast down and to the right of the light. */}
+            <feDropShadow
+              in="surface"
+              dx="3"
+              dy="9"
+              stdDeviation="9"
+              floodColor="var(--color-pumpkin-900)"
+              floodOpacity="0.3"
+            />
+          </filter>
+
+          {/*
+            Gloss for the markers, so they read as beads on the plate rather
+            than as flat dots. One overlay reused by every kind: highlight at
+            the upper left to match the light, shading at the lower right.
+          */}
+          <radialGradient id={beadId} cx="0.34" cy="0.3" r="0.78">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.7" />
+            <stop offset="42%" stopColor="#ffffff" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-900)" stopOpacity="0.22" />
           </radialGradient>
 
           {/* Warm haze along the route, so the journey reads as lit. */}
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="10" />
           </filter>
-
-          {/* Soft lift under the landmass. */}
-          <filter id={shadowId} x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow
-              dx="0"
-              dy="5"
-              stdDeviation="7"
-              floodColor="var(--color-pumpkin-900)"
-              floodOpacity="0.26"
-            />
-          </filter>
         </defs>
 
-        {/* The ground, behind everything. Decorative, so never a hit target. */}
-        <g className="pointer-events-none">
-          <rect
-            x="0"
-            y="0"
-            width={MAP_VIEW_BOX.width}
-            height={MAP_VIEW_BOX.height}
-            fill={`url(#${skyId})`}
-          />
-          {[0.22, 0.34, 0.46, 0.58].map((r) => (
-            <circle
-              key={r}
-              cx={MAP_VIEW_BOX.width * 0.5}
-              cy={MAP_VIEW_BOX.height * 0.42}
-              r={MAP_VIEW_BOX.width * r}
-              fill="none"
-              stroke={`url(#${ringId})`}
-              strokeWidth="1"
-            />
-          ))}
+        {/*
+          The ground: the country's own silhouette, blurred into a glow. Purely
+          decorative, so never a hit target.
+        */}
+        <g className="pointer-events-none" filter={`url(#${haloBlurId})`} opacity="0.55">
+          <g
+            transform={`translate(${MAP_VIEW_BOX.width / 2} ${MAP_VIEW_BOX.height / 2}) scale(1.06) translate(${-MAP_VIEW_BOX.width / 2} ${-MAP_VIEW_BOX.height / 2})`}
+          >
+            {INDIA_OUTLINE_PATHS.map((d, i) => (
+              <path key={i} d={d} fill={`url(#${haloId})`} />
+            ))}
+          </g>
         </g>
 
-        {/* Landmass */}
-        <g filter={`url(#${shadowId})`}>
+        {/*
+          The extruded side of the plate: the same outline stamped downward in
+          darkening steps, with the lit top face drawn over it. Cheaper and
+          crisper than a lighting filter alone, which can only shade a flat
+          shape — this gives the country actual thickness.
+        */}
+        <g className="pointer-events-none">
+          {INDIA_OUTLINE_PATHS.map((d, i) => {
+            const depth = OUTLINE_DEPTH_SCALE[i] ?? 1;
+            return EXTRUSION.map(({ dy, color, opacity }) => (
+              <path
+                key={`${i}-${dy}`}
+                d={d}
+                fill={color}
+                opacity={opacity}
+                transform={`translate(0 ${(dy * depth).toFixed(2)})`}
+              />
+            ));
+          })}
+        </g>
+
+        {/* The lit top face */}
+        <g filter={`url(#${reliefId})`}>
           {INDIA_OUTLINE_PATHS.map((d, i) => (
             <path
               key={i}
@@ -409,6 +488,14 @@ export function IndiaMap({
                       />
                     ) : null}
 
+                    {/* Contact shadow, so the bead sits on the plate. */}
+                    <circle
+                      cy={style.r * 0.22 + 1.5}
+                      r={style.r * 0.95}
+                      fill="var(--color-pumpkin-900)"
+                      opacity="0.22"
+                    />
+
                     <circle
                       r={style.r}
                       fill={style.fill}
@@ -416,6 +503,14 @@ export function IndiaMap({
                       strokeWidth={style.strokeWidth}
                       strokeDasharray={style.dashed ? "3 3" : undefined}
                     />
+
+                    {/*
+                      Gloss, inset so it never covers the ring. Hollow kinds are
+                      meant to read as empty, so they are left matte.
+                    */}
+                    {style.dashed || p.kind === "pending" ? null : (
+                      <circle r={style.r - 0.5} fill={`url(#${beadId})`} />
+                    )}
                   </g>
                 </g>
                 </g>

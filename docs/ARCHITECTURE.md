@@ -246,6 +246,28 @@ And one on typography: Marcellus, the display serif, has letter-like figures —
 "0" reads as a ring and "1" as an I. Every metric, count and date therefore uses
 the sans stack with `tabular-nums`; the serif is for prose headings only.
 
+### The map is drawn as a raised plate, not a flat fill
+
+Two attempts failed before the current one, and both failures are worth keeping:
+
+1. **A full-bleed `rect` with a radial gradient read as a box.** With `cx` at the
+   middle of a 1000x1118 viewBox, the nearest edge is only 0.5 away in gradient
+   units, so the wash was still at meaningful opacity where the rect stopped —
+   four straight edges inside a rounded card. No gradient stop can fix that; the
+   glow has to be a shape. It is now the country's own outline, scaled 1.06 and
+   blurred at stdDeviation 26, so it hugs the coastline and has no edges.
+
+2. **Warming the land to match the ground made the country vanish.** The land
+   has to stay the lightest thing on the panel; the ground was pushed deeper
+   instead.
+
+Depth comes from stamping the outline downward in six darkening steps and drawing
+the lit top face over it, plus `feSpecularLighting` with a distant light at
+azimuth 315 for a lit rim. The extrusion depth is **per shape**: `OUTLINE_DEPTH_SCALE`
+in `src/lib/india-outline.ts` scales it by each path's own height, because the
+five island groups are 13 to 27 units tall and a full 11-unit wall on them
+stamped copies clear of the island itself — they rendered as orange smears.
+
 ## 11. Layout
 
 ```

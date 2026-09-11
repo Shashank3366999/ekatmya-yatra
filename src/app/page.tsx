@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowDown, Compass, HandHeart, MapPin, ShieldCheck } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Building2,
+  Compass,
+  HandHeart,
+  Landmark,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { redirectIfSignedIn } from "@/actions/auth";
 import {
@@ -26,6 +36,36 @@ import { LinkButton } from "@/components/ui/link-button";
 import { formatDate, formatDateShort } from "@/lib/format";
 import { HERITAGE_LABELS, type HeritageType } from "@/lib/heritage-data";
 import { heritageCounts, listHeritagePlaces, listRoutePlaces } from "@/lib/queries";
+
+/**
+ * The Nyas's wider work at Omkareshwar, linked rather than restated.
+ *
+ * Named and described from the organisation's own site (oneness.org.in), which
+ * is the same Acharya Shankar Sanskritik Ekta Nyas organising this Yatra — so
+ * the Yatra is not a standalone event but one part of a larger project, and the
+ * landing page should say so. Descriptions are ours; the links go to theirs, so
+ * nothing here can drift out of date into a wrong claim.
+ */
+const INSIDE_EKATMA_DHAM = [
+  {
+    icon: Landmark,
+    title: "Statue of Oneness",
+    body: "The 108-foot bronze of Adi Shankaracharya as a young seeker, at Omkareshwar in Khandwa district, sculpted by Shri Bhagwan Rampure.",
+    href: "https://www.oneness.org.in/statue-of-oneness",
+  },
+  {
+    icon: Sparkles,
+    title: "Advaita Lok",
+    body: "The museum at Ekatma Dham, presenting Sanatana Dharma and the Advaita tradition through modern, immersive methods.",
+    href: "https://www.oneness.org.in/advait-lok",
+  },
+  {
+    icon: Building2,
+    title: "Institute of Advaita Vedanta",
+    body: "The Acharya Shankar International Institute of Advaita Vedanta — the campus for study and research in the tradition.",
+    href: "https://www.oneness.org.in/institute-of-advaita-vedanta",
+  },
+] as const;
 
 export const metadata: Metadata = {
   title: "Ekatma Yatra 2027 — One Journey, One Consciousness",
@@ -466,6 +506,85 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ------------------------------------------------ inside Ekatma Dham */}
+      <section className="bg-hero-ink relative overflow-hidden">
+        <div className="aurora pointer-events-none absolute inset-0" />
+        <LotusMandala className="spin-slow pointer-events-none absolute -top-24 -right-20 size-64 text-pumpkin-400/10 sm:size-80 lg:size-96" />
+
+        <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+          <Reveal className="max-w-3xl">
+            <p className="text-[10px] tracking-[0.16em] text-pumpkin-400 uppercase">
+              Oneness through Vedanta
+            </p>
+            <h2 className="mt-2 font-display text-2xl text-ink-0 sm:text-3xl">
+              The Yatra sets out from Ekatma Dham
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-ink-0/70 sm:text-base">
+              The Abode of Oneness at Omkareshwar is the home of the Acharya
+              Shankar Sanskritik Ekta Nyas, which is organising this Yatra. The
+              Statue of Oneness stands there, and Omkareshwar is halt eleven on
+              the route.
+            </p>
+          </Reveal>
+
+          {/*
+            The statue's dimensions, taken from the Nyas's own site. Figures
+            only — 108, 54 and 27 are stated identically on both its home page
+            and its Statue of Oneness page, so they are safe to print.
+          */}
+          <Reveal delay={80}>
+            <dl className="mt-8 grid grid-cols-3 gap-3 sm:gap-5">
+              {[
+                { value: 108, unit: "feet", label: "The statue" },
+                { value: 54, unit: "feet", label: "Its pedestal" },
+                { value: 27, unit: "feet", label: "Lotus petal base" },
+              ].map((f) => (
+                <div
+                  key={f.label}
+                  className="rounded-xl border border-ink-0/15 bg-ink-0/5 p-4 text-center backdrop-blur-sm sm:p-5"
+                >
+                  <dd className="text-3xl font-semibold leading-none text-ink-0 sm:text-4xl">
+                    <CountUp value={f.value} />
+                    <span className="ml-1 text-sm font-normal text-pumpkin-400 sm:text-base">
+                      {f.unit}
+                    </span>
+                  </dd>
+                  <dt className="mt-2 text-[11px] tracking-wide text-ink-0/60 uppercase">
+                    {f.label}
+                  </dt>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+
+          <div className="stagger mt-8 grid gap-4 sm:grid-cols-3">
+            {INSIDE_EKATMA_DHAM.map((card) => (
+              <a
+                key={card.title}
+                href={card.href}
+                target="_blank"
+                rel="noreferrer"
+                className="lift group flex flex-col rounded-2xl border border-ink-0/15 bg-ink-0/5 p-5 backdrop-blur-sm transition-colors hover:border-pumpkin-400/50 hover:bg-ink-0/10"
+              >
+                <card.icon size={20} className="text-pumpkin-400" aria-hidden="true" />
+                <h3 className="mt-3 font-display text-lg text-ink-0">{card.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-0/65">
+                  {card.body}
+                </p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-pumpkin-400">
+                  oneness.org.in
+                  <ArrowUpRight
+                    size={13}
+                    aria-hidden="true"
+                    className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ----------------------------------------------- journey timeline */}
       <section className="bg-dusk relative overflow-hidden border-t border-pumpkin-100">
         <div className="bg-grain pointer-events-none absolute inset-0" />
@@ -595,15 +714,94 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-ink-200 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center px-5 text-center">
-          <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" />
-          <p className="mt-4 text-[11px] leading-relaxed text-ink-400">
-            Ekatma Yatra 2027 · One Journey, One Consciousness
-          </p>
-          <p className="mt-1 text-[11px] leading-relaxed text-ink-400">
-            Route and halts are provisional, pending confirmation by the Yatra
-            committee.
+      {/*
+        The footer carries the Nyas's own details, taken from oneness.org.in and
+        checked on two of its pages. The email is deliberately absent: it is
+        obfuscated on their site, and a guessed address on a public page is worse
+        than none. See docs/TEAM-QUESTIONS.md.
+      */}
+      <footer className="border-t border-pumpkin-100 bg-dawn">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12">
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div>
+              <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" />
+              <p className="mt-4 text-xs leading-relaxed text-ink-500">
+                Ekatma Yatra 2027 · One Journey, One Consciousness
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-ink-500">
+                16 January – 10 May 2027 · Kalady to Kedarnath
+              </p>
+            </div>
+
+            <div>
+              <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                The wider mission
+              </p>
+              <ul className="mt-3 space-y-2">
+                {[
+                  ["Ekatma Dham", "https://www.oneness.org.in/ekatma-dham"],
+                  ["Statue of Oneness", "https://www.oneness.org.in/statue-of-oneness"],
+                  ["Advaita Lok", "https://www.oneness.org.in/advait-lok"],
+                  ["The Nyas", "https://www.oneness.org.in/nyas"],
+                ].map(([label, href]) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-ink-600 hover:text-pumpkin-600"
+                    >
+                      {label}
+                      <ArrowUpRight size={12} aria-hidden="true" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                Acharya Shankar Sanskritik Ekta Nyas
+              </p>
+              <address className="mt-3 text-xs leading-relaxed text-ink-600 not-italic">
+                Department of Culture, Government of Madhya Pradesh
+                <br />
+                Madhya Pradesh Tribal Museum, Shyamla Hills
+                <br />
+                Bhopal, Madhya Pradesh — 462003
+              </address>
+              <a
+                href="tel:+917554928869"
+                className="mt-2 inline-block text-xs font-medium text-ink-700 tabular-nums hover:text-pumpkin-600"
+              >
+                +91 755-4928869
+              </a>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                {[
+                  ["X (Twitter)", "https://www.twitter.com/EkatmaDham/"],
+                  ["Facebook", "https://www.facebook.com/Ekatmadham/"],
+                  ["Instagram", "https://www.instagram.com/ekatmadham/"],
+                  ["YouTube", "https://www.youtube.com/@EkatmaDham"],
+                ].map(([label, href]) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-ink-500 underline decoration-pumpkin-300 underline-offset-4 hover:text-pumpkin-600"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <p className="mt-8 border-t border-pumpkin-100 pt-5 text-[11px] leading-relaxed text-ink-400">
+            Route, halts and dates are provisional, pending confirmation by the
+            Yatra committee. Boundaries on the map are a cartographic reference,
+            simplified for display.
           </p>
         </div>
       </footer>

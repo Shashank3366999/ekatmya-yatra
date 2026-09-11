@@ -115,6 +115,49 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 }
 const landingStops = global.landingStops;
 
+/* --------------------------------------------- the Nyas's own facts and links */
+{
+  const p = await page(ctx, "/");
+  const r = await p.evaluate(() => {
+    const text = document.body.innerText;
+    const figures = [...document.querySelectorAll("dd")]
+      .map((d) => parseInt((d.textContent || "").replace(/[^0-9]/g, ""), 10))
+      .filter((n) => !Number.isNaN(n));
+    return {
+      figures,
+      /* Every outbound link must be safe and must actually go to the Nyas. */
+      outbound: [...document.querySelectorAll('a[href^="http"]')]
+        .filter((a) => !a.href.includes("localhost"))
+        .map((a) => ({ host: new URL(a.href).host, blank: a.target === "_blank", rel: a.rel })),
+      hasAddress: /Shyamla Hills/.test(text) && /462003/.test(text),
+      hasPhone: Boolean(document.querySelector('a[href="tel:+917554928869"]')),
+    };
+  });
+
+  /*
+    108 / 54 / 27 are the statue, its pedestal and the lotus base, stated
+    identically on the Nyas's home page and its Statue of Oneness page. They are
+    someone else's facts printed on our site, so they are pinned here — a typo
+    in a number nobody on the team would notice is exactly the kind of error
+    this suite exists for.
+  */
+  for (const n of [108, 54, 27]) {
+    ok(r.figures.includes(n), `landing states the Nyas figure ${n}`, r.figures.join(", "));
+  }
+  ok(r.outbound.length > 0, "landing links out to the Nyas", `${r.outbound.length} links`);
+  ok(
+    r.outbound.every((l) => /(^|\.)oneness\.org\.in$|twitter\.com|facebook\.com|instagram\.com|youtube\.com/.test(l.host)),
+    "every outbound link goes to the Nyas or its own channels",
+    [...new Set(r.outbound.map((l) => l.host))].join(", "),
+  );
+  ok(
+    r.outbound.every((l) => !l.blank || /noreferrer|noopener/.test(l.rel)),
+    "every new-tab link carries rel=noreferrer",
+  );
+  ok(r.hasAddress, "footer carries the Nyas's postal address");
+  ok(r.hasPhone, "footer carries the Nyas's telephone number");
+}
+
 /* ------------------------------------------------------- user surfaces */
 await login(ctx, "survey.kerala@ekatmadham.com");
 {
