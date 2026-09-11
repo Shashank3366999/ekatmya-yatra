@@ -30,8 +30,8 @@ The first four block the deployment; the rest do not.
 rather than a decision. Run it there; it changes nothing:
 
 ```sh
-scp -i ~/.ssh/Ekatmya.pem scripts/preflight.sh ubuntu@<instance>:~
-ssh -i ~/.ssh/Ekatmya.pem ubuntu@<instance> "bash preflight.sh"
+scp -i ~/.ssh/Ekatmya.pem scripts/preflight.sh ec2-user@<instance>:~
+ssh -i ~/.ssh/Ekatmya.pem ec2-user@<instance> "bash preflight.sh"
 ```
 
 It prints the instance type and AMI, the public IP, memory and disk (with a
@@ -46,45 +46,47 @@ console: it is the same information and it travels as text.
 
 | | |
 | --- | --- |
+| Account / region | Recapi AI, `us-east-1` |
+| Instance | `ekatmayatra`, **t3.medium** (2 vCPU, 4 GiB) — enough to build on the box |
+| AMI | Amazon Linux 2023 (`ami-0354c98ae10b02961`, x86_64) — so the login is **`ec2-user`**, the package manager is `dnf`, and nginx reads `/etc/nginx/conf.d/`. The scripts detect this. |
+| Key pair | `Ekatmya` → `Ekatmya.pem` (2048-bit RSA) |
+| Security group | `launch-wizard-10`: 22, 80, 443 open to the world |
 | Domain | `ekatmayatra.xoidlabs.com` |
-| SSH key | `Ekatmya.pem`, a 2048-bit RSA keypair, in the project root |
 
 The key is `chmod 600` and git-ignored by pattern (`*.pem`, `*.key`, `id_rsa*`),
-and it has never been committed — checked against the whole history, not just
-the working tree. It is worth moving it out of the repository anyway:
+and it has never been committed — checked against the whole history. Move it
+out of the repository anyway:
 
 ```sh
 mkdir -p ~/.ssh && mv Ekatmya.pem ~/.ssh/ && chmod 600 ~/.ssh/Ekatmya.pem
+ssh -i ~/.ssh/Ekatmya.pem ec2-user@<instance-ip>
 ```
 
-A key inside a working tree is one `git add -f` or one copied folder away from
-being shared, and git history keeps whatever it is given. Connecting looks the
-same either way:
+### Change these before launching, or straight after
 
-```sh
-ssh -i ~/.ssh/Ekatmya.pem ubuntu@<instance-ip>     # ubuntu@ for an Ubuntu AMI
-ssh -i ~/.ssh/Ekatmya.pem ec2-user@<instance-ip>   # ec2-user@ for Amazon Linux
-```
-
-If it refuses with `UNPROTECTED PRIVATE KEY FILE`, the mode is not 600.
+1. **Storage: 8 GiB is too small.** The OS takes ~2 GB, `node_modules` ~700 MB,
+   the build another few hundred, the repository ~60 MB of photographs, and
+   Next keeps a build cache. It will fill during a build within a few
+   releases. **Set 20 GiB gp3.** If it is already launched: grow the volume in
+   the EC2 console, then on the box `sudo growpart /dev/nvme0n1 1 && sudo
+   xfs_growfs /` — no downtime.
+2. **Turn on volume encryption.** Free, one checkbox, and only possible at
+   launch.
+3. **SSH from your IP only, not `0.0.0.0/0`.** 80 and 443 open to the world is
+   right; 22 is not. Edit the inbound rule to "My IP".
+4. **Allocate an Elastic IP and attach it.** "Public IP: enabled" is a
+   dynamic address: a stop/start changes it and the A record goes stale. The
+   EIP is what the DNS record should point at.
 
 ---
 
 ## 2. The instance
 
-- **OS:** Ubuntu 24.04 LTS.
-- **Size:** `t3.medium` (2 vCPU, 4 GB) to build and run on the same box.
-  `next build` is the memory-hungry step; on a 2 GB instance it is likely to be
-  killed by the OOM reaper. If `t3.small` is a firm constraint, either add 2 GB
-  of swap before building, or build elsewhere and copy `.next` across.
-- **Disk:** 20 GB gp3. The repository carries about 60 MB of photographs and the
-  two video renditions; `node_modules` is roughly 700 MB.
-- **Security group:**
-  - inbound `22` from your own IP only,
-  - inbound `80` and `443` from anywhere,
-  - **not** `3000` from anywhere. Node listens on `127.0.0.1` and nginx is the
-    only thing the internet talks to.
-- **Elastic IP**, so the DNS record survives a stop/start.
+Chosen: `t3.medium`, Amazon Linux 2023. The notes on size and disk are in §1b;
+the only firm requirement the scripts have is outbound HTTPS, for packages.
+
+Node listens on `127.0.0.1:3000` and nginx is the only thing the internet talks
+to, so 3000 must not be opened in the security group.
 
 ---
 
@@ -110,17 +112,14 @@ Turn on automated backups with at least 7 days of retention.
 
 ## 4. Software on the box
 
+`scripts/provision-ec2.sh` does all of this and detects the OS. For the record,
+on Amazon Linux 2023 it comes to:
+
 ```sh
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y nginx git ca-certificates curl unattended-upgrades
-
-# Node 22 LTS
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo corepack enable && corepack prepare pnpm@10.24.0 --activate
-
-node -v   # expect v22.x
-pnpm -v   # expect 10.24.0
+sudo dnf install -y nginx git nmap-ncat dnf-automatic certbot python3-certbot-nginx
+sudo dnf install -y nodejs22          # falls back to NodeSource if absent
+sudo npm install -g pnpm@10.24.0      # the dnf package has no corepack
+sudo setsebool -P httpd_can_network_connect 1   # SELinux: nginx -> 127.0.0.1:3000
 ```
 
 ---
@@ -205,7 +204,7 @@ EnvironmentFile=/srv/yatra/.env.production
 ExecStart=/usr/bin/pnpm start
 Restart=always
 RestartSec=3
-User=ubuntu
+User=ec2-user
 StandardOutput=journal
 StandardError=journal
 
@@ -224,7 +223,7 @@ journalctl -u yatra -f        # the app's log
 
 ## 7. nginx and TLS
 
-`/etc/nginx/sites-available/yatra`:
+`/etc/nginx/conf.d/yatra.conf`:
 
 ```nginx
 server {
@@ -255,12 +254,11 @@ server {
 ```
 
 ```sh
-sudo ln -s /etc/nginx/sites-available/yatra /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+# On Amazon Linux 2023 this lives at /etc/nginx/conf.d/yatra.conf; there is
+# no sites-enabled.
 sudo nginx -t && sudo systemctl reload nginx
 
 # TLS, once the A record resolves to this instance
-sudo snap install --classic certbot && sudo ln -sf /snap/bin/certbot /usr/bin/certbot
 sudo certbot --nginx -d ekatmayatra.xoidlabs.com
 ```
 
@@ -313,8 +311,8 @@ instances behind a load balancer.
 - [ ] Delete `admin@ekatmadham.com` once a real super-admin exists.
 - [ ] Confirm no account still has the password `Yatra@2026`.
 - [ ] RDS automated backups on, retention set.
-- [ ] `unattended-upgrades` enabled for security patches.
-- [ ] SSH by key only: `PasswordAuthentication no` in `sshd_config`.
+- [ ] `dnf-automatic.timer` enabled for security patches (the script does this).
+- [ ] SSH from your IP only in the security group; key-only login is already the AL2023 default.
 - [ ] Rate-limit `/login` in nginx (`limit_req_zone`), since it is the one
       unauthenticated endpoint that touches password hashing.
 - [ ] Decide on the notification provider (§1.5), or tell the team plainly that

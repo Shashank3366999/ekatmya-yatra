@@ -69,7 +69,7 @@ if [ -f /srv/yatra/.env.production ] && grep -q '^DATABASE_URL=.\+' /srv/yatra/.
   if command -v nc >/dev/null 2>&1; then
     line "tcp 5432" "$(nc -z -w 4 "$DB_HOST" 5432 && echo reachable || echo 'NOT reachable — check the RDS security group')"
   else
-    line "tcp 5432" "install netcat to test: sudo apt install -y netcat-openbsd"
+    line "tcp 5432" "install netcat to test: sudo dnf install -y nmap-ncat  (or: apt install netcat-openbsd)"
   fi
 else
   line "DATABASE_URL" "not set yet"
