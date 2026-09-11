@@ -17,3 +17,12 @@ npm-debug.log*
 public/video/*.mp4
 !public/video/intro.mp4
 !public/video/intro-sm.mp4
+
+# Private keys. The EC2 keypair lives here during setup; committing it would
+# publish SSH access to the server for as long as the key exists, and git
+# history keeps it even after a delete. Ignored by pattern rather than by name
+# so the next one is covered too.
+*.pem
+*.key
+id_rsa*
+id_ed25519*
