@@ -19,7 +19,8 @@
     "test:consistency": "node tests/consistency.mjs",
     "test:mobile": "node tests/mobile.mjs",
     "db:rewrite-dashes": "tsx src/db/rewrite-dashes.ts",
-    "test:contrast": "node tests/contrast.mjs"
+    "test:contrast": "node tests/contrast.mjs",
+    "test:session": "node tests/session-security.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.8",

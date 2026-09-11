@@ -6,7 +6,7 @@
  * else is read fresh from the database each request, so an admin revoking access
  * or changing a role takes effect immediately rather than at token expiry.
  */
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { eq } from "drizzle-orm";
@@ -42,6 +42,53 @@ function secret(): Uint8Array {
   return new TextEncoder().encode(value);
 }
 
+/**
+ * Whether the browser's connection to us is actually HTTPS, so the session
+ * cookie's `Secure` flag reflects reality rather than an assumption.
+ *
+ * `NODE_ENV === "production"` was the original test, and it is wrong the
+ * moment a production deployment is not (yet) behind TLS — which is exactly
+ * this site's state while ekatmayatra.xoidlabs.com has no DNS record and
+ * certbot cannot issue a certificate. A `Secure` cookie set over plain HTTP is
+ * not "extra safe", it is silently REFUSED by the browser: sign-in appears to
+ * succeed, the redirect renders from Next's client router cache for a few
+ * minutes as if the session held, and then the first request that actually
+ * reaches the server — a hard reload, a Server Action, the cache going stale —
+ * finds no cookie and bounces to /login. That is the exact bug this fixes.
+ *
+ * nginx is the only thing the internet can reach (Node listens on
+ * 127.0.0.1:3000 only; confirmed closed from outside), and it sets
+ * `X-Forwarded-Proto: $scheme` on every request it proxies, so that header can
+ * be trusted completely — nothing outside this instance can forge it. Once
+ * the domain resolves and `certbot --nginx` adds the http->https redirect,
+ * every real request arrives with `x-forwarded-proto: https` and this starts
+ * returning true again, with no further code change.
+ *
+ * The one case with no signal at all is hitting the app directly with no
+ * proxy in front — `pnpm start` during local testing, or a misconfigured
+ * front end. That defaults to the OLD, strict behaviour (secure in
+ * production) rather than silently downgrading protection when the header is
+ * simply missing.
+ */
+async function connectionIsSecure(): Promise<boolean> {
+  if (process.env.NODE_ENV !== "production") return false;
+
+  const proto = (await headers()).get("x-forwarded-proto");
+  if (proto) return proto === "https";
+
+  /*
+    In practice this branch is not reached: `next start` backfills
+    x-forwarded-proto from the raw socket whenever nothing upstream set it —
+    confirmed by hitting the app directly with no headers at all and reading
+    it back as "http" over this plain connection — so the header is always
+    present and always true to the actual connection. Kept as a fail-safe for
+    a request path that somehow skips that (a custom server, a different
+    runtime): default to secure rather than silently downgrade on an unknown
+    signal.
+  */
+  return true;
+}
+
 export async function createSession(userId: string): Promise<void> {
   const token = await new SignJWT({ sub: userId })
     .setProtectedHeader({ alg: "HS256" })
@@ -52,7 +99,7 @@ export async function createSession(userId: string): Promise<void> {
   (await cookies()).set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await connectionIsSecure(),
     path: "/",
     maxAge: MAX_AGE_SECONDS,
   });
