@@ -15,4 +15,5 @@ npm-debug.log*
 # every clone expensive; the small derived assets it produces ARE committed.
 # See public/video/README.md for where to put the original.
 public/video/*.mp4
-!public/video/hero-loop.mp4
+!public/video/intro.mp4
+!public/video/intro-sm.mp4

@@ -9,7 +9,7 @@ import {
   LotusMandala,
 } from "@/components/brand";
 import { IndiaMap, MapLegend } from "@/components/india-map";
-import { FilmSection } from "@/components/film-section";
+import { PhotoBackdrop, PhotoRibbon } from "@/components/photo-motion";
 import { VideoHero } from "@/components/video-hero";
 import {
   CountUp,
@@ -220,9 +220,12 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* ------------------------------------------------- ribbon of sites */}
-      <section className="border-y border-ink-200 bg-ink-50 py-3.5">
-        <Marquee items={heritage.map((h) => h.name)} />
+      {/* ------------------------------------------------ ribbon of the route */}
+      <section className="border-y border-ink-200 bg-ink-50 py-4">
+        <PhotoRibbon items={sequenced} />
+        <div className="mt-3">
+          <Marquee items={heritage.map((h) => h.name)} />
+        </div>
       </section>
 
       {/* --------------------------------------------------- the journey */}
@@ -316,6 +319,12 @@ export default async function LandingPage() {
 
       {/* ------------------------------------------------- the philosophy */}
       <section className="bg-hero-ink relative overflow-hidden">
+        {/*
+          The route itself drifts behind the Mahavakyas — held far back so the
+          verse stays the thing being read, not the photograph.
+        */}
+        <PhotoBackdrop items={sequenced} className="opacity-25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink-950/85 via-ink-950/70 to-ink-950/90" />
         <div className="aurora pointer-events-none absolute inset-0" />
         <LotusMandala className="spin-slow pointer-events-none absolute -bottom-24 -left-20 size-64 text-pumpkin-400/10 sm:-bottom-36 sm:-left-32 sm:size-80 lg:-bottom-48 lg:-left-40 lg:size-[30rem]" />
 
@@ -414,28 +423,6 @@ export default async function LandingPage() {
               </div>
             </Reveal>
           ) : null}
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------- the film */}
-      <section className="border-t border-ink-200 bg-ink-50">
-        <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
-          <Reveal className="mb-8 max-w-3xl">
-            <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
-              Watch
-            </p>
-            <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
-              Ekatma Dham — A Journey of Oneness
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-ink-600 sm:text-base">
-              The film on Adi Shankaracharya and the Ekatma Dham at Omkareshwar,
-              from the Government of Madhya Pradesh.
-            </p>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <FilmSection />
-          </Reveal>
         </div>
       </section>
 

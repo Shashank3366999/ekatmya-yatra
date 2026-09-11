@@ -19,6 +19,18 @@
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3200";
+/*
+  The landing hero streams a 120-second video, so the network never goes idle
+  there: waiting for "networkidle" on "/" times out at 30s. Wait for "load" and
+  then settle by hand. Every other page still waits for idle.
+*/
+const LANDING_WAIT = { waitUntil: "load" };
+const IDLE_WAIT = { waitUntil: "networkidle" };
+const waitFor = (path) => (path === "/" || path.endsWith("//") ? LANDING_WAIT : IDLE_WAIT);
+async function settle(p, path, ms = 1800) {
+  if (waitFor(path) === LANDING_WAIT) await p.waitForTimeout(ms);
+}
+
 const SHOTS = process.env.SHOTS;
 const pass = [], fail = [];
 /** ok(name, condition, extra?) — name first in this suite. */
@@ -280,7 +292,8 @@ async function newPage(w = 430, h = 900) {
 /* -------------------------------------------- 7. Public user app + journey */
 {
   const { ctx, page, errors } = await newPage();
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/`, LANDING_WAIT);
+  await page.waitForTimeout(1800);
   ok("landing renders", (await page.textContent("body")).includes("One Journey"));
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/13-landing.png`, fullPage: true });
 

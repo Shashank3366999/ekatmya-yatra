@@ -1,31 +1,36 @@
 "use client";
 
 /**
- * The Ekatma Dham film, playing behind the hero copy.
+ * The opening two minutes of the Ekatma Dham film, playing behind the hero copy.
  *
- * It plays an 18-second, 960x540, 0.77 MB loop cut from the full film — not the
- * film itself, which is 86 MB.
+ * The film runs 7:47 at 86 MB. The site ships only its opening 120 seconds, in
+ * two renditions, so a phone never fetches the desktop file:
  *
- * That distinction was measured, not assumed. Pointing the hero at the full file
- * and looping only its opening pulled **64 MB in the first eight seconds**: a
- * playback cap does not limit the download, because the browser buffers ~44s
- * ahead regardless. A Shankardoot opening this on mobile data in the field
- * would have paid for all of it.
+ *   /video/intro-sm.mp4   640x360   3.2 MB   phones
+ *   /video/intro.mp4      960x540   5.3 MB   tablets and laptops
  *
- * The loop was encoded from the source with Chrome's MediaRecorder (see the note
- * in docs/ARCHITECTURE.md); the full film belongs in its own section where
- * someone chooses to watch it.
+ * Both are faststart (moov before mdat) so playback begins on the first chunk
+ * rather than after the whole file. Trimming is what makes this safe: a cap on
+ * the playback position does not cap the download — pointing the hero at the
+ * full film and looping its opening pulled **64 MB in eight seconds**, because
+ * the browser buffers ~44s ahead regardless. A Shankardoot opening this on
+ * mobile data in the field would have paid for all of it.
  *
  * Autoplay is still withheld when the viewer prefers reduced motion or is on a
- * metered connection, the poster carries the first paint, and there is always a
- * visible control — motion should never be something a viewer has to endure.
+ * metered connection, the poster carries the first paint, and the controls are
+ * always visible — motion should never be something a viewer has to endure.
+ * Sound starts off, as autoplay requires, and can be turned on: with the film
+ * no longer having a section of its own, this is where its narration lives.
  */
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 
-/** The short loop cut for this purpose — not the 86 MB film. */
-const SRC = "/video/hero-loop.mp4";
-const POSTER = "/video/poster.jpg";
+const SRC_WIDE = "/video/intro.mp4";
+const SRC_SMALL = "/video/intro-sm.mp4";
+const POSTER = "/video/intro-poster.jpg";
+
+/** Where the phone rendition gives way to the larger one. */
+const WIDE_FROM = "(min-width: 700px)";
 
 type Reason = "ok" | "reduced-motion" | "metered";
 
@@ -53,6 +58,7 @@ function autoplayVerdict(): Reason {
 export function VideoHero({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [reason, setReason] = useState<Reason>("metered");
 
   useEffect(() => {
@@ -88,6 +94,24 @@ export function VideoHero({ className = "" }: { className?: string }) {
     }
   }
 
+  /** Unmuting also starts playback, so the button always does something. */
+  function toggleSound() {
+    const v = ref.current;
+    if (!v) return;
+
+    const next = !v.muted;
+    v.muted = next;
+    setMuted(next);
+
+    if (!next && v.paused) {
+      v.preload = "auto";
+      v.play().then(
+        () => setPlaying(true),
+        () => setPlaying(false),
+      );
+    }
+  }
+
   return (
     <div className={`bg-hero-ink absolute inset-0 overflow-hidden ${className}`}>
       <video
@@ -102,32 +126,49 @@ export function VideoHero({ className = "" }: { className?: string }) {
         aria-hidden="true"
         tabIndex={-1}
       >
-        <source src={SRC} type="video/mp4" />
+        {/* First match wins, so the wide rendition is listed first. */}
+        <source src={SRC_WIDE} type="video/mp4" media={WIDE_FROM} />
+        <source src={SRC_SMALL} type="video/mp4" />
       </video>
 
       {/* Scrims, so the copy over the film stays readable on any frame. */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink-950/85 via-ink-950/55 to-ink-950/25" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/30 to-ink-950/40" />
 
-      {/* The control sits in the corner, clear of the copy. */}
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={playing ? "Pause the background film" : "Play the background film"}
-        className="absolute right-4 bottom-4 z-20 inline-flex min-h-10 items-center gap-2 rounded-full border border-ink-0/25 bg-ink-950/45 px-3.5 text-xs font-medium text-ink-0/80 backdrop-blur-sm transition-colors hover:bg-ink-950/70 hover:text-ink-0 sm:right-6 sm:bottom-6"
-      >
-        {playing ? (
-          <>
-            <Pause size={13} aria-hidden="true" />
-            Pause film
-          </>
-        ) : (
-          <>
-            <Play size={13} aria-hidden="true" />
-            {reason === "metered" ? "Play film" : "Play"}
-          </>
-        )}
-      </button>
+      {/* The controls sit in the corner, clear of the copy. */}
+      <div className="absolute right-4 bottom-4 z-20 flex items-center gap-2 sm:right-6 sm:bottom-6">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={playing ? "Pause the background film" : "Play the background film"}
+          className="inline-flex min-h-10 items-center gap-2 rounded-full border border-ink-0/25 bg-ink-950/45 px-3.5 text-xs font-medium text-ink-0/80 backdrop-blur-sm transition-colors hover:bg-ink-950/70 hover:text-ink-0"
+        >
+          {playing ? (
+            <>
+              <Pause size={13} aria-hidden="true" />
+              Pause film
+            </>
+          ) : (
+            <>
+              <Play size={13} aria-hidden="true" />
+              {reason === "metered" ? "Play film" : "Play"}
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={muted ? "Turn on the film's sound" : "Mute the film"}
+          className="inline-flex size-10 items-center justify-center rounded-full border border-ink-0/25 bg-ink-950/45 text-ink-0/80 backdrop-blur-sm transition-colors hover:bg-ink-950/70 hover:text-ink-0"
+        >
+          {muted ? (
+            <VolumeX size={14} aria-hidden="true" />
+          ) : (
+            <Volume2 size={14} aria-hidden="true" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }

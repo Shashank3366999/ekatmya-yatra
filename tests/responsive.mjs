@@ -13,6 +13,18 @@
 import { chromium } from "playwright";
 
 const B = process.env.BASE_URL ?? "http://localhost:3200";
+/*
+  The landing hero streams a 120-second video, so the network never goes idle
+  there: waiting for "networkidle" on "/" times out at 30s. Wait for "load" and
+  then settle by hand. Every other page still waits for idle.
+*/
+const LANDING_WAIT = { waitUntil: "load" };
+const IDLE_WAIT = { waitUntil: "networkidle" };
+const waitFor = (path) => (path === "/" || path.endsWith("//") ? LANDING_WAIT : IDLE_WAIT);
+async function settle(p, path, ms = 1800) {
+  if (waitFor(path) === LANDING_WAIT) await p.waitForTimeout(ms);
+}
+
 const WIDTHS = [
   { w: 390, h: 844, name: "phone" },
   { w: 768, h: 1024, name: "tablet" },
@@ -83,7 +95,8 @@ for (const { w, h, name } of WIDTHS) {
   const desktop = w >= 1024;
 
   for (const [path, label] of [["/home", "home"], ["/yatra", "yatra"], ["/events", "events"], ["/journey", "journey"], ["/o", "o-dash"], ["/o/survey/new", "o-form"]]) {
-    await p.goto(B + path, { waitUntil: "networkidle" });
+    await p.goto(B + path, waitFor(path));
+    await settle(p, path);
     await p.waitForTimeout(500);
     await checkOverflow(p, label, w);
   }
@@ -218,7 +231,8 @@ for (const { w, h, name } of WIDTHS) {
   const desktop = w >= 1024;
 
   for (const [path, label] of [["/admin", "admin"], ["/admin/surveys", "inbox"], ["/admin/users", "users"], ["/admin/organizers", "orgs"], ["/admin/route", "route"], ["/admin/reports", "reports"], ["/admin/automations", "autom"], ["/admin/announcements", "annc"]]) {
-    await p.goto(B + path, { waitUntil: "networkidle" });
+    await p.goto(B + path, waitFor(path));
+    await settle(p, path);
     await p.waitForTimeout(500);
     await checkOverflow(p, label, w);
   }
@@ -259,7 +273,8 @@ for (const { w, h, name } of WIDTHS) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
   const p = await ctx.newPage();
   for (const [path, label] of [["/", "landing"], ["/login", "login"], ["/register", "register"], ["/register/organizer", "reg-org"]]) {
-    await p.goto(B + path, { waitUntil: "networkidle" });
+    await p.goto(B + path, waitFor(path));
+    await settle(p, path);
     await p.waitForTimeout(500);
     await checkOverflow(p, label, w);
   }

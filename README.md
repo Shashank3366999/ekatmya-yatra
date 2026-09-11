@@ -239,15 +239,19 @@ badly (Thrissur's would swallow Kalady, 15 units away).
 
 ### The film
 
-`public/video/` holds the Government of Madhya Pradesh film *Ekatma Dham — A
-Journey of Oneness* (1280×720, 7m48s, **86 MB**), and it is used two ways:
+The Government of Madhya Pradesh film *Ekatma Dham — A Journey of Oneness*
+(1280×720, 7m48s, **86 MB**) is the master, and the site ships only its opening
+**two minutes**, as the moving backdrop to the landing hero:
 
 | | File | Size | Behaviour |
 | --- | --- | --- | --- |
-| Hero background | `hero-loop.mp4` | **0.77 MB** | 18s, 960×540, silent, loops behind the copy |
-| Watch section | `ekatma-dham-journey-of-oneness.mp4` | 86 MB | `preload="none"` — fetched only when someone presses play |
+| Hero, phones | `intro-sm.mp4` | **3.2 MB** | 120s, 640×360, chosen by `<source media>` |
+| Hero, wider | `intro.mp4` | **5.3 MB** | 120s, 960×540, from 700px up |
 
-**Why a separate loop, rather than looping the film itself.** The first attempt
+The full film is not served anywhere; it stays git-ignored and local. Sound
+starts off, as autoplay requires, and the hero carries a control to turn it on.
+
+**Why a trimmed file, rather than seeking within the film.** The first attempt
 pointed the hero at the full file and reset playback after 26 seconds. Measured
 result: **64 MB pulled in the first eight seconds.** A playback cap does not
 limit the download — the browser buffers roughly 44 seconds ahead regardless. On

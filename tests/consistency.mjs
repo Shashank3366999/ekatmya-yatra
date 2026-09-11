@@ -17,6 +17,18 @@ const ok = (c, n, extra = "") => (c ? pass : fail).push(n + (extra ? ` — ${ext
 const eq = (a, b, n) => ok(a === b && a !== null, n, `${a} vs ${b}`);
 
 const browser = await chromium.launch({ channel: "chrome" });
+/*
+  The landing hero streams a 120-second video, so the network never goes idle
+  there: waiting for "networkidle" on "/" times out at 30s. Wait for "load" and
+  then settle by hand. Every other page still waits for idle.
+*/
+const LANDING_WAIT = { waitUntil: "load" };
+const IDLE_WAIT = { waitUntil: "networkidle" };
+const waitFor = (path) => (path === "/" || path.endsWith("//") ? LANDING_WAIT : IDLE_WAIT);
+async function settle(p, path, ms = 1800) {
+  if (waitFor(path) === LANDING_WAIT) await p.waitForTimeout(ms);
+}
+
 
 /** Read a stat tile / definition-list figure by its label. */
 const STAT = (label) => {
@@ -44,7 +56,8 @@ const bodyNum = (re) => {
 
 async function page(ctx, path) {
   const p = ctx.__page ?? (ctx.__page = await ctx.newPage());
-  await p.goto(B + path, { waitUntil: "networkidle" });
+  await p.goto(B + path, waitFor(path));
+  await settle(p, path);
   await p.waitForTimeout(700);
   return p;
 }

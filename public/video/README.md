@@ -4,9 +4,14 @@
 
 | File | Size | Used for |
 | --- | --- | --- |
-| `hero-loop.mp4` | 0.77 MB | The silent 18s loop behind the landing hero |
-| `poster.jpg` | 103 KB | Poster frame for the hero and the Watch section |
-| `alt.jpg` | 37 KB | A second still, spare |
+| `intro.mp4` | 5.3 MB | The opening 2 minutes, 960×540 — laptops and tablets |
+| `intro-sm.mp4` | 3.2 MB | The same 2 minutes at 640×360 — phones |
+| `intro-poster.jpg` | 42 KB | Poster frame, so first paint is an image |
+
+Both renditions are the **first 120 seconds** of the film and nothing more, and
+both are faststart (`moov` before `mdat`) so playback begins on the first chunk.
+The landing hero picks between them with `<source media="(min-width: 700px)">`,
+which is the only thing keeping a phone off the 5.3 MB file.
 
 ## Not committed — supply separately
 
@@ -14,20 +19,33 @@
 film, *Ekatma Dham — A Journey of Oneness* (1280×720, 7m48s, **86 MB**).
 
 It is deliberately **git-ignored**: 86 MB would stay in the repository's history
-permanently and make every clone expensive. Drop it into this folder to make the
-landing page's "Watch" section work locally.
+permanently and make every clone expensive. It is no longer shown anywhere on
+the site either — it is kept only as the master to cut the intro from.
 
-Better still for production: host it on YouTube/Vimeo or behind a CDN, or supply
-a compressed version — see `docs/TEAM-QUESTIONS.md` Q7b.
+If the full film should be watchable in future, host it on YouTube/Vimeo or
+behind a CDN rather than serving it from here — see `docs/TEAM-QUESTIONS.md`
+Q7b.
 
-## Regenerating the hero loop
+## Regenerating the intro
 
-The loop was cut from the full film with Chrome's MediaRecorder rather than
-ffmpeg, because it needed re-encoding to H.264 mp4 and Chrome can do that
-natively. If the source is replaced, regenerate at 960×540, ~850 kbps, 18s,
-silent.
+With the master film in this folder:
+
+```sh
+ffmpeg -ss 0 -t 120 -i ekatma-dham-journey-of-oneness.mp4 \
+  -vf "scale=960:-2,fps=24" -c:v libx264 -profile:v high -preset veryslow \
+  -crf 32 -pix_fmt yuv420p -g 48 -c:a aac -b:a 48k -ac 1 \
+  -movflags +faststart intro.mp4
+
+ffmpeg -ss 0 -t 120 -i ekatma-dham-journey-of-oneness.mp4 \
+  -vf "scale=640:-2,fps=24" -c:v libx264 -profile:v main -preset veryslow \
+  -crf 32 -pix_fmt yuv420p -g 48 -c:a aac -b:a 48k -ac 1 \
+  -movflags +faststart intro-sm.mp4
+
+ffmpeg -ss 3 -i ekatma-dham-journey-of-oneness.mp4 -frames:v 1 \
+  -vf "scale=1280:-2" -q:v 4 intro-poster.jpg
+```
 
 **Do not point the hero at the full film instead.** That was the first attempt,
 looping only its opening — and it pulled **64 MB in the first eight seconds**,
 because capping playback position does not stop the browser buffering ahead.
-`pnpm test:mobile` now asserts the hero uses `hero-loop.mp4`.
+`pnpm test:mobile` asserts the hero loads `intro-sm.mp4` at phone width.

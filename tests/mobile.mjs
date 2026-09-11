@@ -10,6 +10,18 @@
 import { chromium } from "playwright";
 
 const B = process.env.BASE_URL ?? "http://localhost:3200";
+/*
+  The landing hero streams a 120-second video, so the network never goes idle
+  there: waiting for "networkidle" on "/" times out at 30s. Wait for "load" and
+  then settle by hand. Every other page still waits for idle.
+*/
+const LANDING_WAIT = { waitUntil: "load" };
+const IDLE_WAIT = { waitUntil: "networkidle" };
+const waitFor = (path) => (path === "/" || path.endsWith("//") ? LANDING_WAIT : IDLE_WAIT);
+async function settle(p, path, ms = 1800) {
+  if (waitFor(path) === LANDING_WAIT) await p.waitForTimeout(ms);
+}
+
 const pass = [], fail = [];
 /** ok(condition, name, extra?) — condition first in this suite. */
 const ok = (c, n, extra = "") => (c ? pass : fail).push(n + (extra ? ` — ${extra}` : ""));
@@ -25,7 +37,8 @@ const ctx = await browser.newContext({
 const page = await ctx.newPage();
 
 /* ------------------------------------------------------ installable app */
-await page.goto(`${B}/`, { waitUntil: "networkidle" });
+await page.goto(`${B}/`, LANDING_WAIT);
+await page.waitForTimeout(1800);
 
 const manifest = await page.evaluate(async () => {
   const link = document.querySelector('link[rel="manifest"]');
@@ -88,7 +101,8 @@ for (const [path, label] of [
   ["/home", "user home"],
   ["/yatra", "yatra"],
 ]) {
-  await page.goto(B + path, { waitUntil: "networkidle" });
+  await page.goto(B + path, waitFor(path));
+  await settle(page, path);
   await page.waitForTimeout(600);
 
   const r = await page.evaluate(() => {
@@ -156,7 +170,8 @@ const publicCtx = await browser.newContext({
   deviceScaleFactor: 2,
 });
 const landing = await publicCtx.newPage();
-await landing.goto(`${B}/`, { waitUntil: "networkidle" });
+await landing.goto(`${B}/`, LANDING_WAIT);
+await landing.waitForTimeout(1800);
 await landing.waitForTimeout(1100);
 ok(new URL(landing.url()).pathname === "/", "landing page is reachable when signed out");
 
@@ -199,6 +214,7 @@ const hero = await landing.evaluate(() => {
     // over a moving image.
     scrims: document.querySelectorAll("header .bg-gradient-to-t, header .bg-gradient-to-r").length,
     control: Boolean(document.querySelector('button[aria-label*="background film"]')),
+    sound: Boolean(document.querySelector('button[aria-label*="sound"], button[aria-label*="Mute"]')),
   };
 });
 
@@ -206,11 +222,14 @@ if (hero) {
   /*
     Guards the measurement that mattered: pointing the hero at the full 86 MB
     film pulled 64 MB in eight seconds, because capping playback position does
-    not stop the browser buffering ahead. The hero must use the short cut.
+    not stop the browser buffering ahead. The hero must use a trimmed file, and
+    at this viewport specifically the phone rendition rather than the desktop
+    one — the <source media> query is the only thing separating 3.2 MB from
+    5.3 MB on a phone, and a wrong breakpoint fails silently.
   */
   ok(
-    hero.src === "hero-loop.mp4",
-    "hero uses the small loop, not the full film",
+    hero.src === "intro-sm.mp4",
+    "hero uses the phone rendition of the two-minute intro",
     hero.src,
   );
   ok(hero.hasPoster, "hero video has a poster so first paint is an image");
@@ -218,10 +237,11 @@ if (hero) {
   ok(hero.coversHero, "hero video spans the viewport width");
   ok(hero.scrims >= 2, "scrims sit between the film and the copy", `${hero.scrims}`);
   ok(hero.control, "the background film has a visible pause control");
+  ok(hero.sound, "the film's sound can be turned on");
   ok(hero.headingAboveFold, "hero heading is above the fold");
 }
 
-/* The full film must not be fetched unless asked for. */
+/* The 86 MB film is no longer shipped at all — only its opening two minutes. */
 const filmBytes = await landing.evaluate(() =>
   performance
     .getEntriesByType("resource")
@@ -229,8 +249,12 @@ const filmBytes = await landing.evaluate(() =>
     .reduce((a, r) => a + (r.transferSize || 0), 0),
 );
 ok(filmBytes === 0, "the 86 MB film is not downloaded on page load", `${filmBytes} bytes`);
+ok(
+  !(await landing.content()).includes("ekatma-dham-journey"),
+  "the landing page does not reference the full film",
+);
 
-await publicCtx.close();await publicCtx.close();
+await publicCtx.close();
 await browser.close();
 
 console.log(`\n=== mobile audit: ${pass.length} passed, ${fail.length} failed ===`);
