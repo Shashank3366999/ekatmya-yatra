@@ -85,6 +85,71 @@ ok(
 ok(touch.noSideScroll, "landing does not scroll sideways");
 ok(touch.action === "manipulation", "links avoid the 300ms tap delay", String(touch.action));
 
+/* --------------------------------------------------------- the sign-in screen */
+{
+  await page.goto(`${B}/login`, { waitUntil: "load" });
+  await page.waitForTimeout(1600);
+
+  const l = await page.evaluate(() => {
+    const bg = document.querySelector('img[src*="login-bg"]');
+    const panel = document.querySelector(".glass-panel");
+    const submit = document.querySelector('button[type="submit"]');
+    const input = document.querySelector('input[type="email"]');
+    const label = document.querySelector("label");
+
+    /* Relative luminance, to check type against its own ground rather than by eye. */
+    const lum = (c) => {
+      const [r, g, b] = (c.match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(Number);
+      const f = (v) => {
+        const x = v / 255;
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+      };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    };
+    const ratio = (a, b) => {
+      const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    };
+
+    const panelBg = "rgb(40,40,44)"; // the blurred dark glass, measured once
+    return {
+      hasPhoto: Boolean(bg) && bg.complete && bg.naturalWidth > 0,
+      hasPanel: Boolean(panel),
+      /* The primary action inverts to white-on-ink over a photograph. */
+      submitBg: submit ? getComputedStyle(submit).backgroundColor : null,
+      submitContrast: submit
+        ? ratio(getComputedStyle(submit).backgroundColor, getComputedStyle(submit).color)
+        : 0,
+      labelContrast: label ? ratio(getComputedStyle(label).color, panelBg) : 0,
+      inputContrast: input ? ratio(getComputedStyle(input).color, panelBg) : 0,
+      /* The reference is one screen: no scrolling to reach the button. */
+      fitsOneScreen:
+        document.documentElement.scrollHeight <= window.innerHeight + 2,
+      noSideScroll: document.documentElement.scrollWidth <= window.innerWidth + 1,
+      emblem: Boolean(document.querySelector('svg[aria-label="Ekatma Yatra"]')),
+    };
+  });
+
+  ok(l.hasPhoto, "sign-in renders its background photograph");
+  ok(l.hasPanel, "sign-in form sits on the glass panel");
+  ok(l.emblem, "sign-in carries the Yatra emblem");
+  ok(
+    l.submitBg === "rgb(255, 255, 255)",
+    "the primary action inverts to solid white over the photograph",
+    String(l.submitBg),
+  );
+  /*
+    These ratios are the reason the panel exists. The fields are HeroUI's and
+    take their colours from CSS variables, so a light-theme token leaking in
+    here would render white-on-white and pass every structural check.
+  */
+  ok(l.submitContrast >= 4.5, "primary action text is legible", l.submitContrast.toFixed(1));
+  ok(l.labelContrast >= 4.5, "field labels are legible on the panel", l.labelContrast.toFixed(1));
+  ok(l.inputContrast >= 4.5, "typed input is legible on the panel", l.inputContrast.toFixed(1));
+  ok(l.fitsOneScreen, "sign-in fits one phone screen without scrolling");
+  ok(l.noSideScroll, "sign-in does not scroll sideways");
+}
+
 /* ----------------------------------------------- one-handed reachability */
 async function login(email) {
   await page.goto(`${B}/login`, { waitUntil: "networkidle" });
@@ -213,8 +278,8 @@ const hero = await landing.evaluate(() => {
     // A scrim must sit between the film and the copy, or text is unreadable
     // over a moving image.
     scrims: document.querySelectorAll("header .bg-gradient-to-t, header .bg-gradient-to-r").length,
-    control: Boolean(document.querySelector('button[aria-label*="background film"]')),
-    sound: Boolean(document.querySelector('button[aria-label*="sound"], button[aria-label*="Mute"]')),
+    // The film is wallpaper: no controls of ours, and none of the browser's.
+    controls: v.controls || Boolean(document.querySelector('button[aria-label*="film"]')),
   };
 });
 
@@ -236,8 +301,7 @@ if (hero) {
   ok(hero.muted && hero.inline, "hero video is muted and plays inline");
   ok(hero.coversHero, "hero video spans the viewport width");
   ok(hero.scrims >= 2, "scrims sit between the film and the copy", `${hero.scrims}`);
-  ok(hero.control, "the background film has a visible pause control");
-  ok(hero.sound, "the film's sound can be turned on");
+  ok(!hero.controls, "the background film carries no controls");
   ok(hero.headingAboveFold, "hero heading is above the fold");
 }
 

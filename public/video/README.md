@@ -4,14 +4,17 @@
 
 | File | Size | Used for |
 | --- | --- | --- |
-| `intro.mp4` | 5.3 MB | The opening 2 minutes, 960×540 — laptops and tablets |
-| `intro-sm.mp4` | 3.2 MB | The same 2 minutes at 640×360 — phones |
+| `intro.mp4` | 4.6 MB | The opening 2 minutes, 960×540, silent — laptops and tablets |
+| `intro-sm.mp4` | 2.5 MB | The same 2 minutes at 640×360, silent — phones |
 | `intro-poster.jpg` | 42 KB | Poster frame, so first paint is an image |
 
 Both renditions are the **first 120 seconds** of the film and nothing more, and
 both are faststart (`moov` before `mdat`) so playback begins on the first chunk.
 The landing hero picks between them with `<source media="(min-width: 700px)">`,
-which is the only thing keeping a phone off the 5.3 MB file.
+which is the only thing keeping a phone off the 4.6 MB file.
+
+Both are encoded with `-an`. The hero has no unmute control, so an audio track
+would be bytes nobody can hear — dropping it saved 0.7 MB per rendition.
 
 ## Not committed — supply separately
 
@@ -33,13 +36,11 @@ With the master film in this folder:
 ```sh
 ffmpeg -ss 0 -t 120 -i ekatma-dham-journey-of-oneness.mp4 \
   -vf "scale=960:-2,fps=24" -c:v libx264 -profile:v high -preset veryslow \
-  -crf 32 -pix_fmt yuv420p -g 48 -c:a aac -b:a 48k -ac 1 \
-  -movflags +faststart intro.mp4
+  -crf 32 -pix_fmt yuv420p -g 48 -an -movflags +faststart intro.mp4
 
 ffmpeg -ss 0 -t 120 -i ekatma-dham-journey-of-oneness.mp4 \
   -vf "scale=640:-2,fps=24" -c:v libx264 -profile:v main -preset veryslow \
-  -crf 32 -pix_fmt yuv420p -g 48 -c:a aac -b:a 48k -ac 1 \
-  -movflags +faststart intro-sm.mp4
+  -crf 32 -pix_fmt yuv420p -g 48 -an -movflags +faststart intro-sm.mp4
 
 ffmpeg -ss 3 -i ekatma-dham-journey-of-oneness.mp4 -frames:v 1 \
   -vf "scale=1280:-2" -q:v 4 intro-poster.jpg

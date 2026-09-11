@@ -2,7 +2,7 @@
   "name": "ekatmya-yatra",
   "version": "0.1.0",
   "private": true,
-  "description": "Ek Aatam Yatra \u2014 lightweight responsive web platform for the Bharat Yatra for Oneness",
+  "description": "Ek Aatam Yatra — lightweight responsive web platform for the Bharat Yatra for Oneness",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

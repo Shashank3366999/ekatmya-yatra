@@ -7,6 +7,7 @@ import {
   AccentRule,
   BrandLockup,
   LotusMandala,
+  RouteMotif,
 } from "@/components/brand";
 import { IndiaMap, MapLegend } from "@/components/india-map";
 import { PhotoBackdrop, PhotoRibbon } from "@/components/photo-motion";
@@ -221,7 +222,7 @@ export default async function LandingPage() {
       </header>
 
       {/* ------------------------------------------------ ribbon of the route */}
-      <section className="border-y border-ink-200 bg-ink-50 py-4">
+      <section className="border-y border-pumpkin-100 bg-pumpkin-50/70 py-4">
         <PhotoRibbon items={sequenced} />
         <div className="mt-3">
           <Marquee items={heritage.map((h) => h.name)} />
@@ -229,7 +230,17 @@ export default async function LandingPage() {
       </section>
 
       {/* --------------------------------------------------- the journey */}
-      <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+      <section className="bg-dawn relative overflow-hidden">
+        <div className="bg-grain pointer-events-none absolute inset-0" />
+        <Parallax
+          strength={0.12}
+          className="pointer-events-none absolute -top-20 -left-24 hidden sm:block"
+        >
+          <LotusMandala className="spin-slow size-72 text-pumpkin-500/[0.07] lg:size-96" />
+        </Parallax>
+        <RouteMotif className="pointer-events-none absolute -right-10 bottom-6 hidden w-72 text-pumpkin-500/10 lg:block" />
+
+        <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <Reveal>
@@ -284,11 +295,39 @@ export default async function LandingPage() {
                 </div>
               </dl>
             </Reveal>
+
+            {/*
+              The column ran out of content well before the map card did, which
+              left a pane of empty ground on a laptop. A live countdown is the
+              one thing on this page that changes by the second, so it earns the
+              space rather than padding it.
+            */}
+            <Reveal delay={140}>
+              <div className="relative mt-8 overflow-hidden rounded-2xl border border-pumpkin-200/70 bg-ink-0/70 p-5 backdrop-blur-sm sm:p-6">
+                <LotusMandala className="spin-slow pointer-events-none absolute -right-10 -bottom-12 size-40 text-pumpkin-500/[0.08]" />
+                <div className="relative">
+                  <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
+                    The Yatra begins in
+                  </p>
+                  <div className="mt-3">
+                    <Countdown target={YATRA_START_ISO} ground="light" />
+                  </div>
+                  <p className="mt-3 text-xs text-ink-500">
+                    16 January 2027 · {first?.name ?? "Kalady"}, Kerala
+                  </p>
+                </div>
+              </div>
+            </Reveal>
           </div>
 
           <Reveal delay={60}>
-            <div className="relative overflow-hidden rounded-2xl border border-ink-200 bg-gradient-to-b from-ink-0 to-ink-50 p-5 shadow-sm sm:p-8">
+            <div className="relative overflow-hidden rounded-2xl border border-pumpkin-200/70 bg-gradient-to-b from-ink-0 via-pumpkin-50/60 to-pumpkin-100/70 p-5 shadow-[0_18px_40px_-24px_rgba(94,39,5,0.35)] sm:p-8">
               <LotusMandala className="pointer-events-none absolute -top-8 -right-8 size-36 text-pumpkin-500/10 sm:-top-10 sm:-right-10 sm:size-48" />
+              {/*
+                The lamp the map sits over. Behind the landmass, breathing
+                slowly, so the country reads as lit rather than printed.
+              */}
+              <div className="lamp-glow pointer-events-none absolute top-1/2 left-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pumpkin-300/25 blur-3xl sm:size-80" />
 
               <div className="relative flex items-center justify-between gap-4">
                 <div>
@@ -311,9 +350,10 @@ export default async function LandingPage() {
                 className="mx-auto mt-4 max-h-[30rem] w-full max-w-sm lg:max-w-md"
               />
 
-              <MapLegend className="relative mt-4 justify-center border-t border-ink-200 pt-4" />
+              <MapLegend className="relative mt-4 justify-center border-t border-pumpkin-200/70 pt-4" />
             </div>
           </Reveal>
+        </div>
         </div>
       </section>
 
@@ -341,7 +381,7 @@ export default async function LandingPage() {
       </section>
 
       {/* ------------------------------------------- sacred geography */}
-      <section className="border-t border-ink-200 bg-ink-50">
+      <section className="bg-dusk relative overflow-hidden border-t border-pumpkin-100">
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="max-w-3xl">
             <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
@@ -361,7 +401,7 @@ export default async function LandingPage() {
           <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
             {HERITAGE_ORDER.map((t, i) => (
               <Reveal key={t} delay={i * 60}>
-                <div className="lift h-full rounded-xl border border-ink-200 bg-surface p-4">
+                <div className="lift h-full rounded-xl border border-pumpkin-200/60 bg-surface p-4">
                   <dd className="text-3xl font-semibold leading-none text-pumpkin-600">
                     <CountUp value={counts[t] ?? 0} />
                   </dd>
@@ -387,7 +427,7 @@ export default async function LandingPage() {
             </Reveal>
 
             <Reveal delay={140}>
-              <div className="flex h-full flex-col justify-center rounded-2xl border border-ink-200 bg-surface p-5 sm:p-6">
+              <div className="flex h-full flex-col justify-center rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
                 <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
                   Across Bharat
                 </p>
@@ -427,8 +467,9 @@ export default async function LandingPage() {
       </section>
 
       {/* ----------------------------------------------- journey timeline */}
-      <section className="border-t border-ink-200">
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+      <section className="bg-dusk relative overflow-hidden border-t border-pumpkin-100">
+        <div className="bg-grain pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="max-w-3xl">
             <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
               The itinerary
@@ -455,7 +496,7 @@ export default async function LandingPage() {
               {sequenced.map((p) => (
                 <article
                   key={p.id}
-                  className="lift group flex h-full w-60 shrink-0 flex-col overflow-hidden rounded-xl border border-ink-200 bg-surface sm:w-72"
+                  className="lift group flex h-full w-60 shrink-0 flex-col overflow-hidden rounded-xl border border-pumpkin-200/60 bg-surface sm:w-72"
                 >
                   {/* The place itself. Lazy by default — 21 photos must not
                       all load before the page is usable. */}
@@ -503,8 +544,10 @@ export default async function LandingPage() {
       </section>
 
       {/* --------------------------------------------------- role chooser */}
-      <section className="border-t border-ink-200">
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+      <section className="bg-dawn relative overflow-hidden border-t border-pumpkin-100">
+        <div className="bg-grain pointer-events-none absolute inset-0" />
+        <LotusMandala className="spin-slow pointer-events-none absolute -bottom-24 -right-20 size-64 text-pumpkin-500/[0.06] sm:size-80" />
+        <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="mx-auto max-w-3xl text-center">
             <p className="text-[10px] tracking-[0.16em] text-pumpkin-600 uppercase">
               A sacred call to service
@@ -527,7 +570,7 @@ export default async function LandingPage() {
           <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
             {ROLES.map((card, i) => (
               <Reveal key={card.title} delay={i * 80}>
-                <div className="lift flex h-full flex-col rounded-2xl border border-ink-200 bg-surface p-5 sm:p-6">
+                <div className="lift flex h-full flex-col rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
                   <span className="grid size-10 place-items-center rounded-xl bg-pumpkin-50 text-pumpkin-600">
                     <card.icon size={19} aria-hidden="true" />
                   </span>

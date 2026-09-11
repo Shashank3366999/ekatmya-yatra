@@ -201,6 +201,98 @@
 }
 
 @layer utilities {
+  /*
+    A dark glass panel, used for the sign-in form over its photograph.
+
+    The fields inside are HeroUI's, which read their colours from the semantic
+    variables rather than from classes — so rather than fighting each component
+    with overrides, this redefines those variables for everything inside the
+    panel. The primary action inverts to solid white on ink, which is both the
+    strongest contrast available over a photograph and what the reference shows.
+  */
+  .glass-panel {
+    --field-background: rgb(255 255 255 / 0.1);
+    --field-foreground: #ffffff;
+    --field-placeholder: rgb(255 255 255 / 0.45);
+    --field-border: rgb(255 255 255 / 0.28);
+
+    --accent: #ffffff;
+    --accent-hover: rgb(255 255 255 / 0.88);
+    --accent-foreground: #111113;
+
+    --surface: rgb(255 255 255 / 0.08);
+    --surface-foreground: #ffffff;
+    --muted: rgb(255 255 255 / 0.65);
+  }
+
+  /* Labels and help text inside the panel, which are plain elements. */
+  .glass-panel label,
+  .glass-panel [slot="label"] {
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  /*
+    Warm grounds for the light sections.
+
+    Flat white between two dark sections read as a gap rather than a page, so
+    the light sections sit on a dawn wash instead: pumpkin at the lowest tints
+    the palette has, which keeps the pumpkin/white/black scheme intact while
+    giving each band an edge. `.bg-dawn` lights from the top, `.bg-dusk` from
+    the bottom, so consecutive sections meet rather than repeat.
+  */
+  .bg-dawn {
+    background-image:
+      radial-gradient(
+        120% 70% at 50% 0%,
+        var(--color-pumpkin-50) 0%,
+        rgb(254 243 233 / 0.35) 45%,
+        var(--color-ink-0) 100%
+      );
+  }
+
+  .bg-dusk {
+    background-image:
+      radial-gradient(
+        120% 70% at 50% 100%,
+        var(--color-pumpkin-50) 0%,
+        rgb(254 243 233 / 0.3) 42%,
+        var(--color-ink-0) 100%
+      );
+  }
+
+  /*
+    A faint dotted ground, like the grain of handmade paper. Two offset dot
+    grids rather than one, so no obvious lattice appears at any zoom.
+  */
+  .bg-grain {
+    background-image:
+      radial-gradient(var(--color-pumpkin-200) 0.5px, transparent 0.5px),
+      radial-gradient(var(--color-pumpkin-200) 0.5px, transparent 0.5px);
+    background-size: 26px 26px, 26px 26px;
+    background-position: 0 0, 13px 13px;
+    opacity: 0.35;
+  }
+
+  /*
+    A slow breathing glow, for the lamp behind the map. Scale only — no filter
+    animation, which repaints the whole subtree on every frame.
+  */
+  .lamp-glow {
+    animation: lamp-glow 7s ease-in-out infinite;
+  }
+
+  @keyframes lamp-glow {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.85;
+    }
+  }
+
   /* Dark ground behind the statue in hero panels. Neutral, not green. */
   .bg-hero-ink {
     background-image:
@@ -568,7 +660,8 @@
     .nudge,
     .spin-slow,
     .aurora::before,
-    .aurora::after {
+    .aurora::after,
+    .lamp-glow {
       animation: none !important;
     }
   }

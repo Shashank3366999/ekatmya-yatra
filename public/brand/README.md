@@ -20,6 +20,20 @@ at roughly 1:1 and stays sharp.
 allow a true full-bleed hero on large monitors without upscaling. Nothing needs
 to change in the code — same filename, same aspect ratio.
 
+## `login-bg.webp` — in use
+
+The sign-in background. **1080×1889, portrait**, the figure left of centre with
+the Himalayas and sky behind.
+
+Portrait is why sign-in gets its own route group: on a phone the image's height
+fills the screen exactly (cover crops the width, not the height), so the layout
+can be composed against it rather than around a crop. On a laptop it is anchored
+`object-[34%_8%]` so the head and sky stay in frame instead of the torso.
+
+The file arrived as `login background.webp`. It was renamed — a space in an
+asset path has to be URL-encoded everywhere it is referenced, and one missed
+encoding is a silent 404.
+
 ## Still useful to have
 
 | Asset | Used for |

@@ -72,8 +72,8 @@ export function PhotoRibbon({ items }: { items: PhotoItem[] }) {
           </div>
         ))}
       </div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-ink-50 to-transparent sm:w-16" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-ink-50 to-transparent sm:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-pumpkin-50 to-transparent sm:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-pumpkin-50 to-transparent sm:w-16" />
     </div>
   );
 }

@@ -139,6 +139,8 @@ export function IndiaMap({
   const landId = `land-${uid}`;
   const glowId = `glow-${uid}`;
   const shadowId = `shadow-${uid}`;
+  const skyId = `sky-${uid}`;
+  const ringId = `ring-${uid}`;
   const [hovered, setHovered] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -226,10 +228,28 @@ export function IndiaMap({
       >
         <defs>
           <linearGradient id={landId} x1="0" y1="0" x2="0.3" y2="1">
-            <stop offset="0%" stopColor="var(--color-ink-50)" />
-            <stop offset="55%" stopColor="var(--color-ink-100)" />
-            <stop offset="100%" stopColor="var(--color-ink-300)" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="60%" stopColor="#fffaf5" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-50)" />
           </linearGradient>
+
+          {/*
+            The ground the country sits on. A flat white panel left the map
+            looking like a spreadsheet; this is a warm dawn wash, brightest
+            behind the route and fading to nothing at the edges so it never
+            reads as a box.
+          */}
+          <radialGradient id={skyId} cx="0.5" cy="0.42" r="0.72">
+            <stop offset="0%" stopColor="var(--color-pumpkin-200)" stopOpacity="0.75" />
+            <stop offset="55%" stopColor="var(--color-pumpkin-200)" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-100)" stopOpacity="0" />
+          </radialGradient>
+
+          {/* Concentric rings, as on a yantra — the journey's widening circles. */}
+          <radialGradient id={ringId} cx="0.5" cy="0.42" r="0.72">
+            <stop offset="0%" stopColor="var(--color-pumpkin-400)" stopOpacity="0.30" />
+            <stop offset="100%" stopColor="var(--color-pumpkin-400)" stopOpacity="0" />
+          </radialGradient>
 
           {/* Warm haze along the route, so the journey reads as lit. */}
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
@@ -242,11 +262,33 @@ export function IndiaMap({
               dx="0"
               dy="5"
               stdDeviation="7"
-              floodColor="var(--color-ink-900)"
-              floodOpacity="0.14"
+              floodColor="var(--color-pumpkin-900)"
+              floodOpacity="0.26"
             />
           </filter>
         </defs>
+
+        {/* The ground, behind everything. Decorative, so never a hit target. */}
+        <g className="pointer-events-none">
+          <rect
+            x="0"
+            y="0"
+            width={MAP_VIEW_BOX.width}
+            height={MAP_VIEW_BOX.height}
+            fill={`url(#${skyId})`}
+          />
+          {[0.22, 0.34, 0.46, 0.58].map((r) => (
+            <circle
+              key={r}
+              cx={MAP_VIEW_BOX.width * 0.5}
+              cy={MAP_VIEW_BOX.height * 0.42}
+              r={MAP_VIEW_BOX.width * r}
+              fill="none"
+              stroke={`url(#${ringId})`}
+              strokeWidth="1"
+            />
+          ))}
+        </g>
 
         {/* Landmass */}
         <g filter={`url(#${shadowId})`}>
@@ -255,8 +297,8 @@ export function IndiaMap({
               key={i}
               d={d}
               fill={`url(#${landId})`}
-              stroke="var(--color-ink-400)"
-              strokeWidth="1.1"
+              stroke="var(--color-pumpkin-400)"
+              strokeWidth="1.25"
               strokeLinejoin="round"
             />
           ))}

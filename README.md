@@ -82,7 +82,8 @@ Stop the dev server first — the local PGlite database is single-process.
 | **Organiser** | `/o`         | Organising committee: survey, checklists    |
 | **Admin**     | `/admin`     | Administration: approvals, triage, reports  |
 
-Public: `/` (landing), `/login`, `/register`, `/register/organizer`, `/pending`.
+Public: `/` (landing), `/login` (its own full-bleed shell), `/register`,
+`/register/organizer`, `/pending`.
 
 ### Mobile-first
 
@@ -245,11 +246,14 @@ The Government of Madhya Pradesh film *Ekatma Dham — A Journey of Oneness*
 
 | | File | Size | Behaviour |
 | --- | --- | --- | --- |
-| Hero, phones | `intro-sm.mp4` | **3.2 MB** | 120s, 640×360, chosen by `<source media>` |
-| Hero, wider | `intro.mp4` | **5.3 MB** | 120s, 960×540, from 700px up |
+| Hero, phones | `intro-sm.mp4` | **2.5 MB** | 120s, 640×360, silent, chosen by `<source media>` |
+| Hero, wider | `intro.mp4` | **4.6 MB** | 120s, 960×540, silent, from 700px up |
 
-The full film is not served anywhere; it stays git-ignored and local. Sound
-starts off, as autoplay requires, and the hero carries a control to turn it on.
+The full film is not served anywhere; it stays git-ignored and local. The
+renditions carry no audio track and the hero carries no controls — the film is
+wallpaper and the copy is the content, so autoplay is the only thing to get
+right: it is withheld under reduced motion or on a metered connection, where
+nothing is fetched and the poster stands in.
 
 **Why a trimmed file, rather than seeking within the film.** The first attempt
 pointed the hero at the full file and reset playback after 26 seconds. Measured

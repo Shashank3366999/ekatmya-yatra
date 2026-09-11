@@ -164,7 +164,19 @@ export function CountUp({
  * Renders nothing until mounted: a server-rendered "days remaining" would be
  * stale the moment it was sent, and would mismatch on hydration.
  */
-export function Countdown({ target }: { target: string }) {
+export function Countdown({
+  target,
+  ground = "dark",
+}: {
+  target: string;
+  /**
+   * The ground it sits on, not the colour of its type. The first version was
+   * written for the dark hero and hard-coded white digits, so dropping it onto
+   * a light card rendered an empty box — the numbers were there, in white, on
+   * cream. Naming the prop after the background is what stops that recurring.
+   */
+  ground?: "dark" | "light";
+}) {
   const [parts, setParts] = useState<
     { days: number; hours: number; minutes: number; seconds: number } | null
   >(null);
@@ -196,6 +208,11 @@ export function Countdown({ target }: { target: string }) {
     return <div className="h-[4.5rem]" aria-hidden="true" />;
   }
 
+  const shell =
+    ground === "dark" ? "border-ink-0/15 bg-ink-0/8" : "border-pumpkin-200 bg-ink-0/80";
+  const digit = ground === "dark" ? "text-ink-0" : "text-ink-900";
+  const caption = ground === "dark" ? "text-ink-0/60" : "text-ink-500";
+
   const cells = [
     { label: "Days", value: parts.days },
     { label: "Hours", value: parts.hours },
@@ -208,12 +225,12 @@ export function Countdown({ target }: { target: string }) {
       {cells.map((c) => (
         <div
           key={c.label}
-          className="min-w-14 flex-1 rounded-xl border border-ink-0/15 bg-ink-0/8 px-2 py-2 text-center backdrop-blur-sm sm:min-w-16 sm:px-3"
+          className={`min-w-14 flex-1 rounded-xl border px-2 py-2 text-center backdrop-blur-sm sm:min-w-16 sm:px-3 ${shell}`}
         >
-          <div className="text-xl font-semibold tabular-nums text-ink-0 sm:text-2xl">
+          <div className={`text-xl font-semibold tabular-nums sm:text-2xl ${digit}`}>
             {String(c.value).padStart(2, "0")}
           </div>
-          <div className="mt-0.5 text-[9px] tracking-wider text-ink-0/60 uppercase sm:text-[10px]">
+          <div className={`mt-0.5 text-[9px] tracking-wider uppercase sm:text-[10px] ${caption}`}>
             {c.label}
           </div>
         </div>
@@ -238,7 +255,7 @@ export function Marquee({ items }: { items: string[] }) {
             {items.map((name) => (
               <span
                 key={`${copy}-${name}`}
-                className="rounded-full border border-ink-200 bg-surface px-3.5 py-1.5 text-xs whitespace-nowrap text-ink-600"
+                className="rounded-full border border-pumpkin-200/70 bg-ink-0/70 px-3.5 py-1.5 text-xs whitespace-nowrap text-ink-600"
               >
                 {name}
               </span>
@@ -247,8 +264,8 @@ export function Marquee({ items }: { items: string[] }) {
         ))}
       </div>
       {/* Fade the ribbon into the page at both ends. */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-ink-50 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-ink-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-pumpkin-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-pumpkin-50 to-transparent" />
     </div>
   );
 }

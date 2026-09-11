@@ -55,6 +55,70 @@ export function LotusMandala({ className = "" }: { className?: string }) {
 }
 
 /**
+ * The large emblem, for the sign-in screen only.
+ *
+ * `YatraMark` is a 2px line drawing tuned to read at 24px in a header; blown up
+ * to 64px over a photograph it turns into a thin wire outline. This is the same
+ * idea drawn for size: filled petals opening around a single flame, in two
+ * tones of pumpkin so it holds its shape against a bright sky or dark foliage.
+ * Pumpkin only — green is reserved for the sidebars.
+ */
+export function YatraEmblem({ className = "", size = 72 }: { className?: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      className={className}
+      role="img"
+      aria-label="Ekatma Yatra"
+    >
+      {/*
+        A flame cradled in a lotus. The first attempt ringed the flame with
+        eight petals and read as a daisy — a full circle of petals is a sunburst,
+        not a lotus. So the petals sit beneath and to the sides, opening upward,
+        and the flame is the tallest thing in the mark.
+      */}
+      <g transform="translate(60 64)">
+        {/* Outer pair, sweeping wide */}
+        <path
+          d="M-4 8C-22 4-34-6-38-22c14 0 26 8 34 26Z"
+          fill="currentColor"
+          opacity="0.45"
+        />
+        <path
+          d="M4 8C22 4 34-6 38-22c-14 0-26 8-34 26Z"
+          fill="currentColor"
+          opacity="0.45"
+        />
+        {/* Inner pair, upright and stronger */}
+        <path
+          d="M-3 10C-15 4-21-6-20-20c9 4 15 14 17 30Z"
+          fill="currentColor"
+          opacity="0.7"
+        />
+        <path
+          d="M3 10C15 4 21-6 20-20c-9 4-15 14-17 30Z"
+          fill="currentColor"
+          opacity="0.7"
+        />
+
+        {/* The flame — one light, taller than the petals that hold it */}
+        <path
+          d="M0-46c9.5 11.5 14.5 20 14.5 27.4A14.5 14.5 0 0 1 0-4.1a14.5 14.5 0 0 1-14.5-14.5C-14.5-26-9.5-34.5 0-46Z"
+          fill="currentColor"
+        />
+        <path
+          d="M0-28c3.8 4.6 5.8 8 5.8 11A5.8 5.8 0 0 1 0-11.2 5.8 5.8 0 0 1-5.8-17C-5.8-20-3.8-23.4 0-28Z"
+          fill="#fff"
+          opacity="0.9"
+        />
+      </g>
+    </svg>
+  );
+}
+
+/**
  * The app mark: a lamp flame inside an arch — the Ekatma (oneness) idea as a
  * single light. Reads clearly at 24px.
  */

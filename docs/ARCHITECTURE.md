@@ -252,7 +252,8 @@ the sans stack with `tabular-nums`; the serif is for prose headings only.
 src/
 ├── app/
 │   ├── page.tsx              landing / role chooser
-│   ├── (auth)/               login, register, register/organizer, pending
+│   ├── (login)/              /login — its own shell, full-bleed photograph
+│   ├── (auth)/               register, register/organizer, pending
 │   ├── (user)/               /home /yatra /events /journey /join /announcements
 │   ├── o/                    organiser app: dashboard, survey, activities, profile
 │   ├── admin/                admin: surveys, organizers, users, route,
