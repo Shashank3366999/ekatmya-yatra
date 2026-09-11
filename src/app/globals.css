@@ -246,7 +246,14 @@
     strongest contrast available over a photograph and what the reference shows.
   */
   .glass-panel {
-    --field-background: rgb(255 255 255 / 0.1);
+    /*
+      A dark field, not a 10% white one. The panel behind it is translucent
+      and blurred, so a near-transparent field depended on that panel for its
+      darkness — and when Chrome autofilled the sign-in form it painted its own
+      pale background underneath, leaving white type on white. An opaque-ish
+      dark field reads the same on the panel and does not care what is under it.
+    */
+    --field-background: rgb(18 18 20 / 0.6);
     --field-foreground: #ffffff;
     --field-placeholder: rgb(255 255 255 / 0.45);
     --field-border: rgb(255 255 255 / 0.28);
@@ -264,6 +271,21 @@
   .glass-panel label,
   .glass-panel [slot="label"] {
     color: rgb(255 255 255 / 0.85);
+  }
+
+  /*
+    Autofill inside the panel. The global rule covers Chrome's pale autofill
+    background with an inset shadow of --field-background, and inside the
+    panel that used to be 10% white, which hid nothing. This one is opaque,
+    so an autofilled email stays white on dark.
+  */
+  .glass-panel input:-webkit-autofill,
+  .glass-panel input:-webkit-autofill:hover,
+  .glass-panel input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff;
+    -webkit-box-shadow: 0 0 0 1000px #1c1c1f inset;
+    box-shadow: 0 0 0 1000px #1c1c1f inset;
+    caret-color: #ffffff;
   }
 
   /*
