@@ -190,7 +190,7 @@ cat <<EOF
 Next, in order:
 
   1. Put the code in ${APP_DIR}
-       git clone <repo-url> ${APP_DIR}
+       git clone https://github.com/Shashank3366999/ekatmya-yatra.git ${APP_DIR}
 
   2. Fill in DATABASE_URL in ${APP_DIR}/.env.production
 

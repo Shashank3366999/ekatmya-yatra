@@ -149,7 +149,7 @@ doing by hand.
 ```sh
 # 1 — the code
 sudo mkdir -p /srv/yatra && sudo chown $USER /srv/yatra
-git clone <repo-url> /srv/yatra && cd /srv/yatra
+git clone https://github.com/Shashank3366999/ekatmya-yatra.git /srv/yatra && cd /srv/yatra
 pnpm install --frozen-lockfile
 
 # 2 — the environment. Never commit this file.
