@@ -34,7 +34,9 @@ say "Detected ${PRETTY_NAME}"
 # ------------------------------------------------------------------ packages
 say "System packages"
 if [ "$PKG" = dnf ]; then
-  sudo dnf install -y -q nginx git curl ca-certificates nmap-ncat dnf-automatic
+  # No `curl` here: AL2023 ships curl-minimal, which provides the binary and
+  # conflicts with the full package. Asking for both fails the whole install.
+  sudo dnf install -y -q nginx git ca-certificates nmap-ncat dnf-automatic
   # Security patches on their own, the AL2023 way.
   sudo systemctl enable --now dnf-automatic.timer >/dev/null 2>&1 || true
 else
@@ -189,8 +191,11 @@ cat <<EOF
 
 Next, in order:
 
-  1. Put the code in ${APP_DIR}
-       git clone https://github.com/Shashank3366999/ekatmya-yatra.git ${APP_DIR}
+  1. Put the code in ${APP_DIR}. It already holds .env.production, so clone
+     into it rather than onto it:
+       cd ${APP_DIR} && git init -q && \
+       git remote add origin https://github.com/Shashank3366999/ekatmya-yatra.git && \
+       git fetch -q origin && git checkout -q -t origin/main
 
   2. Fill in DATABASE_URL in ${APP_DIR}/.env.production
 

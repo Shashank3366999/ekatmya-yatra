@@ -59,7 +59,7 @@ line "outbound https" "$(curl -s -o /dev/null -m 5 -w '%{http_code}' https://reg
 for p in 80 443 3000; do
   line "listening on :$p" "$( (ss -lntp 2>/dev/null || netstat -lntp 2>/dev/null) | grep -q ":$p " && echo yes || echo no)"
 done
-line "yatra service" "$(systemctl is-active yatra 2>/dev/null || echo 'not installed')"
+line "yatra service" "$(systemctl is-active yatra 2>/dev/null || true)"
 
 hr "Database reachability"
 if [ -f /srv/yatra/.env.production ] && grep -q '^DATABASE_URL=.\+' /srv/yatra/.env.production; then
