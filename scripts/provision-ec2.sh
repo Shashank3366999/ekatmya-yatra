@@ -75,6 +75,7 @@ if [ -f "${APP_DIR}/.env.production" ]; then
   echo "  exists already, left untouched"
 else
   SECRET="$(openssl rand -base64 32)"
+  ADMIN_PASSWORD="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-20)"
   cat > "${APP_DIR}/.env.production" <<EOF
 # Written by provision-ec2.sh. Keep this file out of git.
 APP_ENV=production
@@ -85,9 +86,15 @@ AUTH_SECRET=${SECRET}
 # REQUIRED. The app refuses to start without it, because the fallback writes
 # to a directory inside the working tree and a deploy would delete it.
 DATABASE_URL=
+
+# The first super-admin. The seed refuses to create one on a real database
+# without an explicit password, because the default is public. Change it
+# after the first sign-in.
+SEED_ADMIN_EMAIL=admin@ekatmadham.com
+SEED_ADMIN_PASSWORD=${ADMIN_PASSWORD}
 EOF
   chmod 600 "${APP_DIR}/.env.production"
-  echo "  written, with a freshly generated AUTH_SECRET"
+  echo "  written, with a generated AUTH_SECRET and a generated admin password"
   echo "  !! DATABASE_URL is empty. Fill it in before deploying."
 fi
 

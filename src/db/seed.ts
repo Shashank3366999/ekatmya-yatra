@@ -386,6 +386,19 @@ async function main() {
   const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@ekatmadham.com").toLowerCase();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "Yatra@2026";
 
+  /*
+    The default password is written down in this repository. On a real database
+    it must be set explicitly, or the first admin of the production system has
+    a password anyone can read. The provisioner generates one into
+    .env.production; this refuses rather than fall back.
+  */
+  if (!usingPgliteLocally() && !process.env.SEED_ADMIN_PASSWORD) {
+    console.error("✖ SEED_ADMIN_PASSWORD is not set, and DATABASE_URL is.");
+    console.error("  The default admin password is public. Set SEED_ADMIN_PASSWORD in the");
+    console.error("  environment (the provisioner writes one) and run the seed again.");
+    process.exit(1);
+  }
+
   const [existingAdmin] = await db
     .select({ id: s.users.id })
     .from(s.users)
@@ -399,7 +412,11 @@ async function main() {
       fullName: "Yatra Administrator",
       accountType: "super_admin",
     });
-    console.log(`  admin: ${adminEmail} / ${adminPassword}`);
+    console.log(
+      usingPgliteLocally()
+        ? `  admin: ${adminEmail} / ${adminPassword}`
+        : `  admin: ${adminEmail} (password from SEED_ADMIN_PASSWORD, not shown)`,
+    );
   } else {
     console.log(`  admin: ${adminEmail} (already present)`);
   }
