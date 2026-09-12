@@ -9,7 +9,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { AccentRule, ThemeBanner } from "@/components/brand";
+import { ThemeBanner } from "@/components/brand";
 import { IndiaMap, MapLegend } from "@/components/india-map";
 import { Empty } from "@/components/ui/empty";
 import { LinkButton } from "@/components/ui/link-button";
@@ -237,12 +237,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <AccentRule />
-
-      <p className="text-center text-[11px] leading-relaxed text-ink-500">
-        Yatra dates, route and organisational terminology are provisional pending
-        confirmation by the Yatra committee.
-      </p>
     </div>
   );
 }

@@ -88,10 +88,6 @@ export default async function UserHomePage() {
             </div>
           </dl>
         </div>
-
-        <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
-          Dates are provisional and subject to confirmation by the Yatra committee.
-        </p>
       </section>
 
       {/* Map + side rail. One column on a phone, two from lg. */}

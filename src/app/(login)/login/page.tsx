@@ -77,13 +77,9 @@ export default function LoginPage() {
           </Link>
 
           <div className="mt-4 border-t border-ink-0/12 pt-3 sm:mt-5 sm:pt-4">
-            <p className="text-center text-[11px] leading-relaxed text-ink-0/55">
-              Yatra dates and route are provisional and subject to confirmation
-              by the Yatra committee.
-            </p>
             <Link
               href="/"
-              className="mt-2.5 block text-center text-[11px] font-medium text-ink-0/70 hover:text-ink-0"
+              className="block text-center text-[11px] font-medium text-ink-0/70 hover:text-ink-0"
             >
               ← Back to the Yatra
             </Link>

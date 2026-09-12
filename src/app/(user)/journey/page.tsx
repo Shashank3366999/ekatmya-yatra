@@ -86,11 +86,6 @@ export default async function JourneyPage() {
                 </li>
               ))}
             </ul>
-
-            <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
-              Arrival dates are provisional. The Yatra team will confirm the final
-              schedule closer to the date.
-            </p>
           </div>
         </div>
       )}

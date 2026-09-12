@@ -19,7 +19,10 @@ Kanchipuram, Sringeri, Kollur, Kolhapur, Nashik, Dwarka, Omkareshwar, Ujjain,
 Puri, Varanasi, Prayagraj, Haridwar, Rishikesh, Joshimath, Badrinath, Kedarnath).
 
 **We need:** the confirmed year and dates, and confirmation or correction of that
-stop list. Every date shown in the app currently carries a "provisional" note.
+stop list. The "provisional" notes that used to sit on every date-showing page
+have been removed at the Yatra team's request; if any dates are still not
+final, that now needs to be communicated some other way, since the app no
+longer says so anywhere.
 
 ### Q2. The registration form already circulating
 You shared the Google Form floated in the group a month ago:

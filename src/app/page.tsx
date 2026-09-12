@@ -208,21 +208,7 @@ export default async function LandingPage() {
 
         <div className="relative z-10">
           <div className="mx-auto flex min-h-[36rem] max-w-7xl flex-col px-5 pt-6 pb-16 sm:min-h-[40rem] sm:px-8 sm:pb-20 lg:min-h-[44rem] lg:px-12 lg:pt-8">
-            <div className="flex items-start justify-between gap-3">
-              <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
-              {/*
-                The Yatra team's instruction: no admin card on this page, but a
-                small way in at the top for whoever administers it. It goes to
-                /login, not straight to /admin — this is not a shortcut past
-                signing in, just a quiet door for the people who need it.
-              */}
-              <Link
-                href="/login"
-                className="shrink-0 pt-1 text-xs font-medium text-ink-0/50 transition-colors hover:text-ink-0/85"
-              >
-                Admin
-              </Link>
-            </div>
+            <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
 
             <div className="mt-auto max-w-2xl">
               <Reveal>
@@ -595,8 +581,7 @@ export default async function LandingPage() {
               {last?.name ?? "Kedarnath"}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-ink-600 sm:text-base">
-              Drag or scroll along the journey. Halts and dates are provisional
-              until the Yatra committee confirms the final itinerary.
+              Drag or scroll along the journey.
             </p>
           </Reveal>
 
@@ -815,11 +800,20 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <p className="mt-8 border-t border-pumpkin-100 pt-5 text-[11px] leading-relaxed text-ink-500">
-            Route, halts and dates are provisional, pending confirmation by the
-            Yatra committee. Boundaries on the map are a cartographic reference,
-            simplified for display.
-          </p>
+          {/*
+            The Yatra team's instruction: no admin card on this page. This is a
+            small link, not a button — it goes to /login, not straight to
+            /admin, never a shortcut past signing in, just a quiet door for
+            whoever administers it.
+          */}
+          <div className="mt-8 border-t border-pumpkin-100 pt-5 text-right">
+            <Link
+              href="/login"
+              className="text-[11px] font-medium text-ink-500 transition-colors hover:text-pumpkin-700"
+            >
+              Admin
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
