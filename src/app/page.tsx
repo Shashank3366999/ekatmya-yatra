@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowDown,
   ArrowUpRight,
   Building2,
+  Compass,
   HandHeart,
   Landmark,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
@@ -111,38 +112,37 @@ const HERITAGE_ORDER: HeritageType[] = [
 ];
 
 /**
- * The two ways in.
+ * The two ways in — deliberately not peers.
  *
- * The Yatra team asked for exactly these on the landing page, and for the
- * administrator sign-in to be gone from it: the Admin Panel lives at /admin and
- * is reached by signing in, not advertised.
+ * The Yatra team's correction: a Shankardoot is not the same thing as everyone
+ * who joins the Yatra, and volunteering is not the same thing as following it.
+ * Most people who arrive here just want to be part of the Yatra — that is
+ * JOIN, the main action, open the moment someone submits the form. A smaller
+ * number step forward for a specific responsibility under a role the Yatra
+ * team defines (survey, logistics, outreach, and whatever else an admin adds
+ * at /admin/roles) — that is VOLUNTEER, a posting that waits for approval, and
+ * it is presented as the secondary path, not an equal alternative.
  *
- * Shankardoot is the Yatra's own word for a member of the organising team, so
- * it leads the card rather than our description of it. The other card is
- * Volunteer, which is the ordinary Journey-app account this site has always
- * had: nothing to approve, nothing to wait for. They are different kinds of
- * thing, and the notes say so.
+ * The Admin Panel is not a card here at all; it is a small link beside the
+ * wordmark, reached by signing in like anything else at /login.
  */
-const ROLES = [
-  {
-    icon: ShieldCheck,
-    title: "Serve as a Shankardoot",
-    body: "A seat on the organising team at national, state or district level, with a responsibility of your own. Pick the role you are taking and the Yatra team reviews it.",
-    href: "/register/organizer",
-    cta: "Register to serve",
-    variant: "primary" as const,
-    note: "Needs approval from the Yatra team",
-  },
-  {
-    icon: HandHeart,
-    title: "Volunteer",
-    body: "Follow the route, see the events near you, build your own journey, and give time on the ground as the Yatra passes through your area.",
-    href: "/register",
-    cta: "Join as a volunteer",
-    variant: "secondary" as const,
-    note: "Open straight away, no approval needed",
-  },
-];
+const JOIN = {
+  icon: Compass,
+  title: "Join Ekatma Yatra",
+  body: "Follow the route, see the events near you, and build your own journey as the Yatra moves from Kalady to Kedarnath.",
+  href: "/register",
+  cta: "Join Ekatma Yatra",
+  note: "Open straight away, no approval needed",
+};
+
+const VOLUNTEER = {
+  icon: HandHeart,
+  title: "Join as Volunteer",
+  body: "Give time on the ground under a role the Yatra team defines: survey, logistics, outreach and more, reviewed before your dashboard unlocks.",
+  href: "/register/organizer",
+  cta: "Join as Volunteer",
+  note: "Needs approval from the Yatra team",
+};
 
 export default async function LandingPage() {
   // Anyone already signed in belongs in their own app, not here.
@@ -208,7 +208,21 @@ export default async function LandingPage() {
 
         <div className="relative z-10">
           <div className="mx-auto flex min-h-[36rem] max-w-7xl flex-col px-5 pt-6 pb-16 sm:min-h-[40rem] sm:px-8 sm:pb-20 lg:min-h-[44rem] lg:px-12 lg:pt-8">
-            <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
+            <div className="flex items-start justify-between gap-3">
+              <BrandLockup subtitle="Acharya Shankar Sanskritik Ekta Nyas" tone="light" />
+              {/*
+                The Yatra team's instruction: no admin card on this page, but a
+                small way in at the top for whoever administers it. It goes to
+                /login, not straight to /admin — this is not a shortcut past
+                signing in, just a quiet door for the people who need it.
+              */}
+              <Link
+                href="/login"
+                className="shrink-0 pt-1 text-xs font-medium text-ink-0/50 transition-colors hover:text-ink-0/85"
+              >
+                Admin
+              </Link>
+            </div>
 
             <div className="mt-auto max-w-2xl">
               <Reveal>
@@ -253,11 +267,11 @@ export default async function LandingPage() {
               </Reveal>
 
               <Reveal delay={220} className="mt-6 flex flex-wrap gap-3 sm:mt-7">
-                <LinkButton href="/register/organizer" size="lg">
-                  Become a Shankardoot
+                <LinkButton href="/register" size="lg">
+                  Join Ekatma Yatra
                 </LinkButton>
-                <LinkButton href="/register" variant="secondary" size="lg">
-                  Volunteer
+                <LinkButton href="/register/organizer" variant="secondary" size="lg">
+                  Join as Volunteer
                 </LinkButton>
               </Reveal>
             </div>
@@ -652,49 +666,67 @@ export default async function LandingPage() {
         <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <Reveal className="mx-auto max-w-3xl text-center">
             <p className="text-[10px] tracking-[0.16em] text-pumpkin-700 uppercase">
-              A sacred call to service
+              Two ways to take part
             </p>
             <h2 className="mt-2 font-display text-2xl text-ink-900 sm:text-3xl">
-              Become a Shankardoot
+              Join Ekatma Yatra
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-ink-600 sm:text-base">
-              It is a sacred privilege to step forward and dedicate yourself to
-              this grand initiative for awakening our spiritual heritage.
-              Contribute your time according to your convenience: in managing
-              arrangements, public awareness and ground operations; in spreading
-              the wisdom of Advaita; and in walking the footsteps of Acharya
-              Shankar yourself.
+              Most people simply join the Yatra: follow the route, see events
+              nearby, be part of the journey. A smaller number step forward as
+              volunteers, taking on a role the Yatra team defines and reviews.
             </p>
           </Reveal>
 
           <AccentRule className="mx-auto my-8 max-w-xs" />
 
-          <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 sm:gap-6">
-            {ROLES.map((card, i) => (
-              <Reveal key={card.title} delay={i * 80}>
-                <div className="lift flex h-full flex-col rounded-2xl border border-pumpkin-200/60 bg-surface p-5 sm:p-6">
-                  <span className="grid size-10 place-items-center rounded-xl bg-pumpkin-50 text-pumpkin-700">
-                    <card.icon size={19} aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-4 font-display text-lg text-ink-900">
-                    {card.title}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
-                    {card.body}
-                  </p>
-                  <LinkButton
-                    href={card.href}
-                    variant={card.variant}
-                    size="sm"
-                    className="mt-5"
-                  >
-                    {card.cta}
-                  </LinkButton>
-                  {/* Say up front which one waits on an admin and which does not. */}
-                  <p className="mt-2.5 text-[11px] text-ink-500">{card.note}</p>
-                </div>
-              </Reveal>
-            ))}
+          {/*
+            Asymmetric on purpose: JOIN is the main action, large and first.
+            VOLUNTEER sits beside it as a visibly smaller, quieter side card —
+            same information shape, deliberately less weight, never an equal
+            two-up grid.
+          */}
+          <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-5">
+            <Reveal className="sm:flex-[3]">
+              <div className="lift flex h-full flex-col rounded-2xl border border-pumpkin-300/70 bg-surface p-6 shadow-[0_18px_40px_-24px_rgba(94,39,5,0.25)] sm:p-8">
+                <span className="grid size-12 place-items-center rounded-xl bg-pumpkin-500 text-ink-900">
+                  <JOIN.icon size={22} aria-hidden="true" />
+                </span>
+                <h3 className="mt-5 font-display text-xl text-ink-900 sm:text-2xl">
+                  {JOIN.title}
+                </h3>
+                <p className="mt-2.5 flex-1 text-sm leading-relaxed text-ink-600 sm:text-base">
+                  {JOIN.body}
+                </p>
+                <LinkButton href={JOIN.href} size="lg" className="mt-6 self-start">
+                  {JOIN.cta}
+                </LinkButton>
+                <p className="mt-2.5 text-[11px] text-ink-500">{JOIN.note}</p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={80} className="sm:flex-[2]">
+              <div className="flex h-full flex-col rounded-2xl border border-dashed border-ink-300 bg-surface/60 p-5">
+                <span className="grid size-9 place-items-center rounded-lg bg-ink-100 text-ink-600">
+                  <VOLUNTEER.icon size={17} aria-hidden="true" />
+                </span>
+                <h3 className="mt-3 font-display text-base text-ink-900">
+                  {VOLUNTEER.title}
+                </h3>
+                <p className="mt-2 flex-1 text-xs leading-relaxed text-ink-600">
+                  {VOLUNTEER.body}
+                </p>
+                <LinkButton
+                  href={VOLUNTEER.href}
+                  variant="outline"
+                  size="sm"
+                  className="mt-4 self-start"
+                >
+                  {VOLUNTEER.cta}
+                </LinkButton>
+                <p className="mt-2 text-[11px] text-ink-500">{VOLUNTEER.note}</p>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>

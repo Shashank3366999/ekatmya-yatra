@@ -13,14 +13,17 @@ import { RegisterOrganizerForm } from "./organizer-form";
  */
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Become a Shankardoot" };
+export const metadata: Metadata = { title: "Join as Volunteer" };
 
 /**
- * Joining the organising team.
+ * Joining as a volunteer.
  *
- * This is the route in that needs approval, because it is a posting: a seat at
- * a level with a responsibility attached. Volunteering is not this — a
- * volunteer is an ordinary account at /register, with nothing to approve.
+ * A volunteer takes on a specific responsibility under a role the Yatra team
+ * defines — survey, logistics, outreach, and whatever else an admin adds at
+ * /admin/roles — which is why this needs approval and a checklist. It is not
+ * the same thing as simply joining the Yatra, which is the ordinary account at
+ * /register with nothing to approve; that is the site's main action, and this
+ * is the secondary one.
  */
 export default async function RegisterOrganizerPage() {
   const [states, districtsByState, roleTemplates] = await Promise.all([
@@ -32,11 +35,11 @@ export default async function RegisterOrganizerPage() {
   return (
     <div>
       <h1 className="font-display text-2xl text-ink-900">
-        Become a Shankardoot
+        Join as Volunteer
       </h1>
       <p className="mt-1.5 text-sm text-ink-500">
-        A seat on the organising team at national, state or district level, with
-        a responsibility of your own. Choose the role you are taking on.
+        Take on a role the Yatra team has defined: at national, state or
+        district level, with a checklist of its own. Choose the one that fits.
       </p>
 
       <Alert status="accent" className="mt-5">
@@ -59,9 +62,9 @@ export default async function RegisterOrganizerPage() {
       </div>
 
       <p className="mt-6 text-sm text-ink-500">
-        Want to volunteer or simply follow the Yatra?{" "}
+        Just want to follow the Yatra?{" "}
         <Link href="/register" className="font-medium text-pumpkin-700 underline">
-          Create an account
+          Join Ekatma Yatra
         </Link>
         . No approval needed.
       </p>

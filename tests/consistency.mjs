@@ -218,59 +218,69 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 }
 const landingStops = global.landingStops;
 
-/* ------------------------------- the two ways in, and no admin door in sight */
+/* ------------------------------ the two ways in, correctly weighted ---------- */
 {
+  /*
+    The Yatra team's correction: a Shankardoot is not the same thing as
+    everyone who joins the Yatra, and volunteering is not the same thing as
+    following it. So the main action is JOIN (-> /register, no approval), the
+    secondary action is VOLUNTEER (-> /register/organizer, needs approval and
+    a role), and "Shankardoot" is not a landing-page label at all any more.
+    The admin sign-in is a small link to /login, not a card, and never links
+    to /admin directly.
+  */
   const p = await page(ctx, "/");
   const r = await p.evaluate(() => {
     const t = document.body.innerText;
+    const hrefs = (sel) => [...document.querySelectorAll(sel)].map((a) => a.getAttribute("href"));
+    // The main and secondary cards, identified by their heading text.
+    const cardWidth = (heading) => {
+      const h = [...document.querySelectorAll("h3")].find((e) => e.textContent.trim() === heading);
+      return h ? h.closest("div").parentElement.getBoundingClientRect().width : 0;
+    };
     return {
-      shankardoot: /Shankardoot/.test(t),
-      volunteer: /Volunteer/.test(t),
-      /*
-        The Yatra team asked for the administrator sign-in to be gone from this
-        page: the panel is reached by signing in, not advertised. Checked as
-        "no link to /login at all" rather than as wording, because the wording
-        is the easy half to change.
-      */
-      signInLinks: document.querySelectorAll('a[href^="/login"]').length,
-      adminLinks: document.querySelectorAll('a[href^="/admin"]').length,
-      joinLinks: [
-        ...new Set(
-          [...document.querySelectorAll('a[href^="/register/organizer"]')].map((a) =>
-            a.getAttribute("href"),
-          ),
-        ),
-      ],
-      volunteerLink: [...document.querySelectorAll("a")].some(
-        (a) => a.getAttribute("href") === "/register",
-      ),
+      shankardoot: /Shankardoot/i.test(t),
+      joinText: /Join Ekatma Yatra/.test(t),
+      volunteerText: /Join as Volunteer/.test(t),
+      signInLinks: hrefs('a[href^="/login"]').length,
+      adminLinks: hrefs('a[href^="/admin"]').length,
+      joinHrefs: [...new Set(hrefs('a[href="/register"]'))],
+      volunteerHrefs: [...new Set(hrefs('a[href^="/register/organizer"]'))],
+      joinWidth: cardWidth("Join Ekatma Yatra"),
+      volunteerWidth: cardWidth("Join as Volunteer"),
     };
   });
 
-  ok(r.shankardoot, "landing offers the Shankardoot route in");
-  ok(r.volunteer, "landing offers the Volunteer route in");
+  ok(!r.shankardoot, "landing names no Shankardoot label at all");
+  ok(r.joinText, "landing offers Join Ekatma Yatra");
+  ok(r.volunteerText, "landing offers Join as Volunteer");
   ok(
-    !/Explore the Yatra/.test(await p.evaluate(() => document.body.innerText)),
-    "the volunteer route is named Volunteer, not \"Explore the Yatra\"",
+    r.signInLinks === 1,
+    "landing carries exactly the one small admin sign-in link",
+    `${r.signInLinks}`,
   );
-  ok(r.signInLinks === 0, "landing links to no sign-in page", `${r.signInLinks}`);
-  ok(r.adminLinks === 0, "landing links nowhere under /admin", `${r.adminLinks}`);
+  ok(r.adminLinks === 0, "landing links nowhere under /admin directly", `${r.adminLinks}`);
+  ok(r.joinHrefs.includes("/register"), "Join Ekatma Yatra goes to the ordinary account");
+  ok(
+    r.volunteerHrefs.includes("/register/organizer"),
+    "Join as Volunteer goes to the posting signup",
+    r.volunteerHrefs.join(", "),
+  );
+  ok(
+    r.volunteerHrefs.every((h) => !h.includes("as=")),
+    "no leftover variant of the organiser signup",
+    r.volunteerHrefs.join(", "),
+  );
   /*
-    The two ways in are not two flavours of the same signup. An organising team
-    member takes a posting and waits for approval; a volunteer is the ordinary
-    account this site has always had, with nothing to approve. So they must go
-    to different places, and the volunteer's must be /register.
+    The prominence itself, not just the wording: the Yatra team was explicit
+    that Volunteer must read as visibly secondary, "not placed equally
+    alongside the main CTA" — so this is checked as a real measured width, not
+    assumed from which class name was used.
   */
   ok(
-    r.joinLinks.includes("/register/organizer"),
-    "the organising team route goes to the posting signup",
-    r.joinLinks.join(", "),
-  );
-  ok(r.volunteerLink, "the volunteer route goes to the ordinary account signup");
-  ok(
-    r.joinLinks.every((h) => !h.includes("as=")),
-    "no leftover variant of the organiser signup",
-    r.joinLinks.join(", "),
+    r.joinWidth > r.volunteerWidth * 1.15,
+    "the Join card is visibly larger than the Volunteer card",
+    `join ${Math.round(r.joinWidth)}px vs volunteer ${Math.round(r.volunteerWidth)}px`,
   );
 }
 
