@@ -12,8 +12,10 @@ import {
   availabilityEnum,
   functionEnum,
   orgLevelEnum,
+  participationRoleEnum,
   placeCategoryEnum,
   recommendationEnum,
+  supportCategoryEnum,
   surveyStatusEnum,
   yatraKindEnum,
 } from "@/db/schema";
@@ -80,6 +82,13 @@ const optionalInt = (max = 10_000_000) =>
       (v) => v === null || (Number.isFinite(v) && Number.isInteger(v) && v >= 0 && v <= max),
       "Enter a whole number",
     );
+
+const optionalDecimal = (max = 1000) =>
+  z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? null : Number(v)))
+    .refine((v) => v === null || (Number.isFinite(v) && v >= 0 && v <= max), "Enter a number");
 
 const optionalLat = z
   .string()
@@ -188,9 +197,19 @@ export const surveySchema = z.object({
   isVehicleAccessible: optionalBool,
   accessNotes: optionalText(1000),
 
+  proposedRoles: z.array(z.enum(participationRoleEnum.enumValues)).max(7).default([]),
+  venueCapacity: optionalInt(1_000_000),
+  foodArrangementNotes: optionalText(1000),
+
+  isDirectlyOnRoute: z.coerce.boolean().default(true),
+  offRouteReason: optionalText(1000),
+  supportCategories: z.array(z.enum(supportCategoryEnum.enumValues)).max(10).default([]),
+  distanceFromRouteKm: optionalDecimal(2000),
+
   contactName: optionalText(160),
   contactPhone: phone.optional(),
   contactRole: optionalText(160),
+  institutionWebsite: optionalText(300),
   organizationsMet: z
     .string()
     .trim()

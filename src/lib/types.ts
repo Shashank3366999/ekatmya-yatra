@@ -10,8 +10,10 @@ import type {
   audienceEnum,
   functionEnum,
   orgLevelEnum,
+  participationRoleEnum,
   placeCategoryEnum,
   recommendationEnum,
+  supportCategoryEnum,
   surveyStatusEnum,
   yatraKindEnum,
 } from "@/db/schema";
@@ -24,6 +26,8 @@ export type ApprovalStatus = (typeof approvalStatusEnum.enumValues)[number];
 export type PlaceCategory = (typeof placeCategoryEnum.enumValues)[number];
 export type SurveyStatus = (typeof surveyStatusEnum.enumValues)[number];
 export type Recommendation = (typeof recommendationEnum.enumValues)[number];
+export type ParticipationRole = (typeof participationRoleEnum.enumValues)[number];
+export type SupportCategory = (typeof supportCategoryEnum.enumValues)[number];
 export type YatraKind = (typeof yatraKindEnum.enumValues)[number];
 export type Audience = (typeof audienceEnum.enumValues)[number];
 export type ActivityStatus = (typeof activityStatusEnum.enumValues)[number];

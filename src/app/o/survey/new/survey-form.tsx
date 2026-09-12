@@ -16,6 +16,7 @@
 import { useActionState, useState } from "react";
 import {
   Button,
+  CheckboxGroup,
   Description,
   Input,
   Label,
@@ -29,16 +30,24 @@ import {
 import { Check, MapPin } from "lucide-react";
 
 import { submitSurvey } from "@/actions/survey";
-import { RadioOption } from "@/components/ui/choice";
+import { CheckOption, RadioOption, SwitchField } from "@/components/ui/choice";
 import { FormBanner } from "@/components/ui/form-banner";
 import { StateDistrictSelect } from "@/components/ui/state-district-select";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { PLACE_CATEGORY_LABELS, RECOMMENDATION_LABELS, YATRA_KIND_LABELS } from "@/lib/labels";
+import {
+  PARTICIPATION_ROLE_LABELS,
+  PLACE_CATEGORY_LABELS,
+  RECOMMENDATION_LABELS,
+  SUPPORT_CATEGORY_LABELS,
+  YATRA_KIND_LABELS,
+} from "@/lib/labels";
 import type {
   ActionResult,
+  ParticipationRole,
   PlaceCategory,
   Recommendation,
   SessionUser,
+  SupportCategory,
   YatraKind,
 } from "@/lib/types";
 
@@ -48,12 +57,15 @@ const STEPS = [
   { id: 1, label: "Location" },
   { id: 2, label: "Significance" },
   { id: 3, label: "Facilities" },
-  { id: 4, label: "Contact & verdict" },
+  { id: 4, label: "Role in the Yatra" },
+  { id: 5, label: "Contact & verdict" },
 ] as const;
 
 const CATEGORIES = Object.keys(PLACE_CATEGORY_LABELS) as PlaceCategory[];
 const KINDS = Object.keys(YATRA_KIND_LABELS) as YatraKind[];
 const RECOMMENDATIONS = Object.keys(RECOMMENDATION_LABELS) as Recommendation[];
+const PARTICIPATION_ROLES = Object.keys(PARTICIPATION_ROLE_LABELS) as ParticipationRole[];
+const SUPPORT_CATEGORIES = Object.keys(SUPPORT_CATEGORY_LABELS) as SupportCategory[];
 
 /** Yes / No / Not known — a tri-state, because "unknown" is real field data. */
 function TriState({
@@ -99,6 +111,7 @@ export function SurveyForm({
     "idle" | "locating" | "done" | "error" | "insecure"
   >("idle");
   const [coords, setCoords] = useState<{ lat: string; lng: string }>({ lat: "", lng: "" });
+  const [onRoute, setOnRoute] = useState(true);
 
   /** A state organiser may only file inside their own state. */
   const lockedStateId =
@@ -322,8 +335,68 @@ export function SurveyForm({
         </TextField>
       </fieldset>
 
-      {/* -------------------------------------------- 4. Contact & verdict */}
-      <fieldset hidden={step !== 4} className="space-y-4">
+      {/* ------------------------------------------ 4. Role in the Yatra */}
+      <fieldset hidden={step !== 4} className="space-y-5">
+        <legend className="sr-only">Role in the Yatra</legend>
+
+        <CheckboxGroup name="proposedRoles">
+          <Label>What could happen here?</Label>
+          <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            {PARTICIPATION_ROLES.map((r) => (
+              <CheckOption key={r} value={r}>
+                <span className="text-sm">{PARTICIPATION_ROLE_LABELS[r]}</span>
+              </CheckOption>
+            ))}
+          </div>
+          <Description>Optional. Pick as many of the Yatra's own events as apply.</Description>
+        </CheckboxGroup>
+
+        <TextField name="venueCapacity">
+          <Label>Venue capacity</Label>
+          <Input inputMode="numeric" placeholder="e.g. 5000" />
+          <Description>The most people the venue could hold, not just expect.</Description>
+        </TextField>
+
+        <TextField name="foodArrangementNotes">
+          <Label>Food / prasad arrangements</Label>
+          <TextArea rows={2} placeholder="Who could arrange food, for how many…" />
+        </TextField>
+
+        <SwitchField name="isDirectlyOnRoute" isSelected={onRoute} onChange={setOnRoute}>
+          This place is directly on the proposed route
+        </SwitchField>
+
+        {!onRoute ? (
+          <div className="space-y-4 rounded-xl border border-pumpkin-200 bg-pumpkin-50/60 p-4">
+            <TextField name="offRouteReason">
+              <Label>Why is it still worth recording?</Label>
+              <TextArea
+                rows={2}
+                placeholder="Its relevance to the Yatra, or the role it could still play…"
+              />
+            </TextField>
+
+            <CheckboxGroup name="supportCategories">
+              <Label>How could it help?</Label>
+              <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                {SUPPORT_CATEGORIES.map((s) => (
+                  <CheckOption key={s} value={s}>
+                    <span className="text-sm">{SUPPORT_CATEGORY_LABELS[s]}</span>
+                  </CheckOption>
+                ))}
+              </div>
+            </CheckboxGroup>
+
+            <TextField name="distanceFromRouteKm">
+              <Label>Distance from the route (km)</Label>
+              <Input inputMode="decimal" placeholder="e.g. 12" />
+            </TextField>
+          </div>
+        ) : null}
+      </fieldset>
+
+      {/* -------------------------------------------- 5. Contact & verdict */}
+      <fieldset hidden={step !== 5} className="space-y-4">
         <legend className="sr-only">Contact and recommendation</legend>
 
         <TextField name="contactName">
@@ -342,6 +415,11 @@ export function SurveyForm({
             <Input placeholder="e.g. Trust Secretary" autoComplete="off" />
           </TextField>
         </div>
+
+        <TextField name="institutionWebsite">
+          <Label>Website / email</Label>
+          <Input placeholder="e.g. www.trust.org or office@trust.org" autoComplete="off" />
+        </TextField>
 
         <TextField name="organizationsMet">
           <Label>Organisations involved</Label>

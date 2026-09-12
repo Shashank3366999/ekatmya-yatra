@@ -9,8 +9,10 @@ import type {
   ActivityStatus,
   ApprovalStatus,
   Availability,
+  ParticipationRole,
   PlaceCategory,
   Recommendation,
+  SupportCategory,
   SurveyStatus,
   YatraKind,
 } from "./types";
@@ -37,6 +39,31 @@ export const PLACE_CATEGORY_LABELS: Record<PlaceCategory, string> = {
   institution: "Institution",
   crowd_gathering: "Crowd Gathering Point",
   civic: "Civic / Government",
+  other: "Other",
+};
+
+/** What this place could host — the survey report's "institutional participation". */
+export const PARTICIPATION_ROLE_LABELS: Record<ParticipationRole, string> = {
+  maha_rath_yatra: "Maha Rath Yatra",
+  rath_yatra: "Rath Yatra",
+  night_halt: "Night Halt",
+  welcome: "Welcome / Reception",
+  mahasabha: "Mahasabha (large public assembly)",
+  sabha: "Sabha (assembly)",
+  other: "Other",
+};
+
+/** How a place could help without being a route stop itself. */
+export const SUPPORT_CATEGORY_LABELS: Record<SupportCategory, string> = {
+  venue: "Venue",
+  accommodation: "Accommodation",
+  food: "Food / Prasad",
+  volunteers: "Volunteer support",
+  transport: "Transport",
+  parking: "Parking",
+  outreach: "Outreach / gathering crowds",
+  local_coordination: "Local coordination",
+  publicity: "Publicity / communication",
   other: "Other",
 };
 

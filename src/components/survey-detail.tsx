@@ -1,10 +1,15 @@
 import { Chip } from "@heroui/react";
-import { MapPin, Phone, User } from "lucide-react";
+import { Globe, MapPin, Phone, User } from "lucide-react";
 
 import { AccentRule } from "@/components/brand";
 import { RecommendationChip, SurveyStatusChip } from "@/components/ui/status-chip";
 import { formatDateTime, formatNumber } from "@/lib/format";
-import { PLACE_CATEGORY_LABELS, YATRA_KIND_LABELS } from "@/lib/labels";
+import {
+  PARTICIPATION_ROLE_LABELS,
+  PLACE_CATEGORY_LABELS,
+  SUPPORT_CATEGORY_LABELS,
+  YATRA_KIND_LABELS,
+} from "@/lib/labels";
 import type { surveySubmissions } from "@/db/schema";
 
 type Survey = typeof surveySubmissions.$inferSelect;
@@ -140,6 +145,9 @@ export function SurveyDetail({
           <Row label="Accommodation nearby">
             <YesNo value={survey.hasAccommodation} />
           </Row>
+          {survey.venueCapacity !== null ? (
+            <Row label="Venue capacity">{formatNumber(survey.venueCapacity)}</Row>
+          ) : null}
         </dl>
 
         {survey.accessNotes ? (
@@ -147,10 +155,58 @@ export function SurveyDetail({
             {survey.accessNotes}
           </p>
         ) : null}
+        {survey.foodArrangementNotes ? (
+          <p className="mt-2.5 rounded-lg bg-ink-50 px-3.5 py-3 text-sm leading-relaxed whitespace-pre-line text-ink-600">
+            <span className="font-medium text-ink-700">Food / prasad: </span>
+            {survey.foodArrangementNotes}
+          </p>
+        ) : null}
       </Block>
 
+      {/* Role in the Yatra */}
+      {survey.proposedRoles.length > 0 || !survey.isDirectlyOnRoute ? (
+        <Block title="Role in the Yatra">
+          {survey.proposedRoles.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {survey.proposedRoles.map((r) => (
+                <Chip key={r} size="sm" variant="soft">
+                  {PARTICIPATION_ROLE_LABELS[r]}
+                </Chip>
+              ))}
+            </div>
+          ) : null}
+
+          {!survey.isDirectlyOnRoute ? (
+            <div
+              className={`rounded-xl border border-pumpkin-200 bg-pumpkin-50 p-4 text-sm text-ink-700 ${
+                survey.proposedRoles.length > 0 ? "mt-3" : ""
+              }`}
+            >
+              <p className="font-medium text-ink-900">Not directly on the route</p>
+              {survey.offRouteReason ? (
+                <p className="mt-1 leading-relaxed whitespace-pre-line">{survey.offRouteReason}</p>
+              ) : null}
+              {survey.supportCategories.length > 0 ? (
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {survey.supportCategories.map((s) => (
+                    <Chip key={s} size="sm" variant="soft">
+                      {SUPPORT_CATEGORY_LABELS[s]}
+                    </Chip>
+                  ))}
+                </div>
+              ) : null}
+              {survey.distanceFromRouteKm !== null ? (
+                <p className="mt-2 text-xs text-ink-500">
+                  {survey.distanceFromRouteKm} km from the route
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </Block>
+      ) : null}
+
       {/* Contact */}
-      {survey.contactName || survey.organizationsMet.length > 0 ? (
+      {survey.contactName || survey.organizationsMet.length > 0 || survey.institutionWebsite ? (
         <Block title="People & organisations met">
           <div className="rounded-xl border border-ink-200 bg-surface p-4">
             {survey.contactName ? (
@@ -186,6 +242,19 @@ export function SurveyDetail({
                     </Chip>
                   ))}
                 </div>
+              </div>
+            ) : null}
+
+            {survey.institutionWebsite ? (
+              <div
+                className={`flex items-center gap-1.5 text-xs text-ink-600 ${
+                  survey.contactName || survey.organizationsMet.length > 0
+                    ? "mt-3.5 border-t border-ink-200 pt-3.5"
+                    : ""
+                }`}
+              >
+                <Globe size={12} aria-hidden="true" />
+                {survey.institutionWebsite}
               </div>
             ) : null}
           </div>

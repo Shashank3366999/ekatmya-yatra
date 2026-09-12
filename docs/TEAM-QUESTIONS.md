@@ -38,16 +38,28 @@ If you can export the existing responses as CSV, we can import them as
 pre-approved Shankardoots rather than asking several hundred people to register
 a second time.
 
-### Q2b. The survey form the teams are actually using
-**What we assumed:** place name, state, district, address, coordinates, category,
-Main-or-Sub-Yatra, significance, expected gathering, vehicle access, parking,
-stage/hall, accommodation, access notes, contact person + phone + role,
-organisations met, recommendation, observations.
+### Q2b. The survey form the teams are actually using — reconciled 2026-09-12
+The team confirmed the paper "Complete Survey Report" booklet's fields may be
+freely added or aligned into the app's form. The in-app survey now also asks:
+what the place could host (Maha Rath Yatra, Rath Yatra, Night Halt, Welcome,
+Mahasabha, Sabha), venue capacity, food/prasad arrangements, whether it is
+directly on the route, and — when it is not — why it is still worth recording,
+how it could support the Yatra instead (venue, accommodation, food, volunteers,
+transport, parking, outreach, coordination, publicity), and its distance from
+the route. A website/email field was added alongside the existing contact
+person, phone and role.
 
-**We need:** the official questionnaire, and specifically which fields are
-mandatory. We made only *place name and state* required on purpose — a form that
-refuses incomplete entries sends the information back into a notebook. If the
-committee wants more enforced, tell us which.
+Only *place name and state* are still required, on purpose — a form that
+refuses incomplete entries sends the information back into a notebook.
+
+Sections of the booklet that are not about a single surveyed place — the team
+roster, the state-at-a-glance profile, daily activity logs, local events and
+festivals, the strategic action plan, and the proposed national/state/district
+committees — are not part of this form. Team rosters and committees are the
+existing organiser/role system; the final day-wise route is
+`places.routeOrder`, assigned once the route is confirmed (see Q1 and the
+answer already given: ID and sequencing wait for the backend team, after the
+survey data settles). Say if any of those still need their own screen.
 
 Anything we have not modelled is still captured (there is a JSON overflow field),
 so surveyors are never blocked — but named fields are what reports can count.

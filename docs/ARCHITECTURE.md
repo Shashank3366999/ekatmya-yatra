@@ -103,7 +103,11 @@ goes, and that information needs to reach the admin.
 
 `survey_submissions` models the questions route planners actually ask — capacity,
 vehicle access, parking, stage, accommodation, who was met, which organisations
-were involved, and the surveyor's recommendation. Three deliberate decisions:
+were involved, and the surveyor's recommendation. Reconciled against the Yatra
+team's paper "Complete Survey Report" booklet (2026-09-12), it also records what
+the place could host (Maha Rath Yatra, night halt, Mahasabha, and so on),
+whether it sits directly on the route, and — when it does not — how it could
+still support the Yatra instead. Three deliberate decisions:
 
 - **Only the place name and state are required.** A surveyor who knows nothing
   else yet can still file the place. A form that refuses incomplete data sends

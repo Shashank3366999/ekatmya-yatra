@@ -86,6 +86,17 @@ async function newPage(w = 430, h = 900) {
   await parkGroup.getByText("No", { exact: true }).click();
   await page.getByRole("button", { name: "Next", exact: true }).click();
 
+  // Role in the Yatra step — a proposed role, a venue capacity, and the place
+  // stays "directly on the route" (the default), so no off-route fields show.
+  await page.getByText("Mahasabha (large public assembly)", { exact: true }).click();
+  await page.waitForTimeout(300);
+  ok("participation-role checkbox actually checks",
+    await page.getByRole("checkbox", { name: /Mahasabha/ }).isChecked());
+  await page.getByLabel("Venue capacity").fill("8000");
+  ok("off-route fields stay hidden while on-route is the default",
+    !(await page.getByLabel("Why is it still worth recording?").isVisible().catch(() => false)));
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+
   await page.getByLabel("Person you met").fill("Smt. Lakshmi Devi");
   await page.getByLabel("Their role").fill("Devaswom Board Member");
   await page.getByLabel("Organisations involved").fill("Cochin Devaswom Board, Local Sabha");
@@ -102,6 +113,8 @@ async function newPage(w = 430, h = 900) {
   const body = await page.textContent("body");
   ok("detail shows the new place", body.includes("Chottanikkara Devi Temple"));
   ok("detail shows submitted confirmation", /Submitted to the Yatra administration/i.test(body));
+  ok("detail shows the proposed role", body.includes("Mahasabha (large public assembly)"));
+  ok("detail shows the venue capacity", /8,?000/.test(body));
   ok("reference assigned", /SUR-\d{4}/.test(body), (body.match(/SUR-\d{4}/) || [])[0]);
   ok("gathering persisted", body.includes("12,000"));
   ok("contact persisted", body.includes("Smt. Lakshmi Devi"));

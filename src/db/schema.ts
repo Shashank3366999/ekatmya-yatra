@@ -140,6 +140,40 @@ export const recommendationEnum = pgEnum("recommendation", [
   "not_suitable",
 ]);
 
+/**
+ * What part this place could play in the Yatra, per the paper survey report's
+ * "संस्थागत भागीदारी" (institutional participation) section. Distinct from
+ * `category` (what the place *is*) and `recommendation` (whether to route
+ * through it) — this is which of the Yatra's own events could happen there.
+ */
+export const participationRoleEnum = pgEnum("participation_role", [
+  "maha_rath_yatra",
+  "rath_yatra",
+  "night_halt",
+  "welcome",
+  "mahasabha",
+  "sabha",
+  "other",
+]);
+
+/**
+ * How a place could help the Yatra without being a stop on the route itself —
+ * the paper survey report's "संस्थागत सहायता" (institutional support) section,
+ * asked only when the place is not directly on the proposed path.
+ */
+export const supportCategoryEnum = pgEnum("support_category", [
+  "venue",
+  "accommodation",
+  "food",
+  "volunteers",
+  "transport",
+  "parking",
+  "outreach",
+  "local_coordination",
+  "publicity",
+  "other",
+]);
+
 export const activityStatusEnum = pgEnum("activity_status", [
   "not_started",
   "in_progress",
@@ -406,10 +440,14 @@ export const places = pgTable(
  * One surveyed place proposal. This is the table the whole MVP exists to fill:
  * survey teams create rows, admins read and triage them.
  *
- * NOTE: the field list is a best-effort model of the survey the teams are already
- * doing on paper. It MUST be reconciled with the official survey form —
- * see docs/TEAM-QUESTIONS.md Q5. `extra` absorbs anything not yet modelled so
- * field work is never blocked by a pending migration.
+ * Reconciled against the Yatra team's paper "Complete Survey Report" booklet
+ * (2026-09-12): sections 05-09 (institution & contact, institutional
+ * participation, venue & logistics, institutional support) are now modelled
+ * below rather than left to `extra`. Sections outside a single place's record —
+ * team rosters, state profiles, proposed committees, the day-wise final route —
+ * belong to organiser accounts, `places.routeOrder` and the admin panel, not
+ * here. `extra` still absorbs anything not yet modelled so field work is never
+ * blocked by a pending migration.
  */
 export const surveySubmissions = pgTable(
   "survey_submissions",
@@ -446,10 +484,27 @@ export const surveySubmissions = pgTable(
     isVehicleAccessible: boolean("is_vehicle_accessible"),
     accessNotes: text("access_notes"),
 
+    /* -- Role in the Yatra ("संस्थागत भागीदारी") -- */
+    /** Which of the Yatra's own events this place could host. Multi-select. */
+    proposedRoles: participationRoleEnum("proposed_roles").array().notNull().default(sql`'{}'`),
+    /** Total capacity of the venue, distinct from the gathering estimate above. */
+    venueCapacity: integer("venue_capacity"),
+    foodArrangementNotes: text("food_arrangement_notes"),
+
+    /* -- Or, if not a stop itself ("यदि मार्ग में नहीं है") -- */
+    /** False when this is a supporting institution rather than a route stop. */
+    isDirectlyOnRoute: boolean("is_directly_on_route").notNull().default(true),
+    offRouteReason: text("off_route_reason"),
+    /** How it could help, asked only when not directly on the route. */
+    supportCategories: supportCategoryEnum("support_categories").array().notNull().default(sql`'{}'`),
+    /** Relevant to a proposed night halt: how far from the route itself. */
+    distanceFromRouteKm: real("distance_from_route_km"),
+
     /* -- Who to talk to -- */
     contactName: text("contact_name"),
     contactPhone: varchar("contact_phone", { length: 24 }),
     contactRole: text("contact_role"),
+    institutionWebsite: text("institution_website"),
     /** Supporting organisations/institutions met at this place. */
     organizationsMet: text("organizations_met").array().notNull().default(sql`'{}'`),
 

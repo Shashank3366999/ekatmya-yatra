@@ -256,9 +256,6 @@ export default async function LandingPage() {
                 <LinkButton href="/register" size="lg">
                   Join Ekatma Yatra
                 </LinkButton>
-                <LinkButton href="/register/organizer" variant="secondary" size="lg">
-                  Join as Volunteer
-                </LinkButton>
               </Reveal>
             </div>
           </div>
@@ -801,12 +798,20 @@ export default async function LandingPage() {
           </div>
 
           {/*
-            The Yatra team's instruction: no admin card on this page. This is a
-            small link, not a button — it goes to /login, not straight to
-            /admin, never a shortcut past signing in, just a quiet door for
+            The Yatra team's instruction: no admin card on this page, and the
+            hero carries only the one main action. Both are small links here,
+            not buttons — Volunteer still goes to the full posting form at
+            /register/organizer, Admin to /login rather than straight to
+            /admin — never a shortcut past signing in, just a quiet door for
             whoever administers it.
           */}
-          <div className="mt-8 border-t border-pumpkin-100 pt-5 text-right">
+          <div className="mt-8 flex items-center justify-between border-t border-pumpkin-100 pt-5">
+            <Link
+              href="/register/organizer"
+              className="text-[11px] font-medium text-ink-500 transition-colors hover:text-pumpkin-700"
+            >
+              Join as Volunteer
+            </Link>
             <Link
               href="/login"
               className="text-[11px] font-medium text-ink-500 transition-colors hover:text-pumpkin-700"

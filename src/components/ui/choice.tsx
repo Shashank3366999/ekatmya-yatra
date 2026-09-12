@@ -68,12 +68,17 @@ export function SwitchField({
   children,
   size = "sm",
   defaultSelected,
+  isSelected,
+  onChange,
   className = "",
 }: {
   name: string;
   children: React.ReactNode;
   size?: "sm" | "md" | "lg";
   defaultSelected?: boolean;
+  /** Pass with `onChange` for a controlled switch; omit for uncontrolled. */
+  isSelected?: boolean;
+  onChange?: (selected: boolean) => void;
   className?: string;
 }) {
   return (
@@ -81,6 +86,8 @@ export function SwitchField({
       name={name}
       size={size}
       defaultSelected={defaultSelected}
+      isSelected={isSelected}
+      onChange={onChange}
       className={className}
     >
       <Switch.Content>
